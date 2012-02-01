@@ -1,0 +1,19 @@
+frequency: 20 # ticks between checks for warns/kicks
+activity:
+    - PlayerMoveEvent
+    - PlayerChatEvent
+    - PlayerInteractEvent
+    - PlayerDropItemEvent
+    - PlayerToggleSneakEvent
+    - PlayerItemHeldEvent
+    - PlayerJoinEvent
+    - edgruberman.bukkit.messageformatter.PlayerChat
+warn:
+    idle: 300 # seconds at which to warn player of kick
+    private: 'You will be kicked after %2$d seconds of being idle (Currently idle %1$d seconds)' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds
+    broadcast: '%1$s is idle' # 1 = Player Display Name, 2 = Current Idle Seconds, 3 = Kick Idle Seconds
+kick:
+    idle: 600 # seconds of idle to kick
+    reason: 'Idle for %1$d seconds' # 1 = Kick Idle Seconds
+back:
+    broadcast: '%1$s is no longer idle' # 1 = Player Display Name 

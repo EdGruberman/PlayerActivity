@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="PlayerActivity" default="Test (Build and Copy)" basedir="..">
+    <property name="implementation-title" value="edgruberman.bukkit.playeractivity"/>
+    <property name="implementation-name" value="edgruberman/bukkit/playeractivity/"/>
+    <property name="manifest-classpath" value=""/>
+
+    <property name="test" location="D:/Documents/Personal/Games/Minecraft/Hardcore/Server/plugins"/>
+    <property name="author" value="EdGruberman (ed@rjump.com)"/>
+
+    <property name="src" location="src"/>
+    <property name="resources" location="resources"/>
+    <property name="stage" location="stage"/>
+    <property name="dist" location="dist"/>
+    <property name="doc" location="doc"/>
+
+    <property name="version.properties" location="${ant.file}/../version.properties"/>
+
+    <path id="classpath">
+        <fileset dir="." includes="lib/**"/>
+        <fileset dir="../Shared/lib" includes="**"/>
+    </path>
+
+    <target name="Javadoc Export">
+        <delete dir="${doc}"/>
+        <javadoc sourcepath="${src}" destdir="${doc}" access="public"/>
+    </target>
+
+    <target name="JAR Export">
+        <delete dir="${stage}"/>
+        <delete dir="${dist}"/>
+
+        <mkdir dir="${stage}/jar"/>
+        <javac srcdir="${src}" destdir="${stage}/jar" encoding="utf-8" debug="true" includeantruntime="false">
+            <classpath refid="classpath"/>
+        </javac>
+
+        <copy file="${resources}/plugin.yml" tofile="${stage}/jar/plugin.yml"/>
+        <property file="${version.properties}"/>
+        <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}"/>
+        <replace file="${stage}/jar/plugin.yml" token="%VERSION%" value="${version}"/>
+
+        <mkdir dir="${stage}/jar/defaults"/>
+        <copy todir="${stage}/jar/defaults">
+            <fileset dir="${resources}/defaults"/>
+        </copy>
+
+        <manifest file="${stage}/MANIFEST.MF">
+            <section name="${implementation-name}">
+                <attribute name="Specification-Title" value="${ant.project.name}"/>
+                <attribute name="Specification-Version" value="${version.major}.${version.minor}"/>
+                <attribute name="Specification-Vendor" value="${author}"/>
+                <attribute name="Implementation-Title" value="${implementation-title}"/>
+                <attribute name="Implementation-Version" value="${version.revision}${version.type}${version.build}"/>
+                <attribute name="Implementation-Vendor" value="${author}"/>
+                <attribute name="Class-Path" value="${manifest-classpath}"/>
+            </section>
+        </manifest>
+
+        <mkdir dir="${dist}"/>
+        <jar basedir="${stage}/jar/" jarfile="${dist}/${ant.project.name}.jar" manifest="${stage}/MANIFEST.MF"/>
+        <echo message="Exported v${version} to ${dist}/${ant.project.name}.jar"/>
+    </target>
+
+    <target name="Major Alpha (+1.0.0a1)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.major"    operation="+" value="1" type="int"/>
+            <entry key="version.minor"    value="0" type="int"/>
+            <entry key="version.revision" value="0" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Minor Alpha (#.+1.0a1)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.minor"    operation="+" value="1" type="int"/>
+            <entry key="version.revision" value="0" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Revision Alpha (#.#.+1a1)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.revision" operation="+" value="1" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Beta (#.#.#b1)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value="b"/>
+            <entry key="version.build"    value="0" type="int" />
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Release Candidate (#.#.#rc1)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value="rc"/>
+            <entry key="version.build"    value="0" type="int" />
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Build">
+        <propertyfile file="${version.properties}">
+            <entry key="version.build"    operation="+" value="1" type="int"/>
+        </propertyfile>
+        <antcall target="JAR Export"/>
+    </target>
+
+    <target name="Release (#.#.#)">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value=""/>
+            <entry key="version.build"    value=""/>
+        </propertyfile>
+        <antcall target="JAR Export"/>
+    </target>
+
+    <target name="Test (Build and Copy)">
+        <antcall target="Build"/>
+        <copy file="${dist}/${ant.project.name}.jar" todir="${test}" />
+    </target>
+</project>

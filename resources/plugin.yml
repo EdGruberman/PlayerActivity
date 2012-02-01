@@ -1,0 +1,6 @@
+name: PlayerActivity
+description: Template code used for Bukkit plugins.
+version: %VERSION%
+depend: [MessageManager]
+author: EdGruberman (ed@rjump.com)
+main: edgruberman.bukkit.playeractivity.Main

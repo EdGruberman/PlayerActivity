@@ -1,0 +1,9 @@
+send:
+    PLAYER:
+        level: RIGHTS
+    SERVER:
+        level: RIGHTS
+    WORLD:
+        level: RIGHTS
+    LOG:
+        level: RIGHTS
