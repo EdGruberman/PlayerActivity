@@ -1,5 +1,6 @@
 package edgruberman.bukkit.playeractivity.listeners;
 
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,7 +19,8 @@ public final class PlayerInteractEventListener extends EventListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerInteractEvent event) {
-        if (event.isCancelled()) return;
+        // TODO - use event.isCancelled() when bug is fixed that doesn't check right clicking on air with item returning true
+        if (event.useInteractedBlock() == Result.DENY && event.useItemInHand() == Result.DENY) return;
 
         this.record(event.getPlayer(), System.currentTimeMillis(), event);
     }

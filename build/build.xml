@@ -20,29 +20,83 @@
         <fileset dir="../Shared/lib" includes="**"/>
     </path>
 
-    <target name="Javadoc Export">
-        <delete dir="${doc}"/>
-        <javadoc sourcepath="${src}" destdir="${doc}" access="public"/>
+    <target name="Test (Build and Copy)" description="Build existing version and copy JAR to test server">
+        <antcall target="Build"/>
+        <copy file="${dist}/${ant.project.name}.jar" todir="${test}" />
     </target>
 
-    <target name="JAR Export">
+    <target name="Build" description="Build existing version">
+        <propertyfile file="${version.properties}">
+            <entry key="version.build"    operation="+" value="1" type="int"/>
+        </propertyfile>
+        <antcall target="JAR Export"/>
+    </target>
+
+    <target name="Revision Alpha (#.#.+1a1)" description="Build first alpha of revision update">
+        <propertyfile file="${version.properties}">
+            <entry key="version.revision" operation="+" value="1" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Minor Alpha (#.+1.0a1)" description="Build first alpha of minor update">
+        <propertyfile file="${version.properties}">
+            <entry key="version.minor"    operation="+" value="1" type="int"/>
+            <entry key="version.revision" value="0" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Major Alpha (+1.0.0a1)" description="Build first alpha of major update">
+        <propertyfile file="${version.properties}">
+            <entry key="version.major"    operation="+" value="1" type="int"/>
+            <entry key="version.minor"    value="0" type="int"/>
+            <entry key="version.revision" value="0" type="int"/>
+            <entry key="version.type"     value="a"/>
+            <entry key="version.build"    value="0" type="int"/>
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Beta (#.#.#b1)" description="Build first beta version">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value="b"/>
+            <entry key="version.build"    value="0" type="int" />
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Release Candidate (#.#.#rc1)" description="Build first release candidate">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value="rc"/>
+            <entry key="version.build"    value="0" type="int" />
+        </propertyfile>
+        <antcall target="Build"/>
+    </target>
+
+    <target name="Release (#.#.#)" description="Build full release">
+        <propertyfile file="${version.properties}">
+            <entry key="version.type"     value=""/>
+            <entry key="version.build"    value=""/>
+        </propertyfile>
+        <antcall target="JAR Export"/>
+    </target>
+
+    <target name="JAR Export" depends="-Get Version" description="Create standard plugin file">
         <delete dir="${stage}"/>
         <delete dir="${dist}"/>
+
+        <copy file="${resources}/plugin.yml" tofile="${stage}/jar/plugin.yml"/>
+        <replace file="${stage}/jar/plugin.yml" token="%VERSION%" value="${version}"/>
 
         <mkdir dir="${stage}/jar"/>
         <javac srcdir="${src}" destdir="${stage}/jar" encoding="utf-8" debug="true" includeantruntime="false">
             <classpath refid="classpath"/>
         </javac>
-
-        <copy file="${resources}/plugin.yml" tofile="${stage}/jar/plugin.yml"/>
-        <property file="${version.properties}"/>
-        <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}"/>
-        <replace file="${stage}/jar/plugin.yml" token="%VERSION%" value="${version}"/>
-
-        <mkdir dir="${stage}/jar/defaults"/>
-        <copy todir="${stage}/jar/defaults">
-            <fileset dir="${resources}/defaults"/>
-        </copy>
 
         <manifest file="${stage}/MANIFEST.MF">
             <section name="${implementation-name}">
@@ -56,74 +110,34 @@
             </section>
         </manifest>
 
+        <antcall target="-Stage Defaults Directory"/>
+
         <mkdir dir="${dist}"/>
         <jar basedir="${stage}/jar/" jarfile="${dist}/${ant.project.name}.jar" manifest="${stage}/MANIFEST.MF"/>
-        <echo message="Exported v${version} to ${dist}/${ant.project.name}.jar"/>
     </target>
 
-    <target name="Major Alpha (+1.0.0a1)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.major"    operation="+" value="1" type="int"/>
-            <entry key="version.minor"    value="0" type="int"/>
-            <entry key="version.revision" value="0" type="int"/>
-            <entry key="version.type"     value="a"/>
-            <entry key="version.build"    value="0" type="int"/>
-        </propertyfile>
-        <antcall target="Build"/>
+    <target name="Javadoc Export" description="Create documentation based on code comments">
+        <delete dir="${doc}"/>
+        <javadoc sourcepath="${src}" destdir="${doc}" access="public"/>
     </target>
 
-    <target name="Minor Alpha (#.+1.0a1)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.minor"    operation="+" value="1" type="int"/>
-            <entry key="version.revision" value="0" type="int"/>
-            <entry key="version.type"     value="a"/>
-            <entry key="version.build"    value="0" type="int"/>
-        </propertyfile>
-        <antcall target="Build"/>
+    <target name="-Get Version" description="Private Dependency Task (Do not use)">
+        <property file="${version.properties}"/>
+        <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}"/>
+        <echo message="Current version is ${version}"/>
     </target>
 
-    <target name="Revision Alpha (#.#.+1a1)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.revision" operation="+" value="1" type="int"/>
-            <entry key="version.type"     value="a"/>
-            <entry key="version.build"    value="0" type="int"/>
-        </propertyfile>
-        <antcall target="Build"/>
+    <target name="-Stage Defaults Directory" depends="-Check Defaults Exists" if="${defaults.exists}" description="Private Dependency Task (Do not use)">
+        <mkdir dir="${stage}/jar/defaults"/>
+        <copy todir="${stage}/jar/defaults">
+            <fileset dir="${resources}/defaults"/>
+        </copy>
     </target>
 
-    <target name="Beta (#.#.#b1)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.type"     value="b"/>
-            <entry key="version.build"    value="0" type="int" />
-        </propertyfile>
-        <antcall target="Build"/>
+    <target name="-Check Defaults Exists" description="Private Dependency Task (Do not use)">
+        <available file="${resources}/defaults" type="dir" property="defaults.exists"/>
+        <property name="defaults.exists" value="false"/>
+        <echo message="${resources}/defaults exists = ${defaults.exists}" level="info"/>
     </target>
 
-    <target name="Release Candidate (#.#.#rc1)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.type"     value="rc"/>
-            <entry key="version.build"    value="0" type="int" />
-        </propertyfile>
-        <antcall target="Build"/>
-    </target>
-
-    <target name="Build">
-        <propertyfile file="${version.properties}">
-            <entry key="version.build"    operation="+" value="1" type="int"/>
-        </propertyfile>
-        <antcall target="JAR Export"/>
-    </target>
-
-    <target name="Release (#.#.#)">
-        <propertyfile file="${version.properties}">
-            <entry key="version.type"     value=""/>
-            <entry key="version.build"    value=""/>
-        </propertyfile>
-        <antcall target="JAR Export"/>
-    </target>
-
-    <target name="Test (Build and Copy)">
-        <antcall target="Build"/>
-        <copy file="${dist}/${ant.project.name}.jar" todir="${test}" />
-    </target>
 </project>
