@@ -9,8 +9,6 @@ import edgruberman.bukkit.playeractivity.Tracker;
 
 public final class PlayerJoinEventListener extends EventListener {
 
-    public static final String REFERENCE = "PlayerJoinEvent";
-
     public PlayerJoinEventListener(final Tracker tracker) {
         super(tracker);
         super.register(this);
@@ -18,7 +16,7 @@ public final class PlayerJoinEventListener extends EventListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerJoinEvent event) {
-        this.record(event.getPlayer(), System.currentTimeMillis(), event);
+        this.record(event.getPlayer(), event);
     }
 
 }

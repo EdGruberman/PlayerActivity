@@ -9,8 +9,6 @@ import edgruberman.bukkit.playeractivity.Tracker;
 
 public class MessageFormatterPlayerChatListener extends EventListener {
 
-    public static final String REFERENCE = "edgruberman.bukkit.messageformatter.PlayerChat";
-
     public MessageFormatterPlayerChatListener(final Tracker tracker) {
         super(tracker);
         super.register(this);
@@ -20,7 +18,7 @@ public class MessageFormatterPlayerChatListener extends EventListener {
     public void onPlayerChat(final PlayerChat event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), System.currentTimeMillis(), event);
+        this.record(event.getPlayer(), event);
     }
 
 }

@@ -16,4 +16,4 @@ kick:
     idle: 600 # seconds of idle to kick
     reason: 'Idle for %1$d seconds' # 1 = Kick Idle Seconds
 back:
-    broadcast: '%1$s is no longer idle' # 1 = Player Display Name 
+    broadcast: '%1$s is no longer idle' # 1 = Player Display Name

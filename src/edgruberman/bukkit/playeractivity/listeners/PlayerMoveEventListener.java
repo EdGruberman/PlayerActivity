@@ -9,8 +9,6 @@ import edgruberman.bukkit.playeractivity.Tracker;
 
 public final class PlayerMoveEventListener extends EventListener {
 
-    public static final String REFERENCE = "PlayerMoveEvent";
-
     public PlayerMoveEventListener(final Tracker tracker) {
         super(tracker);
         super.register(this);
@@ -20,7 +18,7 @@ public final class PlayerMoveEventListener extends EventListener {
     public void onEvent(final PlayerMoveEvent event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), System.currentTimeMillis(), event);
+        this.record(event.getPlayer(), event);
     }
 
 }

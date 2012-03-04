@@ -10,8 +10,6 @@ import edgruberman.bukkit.playeractivity.Tracker;
 
 public final class PlayerInteractEventListener extends EventListener {
 
-    public static final String REFERENCE = "PlayerInteractEvent";
-
     public PlayerInteractEventListener(final Tracker tracker) {
         super(tracker);
         super.register(this);
@@ -22,7 +20,7 @@ public final class PlayerInteractEventListener extends EventListener {
         // TODO - use event.isCancelled() when bug is fixed that doesn't check right clicking on air with item returning true
         if (event.useInteractedBlock() == Result.DENY && event.useItemInHand() == Result.DENY) return;
 
-        this.record(event.getPlayer(), System.currentTimeMillis(), event);
+        this.record(event.getPlayer(), event);
     }
 
 }

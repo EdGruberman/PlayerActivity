@@ -37,18 +37,19 @@ public final class Main extends JavaPlugin {
     }
 
     public void loadConfiguration() {
-        FileConfiguration config = this.configurationFile.load();
+        final FileConfiguration config = this.configurationFile.load();
 
         // TODO adjust tracker frequency and listeners if modified in configuration file
         if (this.tracker == null) {
-            List<Class<? extends EventListener>> listeners = new ArrayList<Class<? extends EventListener>>();
-            for (String reference : config.getStringList("activity")) {
-                Class<? extends EventListener> listener = SupportedListeners.getListenerFor(reference);
-                if (listener == null) {
+            final List<Class<? extends EventListener>> listeners = new ArrayList<Class<? extends EventListener>>();
+            for (final String reference : config.getStringList("activity")) {
+                Class<? extends EventListener> listener;
+                try {
+                    listener = Class.forName("edgruberman.bukkit.playeractivity.listeners." + reference).asSubclass(EventListener.class);
+                } catch (final ClassNotFoundException e) {
                     Main.messageManager.log("Unsupported Listener: " + reference, MessageLevel.WARNING);
                     continue;
                 }
-
                 listeners.add(listener);
             }
 
