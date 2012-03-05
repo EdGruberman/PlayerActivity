@@ -54,6 +54,10 @@ public final class EventTracker extends Observable implements Listener {
         return true;
     }
 
+    public List<EventFilter> getFilters() {
+        return this.filters;
+    }
+
     public void clearFilters() {
         for (final EventFilter filter : this.filters) filter.unregister();
         this.filters.clear();
