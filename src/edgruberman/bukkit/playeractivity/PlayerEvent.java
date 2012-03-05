@@ -1,26 +1,17 @@
 package edgruberman.bukkit.playeractivity;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 public class PlayerEvent {
 
-    private final Player player;
-    private long occurred;
+    public final Player player;
+    public final long occurred;
+    public final Event event;
 
-    PlayerEvent(final Player player, final long occurred) {
+    PlayerEvent(final Player player, final Event event, final long occurred) {
         this.player = player;
-        this.occurred = occurred;
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public Long getOccurred() {
-        return this.occurred;
-    }
-
-    public void setOccurred(final long occurred) {
+        this.event = event;
         this.occurred = occurred;
     }
 

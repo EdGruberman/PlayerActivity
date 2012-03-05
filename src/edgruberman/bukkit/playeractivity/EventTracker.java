@@ -1,8 +1,11 @@
 package edgruberman.bukkit.playeractivity;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -13,37 +16,54 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public final class EventTracker implements Listener {
+public final class EventTracker extends Observable implements Listener {
 
     private final Plugin plugin;
-    private final Map<Player, PlayerEvent> last = new HashMap<Player, PlayerEvent>();
+    private final Map<Player, Long> last = new HashMap<Player, Long>();
+    private final List<EventFilter> filters = new ArrayList<EventFilter>();
 
-    public EventTracker(final Plugin plugin, final List<Class<? extends EventListener>> listeners) {
+    public EventTracker(final Plugin plugin) {
+        this(plugin, Collections.<Class<? extends EventFilter>>emptyList());
+    }
+
+    public EventTracker(final Plugin plugin, final List<Class<? extends EventFilter>> filters) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        for (final Class<? extends EventListener> listener : listeners) this.addListener(listener);
+        this.addFilters(filters);
     }
 
     public Plugin getPlugin() {
         return this.plugin;
     }
 
-    public boolean addListener(final Class<? extends EventListener> listener) {
+    public void addFilters(final List<Class<? extends EventFilter>> filters) {
+        for (final Class<? extends EventFilter> filter : filters) this.addFilter(filter);
+    }
+
+    public boolean addFilter(final Class<? extends EventFilter> filter) {
+        EventFilter instance = null;
         try {
-            listener.getConstructor(EventTracker.class).newInstance(this);
+            instance = filter.getConstructor(EventTracker.class).newInstance(this);
         } catch (final Exception e) {
-            Main.messageManager.log("Error instantiating EventListener " + listener.getName(), MessageLevel.SEVERE, e);
+            Main.messageManager.log("Error instantiating EventListener " + filter.getName(), MessageLevel.SEVERE, e);
             return false;
         }
 
+        this.filters.add(instance);
+        instance.register();
         return true;
     }
 
-    public Map<Player, PlayerEvent> getLastAll() {
+    public void clearFilters() {
+        for (final EventFilter filter : this.filters) filter.unregister();
+        this.filters.clear();
+    }
+
+    public Map<Player, Long> getLastAll() {
         return this.last;
     }
 
-    public PlayerEvent getLastFor(final Player player) {
+    public Long getLastFor(final Player player) {
         return this.last.get(player);
     }
 
@@ -67,13 +87,11 @@ public final class EventTracker implements Listener {
      * @param occurred milliSeconds from midnight, January 1, 1970 UTC the activity was performed at
      */
     public void record(final Player player, final Event event, final long occurred) {
-        if (!this.last.containsKey(player)) {
-            this.last.put(player, new PlayerEvent(player, occurred));
-            return;
-        }
+        this.last.put(player, occurred);
 
-        final PlayerEvent status = this.last.get(player);
-        status.setOccurred(occurred);
+        if (this.countObservers() == 0) return;
+
+        this.notifyObservers(new PlayerEvent(player, event, occurred));
     }
 
     @EventHandler

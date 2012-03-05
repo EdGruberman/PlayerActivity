@@ -13,9 +13,9 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 public final class Main extends JavaPlugin {
 
     public static MessageManager messageManager;
+    public static IdleKick idleKick = null;
 
     private ConfigurationFile configurationFile;
-    private IdleKick idleKick = null;
 
     @Override
     public void onLoad() {
@@ -35,7 +35,7 @@ public final class Main extends JavaPlugin {
     }
 
     public void loadConfiguration() {
-        if (this.idleKick != null) this.idleKick.stop();
+        if (Main.idleKick != null) Main.idleKick.stop();
         final FileConfiguration config = this.configurationFile.load();
         this.loadIdleKick(config.getConfigurationSection("IdleKick"));
     }
@@ -46,27 +46,35 @@ public final class Main extends JavaPlugin {
         final Long frequency = config.getLong("frequency");
         if (frequency == null || frequency <= 0) return;
 
-        final List<Class<? extends EventListener>> listeners = new ArrayList<Class<? extends EventListener>>();
+        final List<Class<? extends EventFilter>> filters = new ArrayList<Class<? extends EventFilter>>();
         for (final String reference : config.getStringList("activity")) {
-            Class<? extends EventListener> listener;
+            Class<? extends EventFilter> filter = null;
             try {
-                listener = Class.forName("edgruberman.bukkit.playeractivity.listeners." + reference + "Listener").asSubclass(EventListener.class);
+                filter = Class.forName("edgruberman.bukkit.playeractivity.filters." + reference).asSubclass(EventFilter.class);
             } catch (final ClassNotFoundException e) {
+                // Ignore to try below
+            }
+            try {
+                filter = Class.forName(reference).asSubclass(EventFilter.class);
+            } catch (final ClassNotFoundException e1) {
                 Main.messageManager.log("Unsupported Listener: " + reference, MessageLevel.WARNING);
                 continue;
             }
-            listeners.add(listener);
+            filters.add(filter);
         }
-        if (listeners.size() == 0) return;
+        if (filters.size() == 0) return;
 
-        this.idleKick = new IdleKick(this, frequency, listeners);
-        this.idleKick.warnIdle = config.getInt("warn.idle", this.idleKick.warnIdle);
-        this.idleKick.warnPrivate = config.getString("warn.private", this.idleKick.warnPrivate);
-        this.idleKick.warnBroadcast = config.getString("warn.broadcast", this.idleKick.warnBroadcast);
-        this.idleKick.backBroadcast = config.getString("warn.backBroadcast", this.idleKick.backBroadcast);
-        this.idleKick.kickIdle = config.getInt("kick.idle", this.idleKick.kickIdle);
-        this.idleKick.kickReason = config.getString("kick.reason", this.idleKick.kickReason);
-        this.idleKick.start();
+        if (Main.idleKick == null) Main.idleKick = new IdleKick(this);
+        Main.idleKick.frequency = frequency;
+        Main.idleKick.warnIdle = config.getInt("warn.idle", Main.idleKick.warnIdle);
+        Main.idleKick.warnPrivate = config.getString("warn.private", Main.idleKick.warnPrivate);
+        Main.idleKick.warnBroadcast = config.getString("warn.broadcast", Main.idleKick.warnBroadcast);
+        Main.idleKick.backBroadcast = config.getString("warn.backBroadcast", Main.idleKick.backBroadcast);
+        Main.idleKick.kickIdle = config.getInt("kick.idle", Main.idleKick.kickIdle);
+        Main.idleKick.kickReason = config.getString("kick.reason", Main.idleKick.kickReason);
+        Main.idleKick.tracker.clearFilters();
+        Main.idleKick.tracker.addFilters(filters);
+        Main.idleKick.start();
     }
 
 }
