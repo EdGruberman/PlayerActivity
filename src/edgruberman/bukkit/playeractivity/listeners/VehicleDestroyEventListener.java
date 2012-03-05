@@ -6,13 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class VehicleDestroyEventListener extends EventListener {
+public class VehicleDestroyEventListener extends EventListener {
 
-    public VehicleDestroyEventListener(final Tracker tracker) {
+    public VehicleDestroyEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -22,7 +21,7 @@ public final class VehicleDestroyEventListener extends EventListener {
         if (!(event.getAttacker() instanceof Player)) return;
 
         final Player player = (Player) event.getAttacker();
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }

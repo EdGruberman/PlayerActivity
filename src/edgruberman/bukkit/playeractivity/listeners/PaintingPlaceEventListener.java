@@ -5,20 +5,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.painting.PaintingPlaceEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PaintingPlaceEventListener extends EventListener {
+public class PaintingPlaceEventListener extends EventListener {
 
-    public PaintingPlaceEventListener(final Tracker tracker) {
+    public PaintingPlaceEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PaintingPlaceEvent event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

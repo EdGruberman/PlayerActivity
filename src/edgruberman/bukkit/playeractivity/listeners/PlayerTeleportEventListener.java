@@ -5,20 +5,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PlayerTeleportEventListener extends EventListener {
+public class PlayerTeleportEventListener extends EventListener {
 
-    public PlayerTeleportEventListener(final Tracker tracker) {
+    public PlayerTeleportEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerTeleportEvent event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

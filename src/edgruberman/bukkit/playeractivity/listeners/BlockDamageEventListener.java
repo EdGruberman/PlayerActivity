@@ -5,20 +5,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDamageEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class BlockDamageEventListener extends EventListener {
+public class BlockDamageEventListener extends EventListener {
 
-    public BlockDamageEventListener(final Tracker tracker) {
+    public BlockDamageEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final BlockDamageEvent event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

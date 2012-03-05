@@ -5,20 +5,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PlayerBucketEmptyEventListener extends EventListener {
+public class PlayerBucketEmptyEventListener extends EventListener {
 
-    public PlayerBucketEmptyEventListener(final Tracker tracker) {
+    public PlayerBucketEmptyEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerBucketEmptyEvent event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

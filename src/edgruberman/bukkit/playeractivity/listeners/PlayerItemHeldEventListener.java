@@ -5,18 +5,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PlayerItemHeldEventListener extends EventListener {
+public class PlayerItemHeldEventListener extends EventListener {
 
-    public PlayerItemHeldEventListener(final Tracker tracker) {
+    public PlayerItemHeldEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerItemHeldEvent event) {
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

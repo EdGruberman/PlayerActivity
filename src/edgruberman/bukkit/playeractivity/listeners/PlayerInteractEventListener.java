@@ -6,13 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PlayerInteractEventListener extends EventListener {
+public class PlayerInteractEventListener extends EventListener {
 
-    public PlayerInteractEventListener(final Tracker tracker) {
+    public PlayerInteractEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -20,7 +19,7 @@ public final class PlayerInteractEventListener extends EventListener {
         // TODO - use event.isCancelled() when bug is fixed that doesn't check right clicking on air with item returning true
         if (event.useInteractedBlock() == Result.DENY && event.useItemInHand() == Result.DENY) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

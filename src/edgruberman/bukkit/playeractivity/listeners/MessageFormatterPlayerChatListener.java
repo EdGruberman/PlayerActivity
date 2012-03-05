@@ -5,20 +5,19 @@ import org.bukkit.event.EventPriority;
 
 import edgruberman.bukkit.messageformatter.PlayerChat;
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
 public class MessageFormatterPlayerChatListener extends EventListener {
 
-    public MessageFormatterPlayerChatListener(final Tracker tracker) {
+    public MessageFormatterPlayerChatListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(final PlayerChat event) {
         if (event.isCancelled()) return;
 
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

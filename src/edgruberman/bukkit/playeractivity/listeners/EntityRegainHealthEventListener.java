@@ -6,13 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class EntityRegainHealthEventListener extends EventListener {
+public class EntityRegainHealthEventListener extends EventListener {
 
-    public EntityRegainHealthEventListener(final Tracker tracker) {
+    public EntityRegainHealthEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -22,7 +21,7 @@ public final class EntityRegainHealthEventListener extends EventListener {
         if (!(event.getEntity() instanceof Player)) return;
 
         final Player player = (Player) event.getEntity();
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }

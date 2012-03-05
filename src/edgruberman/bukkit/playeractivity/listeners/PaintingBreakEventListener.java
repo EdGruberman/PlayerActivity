@@ -7,13 +7,12 @@ import org.bukkit.event.painting.PaintingBreakByEntityEvent;
 import org.bukkit.event.painting.PaintingBreakEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PaintingBreakEventListener extends EventListener {
+public class PaintingBreakEventListener extends EventListener {
 
-    public PaintingBreakEventListener(final Tracker tracker) {
+    public PaintingBreakEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -26,7 +25,7 @@ public final class PaintingBreakEventListener extends EventListener {
         if (!(pbbee.getRemover() instanceof Player)) return;
 
         final Player player = (Player) pbbee.getRemover();
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }

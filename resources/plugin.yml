@@ -1,5 +1,5 @@
 name: @NAME@
-description: Template code used for Bukkit plugins.
+description: Track player based events
 depend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@

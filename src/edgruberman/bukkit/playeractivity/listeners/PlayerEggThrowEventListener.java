@@ -5,18 +5,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class PlayerEggThrowEventListener extends EventListener {
+public class PlayerEggThrowEventListener extends EventListener {
 
-    public PlayerEggThrowEventListener(final Tracker tracker) {
+    public PlayerEggThrowEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final PlayerEggThrowEvent event) {
-        this.record(event.getPlayer(), event);
+        this.tracker.record(event.getPlayer(), event);
     }
 
 }

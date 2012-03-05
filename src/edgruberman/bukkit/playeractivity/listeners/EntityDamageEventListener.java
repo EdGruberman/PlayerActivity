@@ -7,13 +7,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class EntityDamageEventListener extends EventListener {
+public class EntityDamageEventListener extends EventListener {
 
-    public EntityDamageEventListener(final Tracker tracker) {
+    public EntityDamageEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -34,7 +33,7 @@ public final class EntityDamageEventListener extends EventListener {
             return;
         }
 
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }

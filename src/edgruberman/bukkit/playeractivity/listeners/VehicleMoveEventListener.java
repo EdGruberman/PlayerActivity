@@ -6,13 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class VehicleMoveEventListener extends EventListener {
+public class VehicleMoveEventListener extends EventListener {
 
-    public VehicleMoveEventListener(final Tracker tracker) {
+    public VehicleMoveEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -20,7 +19,7 @@ public final class VehicleMoveEventListener extends EventListener {
         if (!(event.getVehicle().getPassenger() instanceof Player)) return;
 
         final Player player = (Player) event.getVehicle().getPassenger();
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }

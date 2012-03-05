@@ -6,13 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import edgruberman.bukkit.playeractivity.EventListener;
-import edgruberman.bukkit.playeractivity.Tracker;
+import edgruberman.bukkit.playeractivity.EventTracker;
 
-public final class ProjectileHitEventListener extends EventListener {
+public class ProjectileHitEventListener extends EventListener {
 
-    public ProjectileHitEventListener(final Tracker tracker) {
+    public ProjectileHitEventListener(final EventTracker tracker) {
         super(tracker);
-        super.register(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -20,7 +19,7 @@ public final class ProjectileHitEventListener extends EventListener {
         if (!(event.getEntity() instanceof Player)) return;
 
         final Player player = (Player) event.getEntity();
-        this.record(player, event);
+        this.tracker.record(player, event);
     }
 
 }
