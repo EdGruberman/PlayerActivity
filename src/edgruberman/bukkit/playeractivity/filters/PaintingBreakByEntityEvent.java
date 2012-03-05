@@ -6,15 +6,15 @@ import org.bukkit.event.EventPriority;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 
-public class VehicleEnterEvent extends Interpreter {
+public class PaintingBreakByEntityEvent extends Interpreter {
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onEvent(final org.bukkit.event.vehicle.VehicleEnterEvent event) {
+    public void onEvent(final org.bukkit.event.painting.PaintingBreakByEntityEvent event) {
         if (event.isCancelled()) return;
 
-        if (!(event.getEntered() instanceof Player)) return;
+        if (!(event.getRemover() instanceof Player)) return;
 
-        final Player player = (Player) event.getEntered();
+        final Player player = (Player) event.getRemover();
         this.tracker.record(player, event);
     }
 

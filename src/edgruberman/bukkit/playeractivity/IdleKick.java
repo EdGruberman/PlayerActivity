@@ -39,15 +39,20 @@ public final class IdleKick implements Runnable, Listener {
         this.tracker = new EventTracker(plugin);
     }
 
-    IdleKick(final Plugin plugin, final long frequency, final List<Class<? extends EventFilter>> filters) {
+    IdleKick(final Plugin plugin, final long frequency, final List<Interpreter> interpreters) {
         this.plugin = plugin;
-        this.tracker = new EventTracker(plugin, filters);
+        this.tracker = new EventTracker(plugin, interpreters);
         this.frequency = frequency;
     }
 
     public boolean start() {
-        // TODO bail if tracker has no listeners
-        if (this.taskId != -1 || this.frequency <= 0 || (this.warnIdle <= 0 && this.kickIdle <= 0)) return false;
+        if (
+                   this.taskId != -1
+                || this.frequency <= 0
+                || (this.warnIdle <= 0 && this.kickIdle <= 0)
+                || this.tracker.getInterpreters().size() == 0
+        )
+            return false;
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
         this.taskId = this.plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(this.plugin, this, this.frequency, this.frequency);

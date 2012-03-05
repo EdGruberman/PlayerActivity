@@ -4,14 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import edgruberman.bukkit.playeractivity.EventFilter;
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.Interpreter;
 
-public class EntityRegainHealthEvent extends EventFilter {
-
-    public EntityRegainHealthEvent(final EventTracker tracker) {
-        super(tracker);
-    }
+public class EntityRegainHealthEvent extends Interpreter {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final org.bukkit.event.entity.EntityRegainHealthEvent event) {

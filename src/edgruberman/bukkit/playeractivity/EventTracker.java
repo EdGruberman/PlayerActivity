@@ -14,53 +14,44 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
-
 public final class EventTracker extends Observable implements Listener {
 
     private final Plugin plugin;
     private final Map<Player, Long> last = new HashMap<Player, Long>();
-    private final List<EventFilter> filters = new ArrayList<EventFilter>();
+    private final List<Interpreter> interpreters = new ArrayList<Interpreter>();
 
     public EventTracker(final Plugin plugin) {
-        this(plugin, Collections.<Class<? extends EventFilter>>emptyList());
+        this(plugin, Collections.<Interpreter>emptyList());
     }
 
-    public EventTracker(final Plugin plugin, final List<Class<? extends EventFilter>> filters) {
+    public EventTracker(final Plugin plugin, final List<Interpreter> interpreters) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        this.addFilters(filters);
+        this.addInterpreters(interpreters);
     }
 
     public Plugin getPlugin() {
         return this.plugin;
     }
 
-    public void addFilters(final List<Class<? extends EventFilter>> filters) {
-        for (final Class<? extends EventFilter> filter : filters) this.addFilter(filter);
+    public void addInterpreters(final List<Interpreter> interpreters) {
+        for (final Interpreter interpreter : interpreters) this.addInterpreter(interpreter);
     }
 
-    public boolean addFilter(final Class<? extends EventFilter> filter) {
-        EventFilter instance = null;
-        try {
-            instance = filter.getConstructor(EventTracker.class).newInstance(this);
-        } catch (final Exception e) {
-            Main.messageManager.log("Error instantiating EventListener " + filter.getName(), MessageLevel.SEVERE, e);
-            return false;
-        }
-
-        this.filters.add(instance);
-        instance.register();
+    public boolean addInterpreter(final Interpreter interpreter) {
+        this.interpreters.add(interpreter);
+        interpreter.register(this);
         return true;
     }
 
-    public List<EventFilter> getFilters() {
-        return this.filters;
+    public List<Interpreter> getInterpreters() {
+        return this.interpreters;
     }
 
-    public void clearFilters() {
-        for (final EventFilter filter : this.filters) filter.unregister();
-        this.filters.clear();
+    public void clear() {
+        for (final Interpreter filter : this.interpreters) filter.unregister();
+        this.interpreters.clear();
+        this.last.clear();
     }
 
     public Map<Player, Long> getLastAll() {
@@ -72,35 +63,54 @@ public final class EventTracker extends Observable implements Listener {
     }
 
     /**
-     * Record last activity for player assuming current time for occurrence.
+     * Record last activity for player.
      * (This could be called on high frequency events such as PLAYER_MOVE.)
      *
      * @param player player to record this as last activity for
      * @param type event type that player engaged in
      */
     public void record(final Player player, final Event event) {
-            this.record(player, event, System.currentTimeMillis());
-    }
+        final long occured = System.currentTimeMillis();
 
-    /**
-     * Record last activity for player.
-     * (This could be called on high frequency events such as PLAYER_MOVE.)
-     *
-     * @param player player to record this as last activity for
-     * @param type event type that player engaged in (TODO store in Status for later reference based on Tracker field indicating to keep reference)
-     * @param occurred milliSeconds from midnight, January 1, 1970 UTC the activity was performed at
-     */
-    public void record(final Player player, final Event event, final long occurred) {
-        this.last.put(player, occurred);
+        this.last.put(player, occured);
 
+        this.setChanged();
         if (this.countObservers() == 0) return;
 
-        this.notifyObservers(new PlayerEvent(player, event, occurred));
+        this.notifyObservers(new PlayerEvent(player, event, occured));
     }
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
         this.last.remove(event.getPlayer());
+    }
+
+    public static Interpreter newInterpreter(final String className) {
+        Class<? extends Interpreter> clazz;
+
+        // Look in local package
+        try {
+            clazz = Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
+        } catch (final ClassNotFoundException e) {
+            // Ignore
+        }
+
+        // Look for a custom class
+        try {
+            clazz = Class.forName(className).asSubclass(Interpreter.class);
+        } catch (final ClassNotFoundException e1) {
+            return null;
+        }
+
+        // Instantiate class
+        Interpreter interpreter;
+        try {
+            interpreter = clazz.newInstance();
+        } catch (final Exception e) {
+            return null;
+        }
+
+        return interpreter;
     }
 
 }

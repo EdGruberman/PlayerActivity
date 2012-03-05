@@ -5,14 +5,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import edgruberman.bukkit.playeractivity.EventFilter;
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.Interpreter;
 
-public class EntityDamageEvent extends EventFilter {
-
-    public EntityDamageEvent(final EventTracker tracker) {
-        super(tracker);
-    }
+public class EntityDamageEvent extends Interpreter {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final org.bukkit.event.entity.EntityDamageEvent event) {

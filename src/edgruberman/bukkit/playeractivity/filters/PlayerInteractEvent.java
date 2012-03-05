@@ -4,14 +4,9 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import edgruberman.bukkit.playeractivity.EventFilter;
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.Interpreter;
 
-public class PlayerInteractEvent extends EventFilter {
-
-    public PlayerInteractEvent(final EventTracker tracker) {
-        super(tracker);
-    }
+public class PlayerInteractEvent extends Interpreter {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEvent(final org.bukkit.event.player.PlayerInteractEvent event) {

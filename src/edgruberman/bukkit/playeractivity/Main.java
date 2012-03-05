@@ -35,34 +35,29 @@ public final class Main extends JavaPlugin {
     }
 
     public void loadConfiguration() {
-        if (Main.idleKick != null) Main.idleKick.stop();
         final FileConfiguration config = this.configurationFile.load();
         this.loadIdleKick(config.getConfigurationSection("IdleKick"));
     }
 
     private void loadIdleKick(final ConfigurationSection config) {
+        if (Main.idleKick != null) Main.idleKick.stop();
+        Main.idleKick.tracker.clear();
         if (!config.getBoolean("enabled", false)) return;
 
         final Long frequency = config.getLong("frequency");
         if (frequency == null || frequency <= 0) return;
 
-        final List<Class<? extends EventFilter>> filters = new ArrayList<Class<? extends EventFilter>>();
-        for (final String reference : config.getStringList("activity")) {
-            Class<? extends EventFilter> filter = null;
-            try {
-                filter = Class.forName("edgruberman.bukkit.playeractivity.filters." + reference).asSubclass(EventFilter.class);
-            } catch (final ClassNotFoundException e) {
-                // Ignore to try below
-            }
-            try {
-                filter = Class.forName(reference).asSubclass(EventFilter.class);
-            } catch (final ClassNotFoundException e1) {
-                Main.messageManager.log("Unsupported Listener: " + reference, MessageLevel.WARNING);
+        final List<Interpreter> interpreters = new ArrayList<Interpreter>();
+        for (final String className : config.getStringList("activity")) {
+            final Interpreter interpreter = EventTracker.newInterpreter(className);
+            if (interpreter == null) {
+                Main.messageManager.log("Unsupported activity: " + className, MessageLevel.WARNING);
                 continue;
             }
-            filters.add(filter);
+
+            interpreters.add(interpreter);
         }
-        if (filters.size() == 0) return;
+        if (interpreters.size() == 0) return;
 
         if (Main.idleKick == null) Main.idleKick = new IdleKick(this);
         Main.idleKick.frequency = frequency;
@@ -72,8 +67,7 @@ public final class Main extends JavaPlugin {
         Main.idleKick.backBroadcast = config.getString("warn.backBroadcast", Main.idleKick.backBroadcast);
         Main.idleKick.kickIdle = config.getInt("kick.idle", Main.idleKick.kickIdle);
         Main.idleKick.kickReason = config.getString("kick.reason", Main.idleKick.kickReason);
-        Main.idleKick.tracker.clearFilters();
-        Main.idleKick.tracker.addFilters(filters);
+        Main.idleKick.tracker.addInterpreters(interpreters);
         Main.idleKick.start();
     }
 
