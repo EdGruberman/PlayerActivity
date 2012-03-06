@@ -1,19 +1,19 @@
 IdleKick:
-	enabled: false
-	frequency: 100 # ticks between checks for warns/kicks; 20 ticks/sec on average; -1 to disable
-	activity:
-	    - PlayerMoveEvent
-	    - PlayerChatEvent
-	    - PlayerInteractEvent
-	    - PlayerDropItemEvent
-	    - PlayerToggleSneakEvent
-	    - PlayerItemHeldEvent
-	    - PlayerJoinEvent
-	warn:
-	    idle: 300 # seconds at which to warn player of kick; -1 to disable
-	    private: 'You will be kicked after %2$ds of being idle' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds
-	    broadcast: '%3$s has been idle for %1$ds' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds, 3 = Player Display Name
-	    backBroadcast: '%2$s is back after being idle for %1$ds' # 1 = Current Idle Seconds, 2 = Player Display Name
-	kick:
-	    idle: 600 # seconds of idle to kick; -1 to disable
-	    reason: 'Idle past limit of %1$d seconds' # 1 = Kick Idle Seconds
+    enabled: false
+    frequency: 100 # ticks between checks for warns/kicks; 20 ticks/sec on average; -1 to disable
+    activity:
+        - PlayerMoveEvent
+        - PlayerChatEvent
+        - PlayerInteractEvent
+        - PlayerDropItemEvent
+        - PlayerToggleSneakEvent
+        - PlayerItemHeldEvent
+        - PlayerJoinEvent
+    warn:
+        idle: 300 # seconds at which to warn player of kick; -1 to disable
+        private: 'You will be kicked after %2$ds of being idle' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds
+        broadcast: '%3$s has been idle for %1$ds' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds, 3 = Player Display Name
+        backBroadcast: '%2$s is back after being idle for %1$ds' # 1 = Current Idle Seconds, 2 = Player Display Name
+    kick:
+        idle: 600 # seconds of idle to kick; -1 to disable
+        reason: 'Idle past limit of %1$d seconds' # 1 = Kick Idle Seconds
