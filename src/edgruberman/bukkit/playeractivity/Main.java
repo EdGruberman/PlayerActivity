@@ -40,8 +40,11 @@ public final class Main extends JavaPlugin {
     }
 
     private void loadIdleKick(final ConfigurationSection config) {
-        if (Main.idleKick != null) Main.idleKick.stop();
-        Main.idleKick.tracker.clear();
+        if (Main.idleKick != null) {
+            Main.idleKick.stop();
+            if (Main.idleKick.tracker != null) Main.idleKick.tracker.clear();
+        }
+
         if (!config.getBoolean("enabled", false)) return;
 
         final Long frequency = config.getLong("frequency");
