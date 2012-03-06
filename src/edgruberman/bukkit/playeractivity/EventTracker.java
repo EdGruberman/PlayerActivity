@@ -85,27 +85,30 @@ public final class EventTracker extends Observable implements Listener {
         this.last.remove(event.getPlayer());
     }
 
+    // TODO gracefully manage a NoClassDefFoundError when initializing an existing Interpreter SubClass importing a class not found
     public static Interpreter newInterpreter(final String className) {
-        Class<? extends Interpreter> clazz;
+        Class<? extends Interpreter> subClass = null;
 
         // Look in local package
         try {
-            clazz = Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
-        } catch (final ClassNotFoundException e) {
+            subClass = Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
+        } catch (final Exception e) {
             // Ignore
         }
 
         // Look for a custom class
-        try {
-            clazz = Class.forName(className).asSubclass(Interpreter.class);
-        } catch (final ClassNotFoundException e1) {
-            return null;
+        if (subClass == null) {
+            try {
+                subClass = Class.forName(className).asSubclass(Interpreter.class);
+            } catch (final Exception e) {
+                return null;
+            }
         }
 
         // Instantiate class
         Interpreter interpreter;
         try {
-            interpreter = clazz.newInstance();
+            interpreter = subClass.newInstance();
         } catch (final Exception e) {
             return null;
         }
