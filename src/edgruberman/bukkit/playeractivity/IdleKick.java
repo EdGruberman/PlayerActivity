@@ -32,7 +32,7 @@ public final class IdleKick implements Runnable, Listener {
     public final Plugin plugin;
     public final EventTracker tracker;
     private int taskId = -1;
-    private final Map<Player, Long> warnings = new HashMap<Player, Long>();
+    private final Map<Player, Long> idles = new HashMap<Player, Long>();
 
     IdleKick(final Plugin plugin){
         this.plugin = plugin;
@@ -55,7 +55,7 @@ public final class IdleKick implements Runnable, Listener {
             return false;
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-        this.taskId = this.plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(this.plugin, this, this.frequency, this.frequency);
+        this.taskId = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, this, this.frequency, this.frequency);
         return (this.taskId != -1);
     }
 
@@ -71,36 +71,36 @@ public final class IdleKick implements Runnable, Listener {
     public void run() {
         final long now = System.currentTimeMillis();
         for (final Map.Entry<Player, Long> event : this.tracker.getLastAll().entrySet()) {
-            final Long warned = this.warnings.get(event.getKey());
-            final long idle = (now - event.getValue()) / 1000;
+            final Long idle = this.idles.get(event.getKey());
+            final long last = (now - event.getValue()) / 1000;
 
             // Player no longer idle
-            if (warned != null && event.getValue() > warned) {
-                this.warnings.remove(event.getKey());
+            if (idle != null && event.getValue() != idle) {
+                this.idles.remove(event.getKey());
                 if (this.backBroadcast != null)
-                    Main.messageManager.broadcast(String.format(this.backBroadcast, idle, event.getKey().getDisplayName()), MessageLevel.EVENT);
+                    Main.messageManager.broadcast(String.format(this.backBroadcast, (now - idle) / 1000, event.getKey().getDisplayName()), MessageLevel.EVENT);
 
                 continue;
             }
 
             // Warn player if idle too long
-            if (this.warnIdle > 0 && warned == null && idle >= this.warnIdle) {
+            if (this.warnIdle > 0 && idle == null && last >= this.warnIdle) {
                 if (this.warnBroadcast != null) {
-                    final String messageBroadcast = String.format(this.warnBroadcast, idle, this.kickIdle, event.getKey().getDisplayName());
+                    final String messageBroadcast = String.format(this.warnBroadcast, last, this.kickIdle, event.getKey().getDisplayName());
                     Main.messageManager.broadcast(messageBroadcast, MessageLevel.EVENT);
                 }
 
                 if (this.warnPrivate != null) {
-                    final String messagePrivate = String.format(this.warnPrivate, idle, this.kickIdle);
+                    final String messagePrivate = String.format(this.warnPrivate, last, this.kickIdle);
                     Main.messageManager.send(event.getKey(), messagePrivate, MessageLevel.WARNING);
                 }
 
-                this.warnings.put(event.getKey(), System.currentTimeMillis());
+                this.idles.put(event.getKey(), event.getValue());
                 continue;
             }
 
             // Kick player if idle too long
-            if (this.kickIdle > 0 && idle >= this.kickIdle) {
+            if (this.kickIdle > 0 && last >= this.kickIdle) {
                 final String message = (this.kickReason != null ? String.format(this.kickReason, this.kickIdle) : null);
                 event.getKey().kickPlayer(message);
             }
@@ -110,7 +110,7 @@ public final class IdleKick implements Runnable, Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.warnings.remove(event.getPlayer());
+        this.idles.remove(event.getPlayer());
     }
 
 }
