@@ -74,9 +74,9 @@ public final class EventTracker extends Observable implements Listener {
 
         this.last.put(player, occured);
 
-        this.setChanged();
         if (this.countObservers() == 0) return;
 
+        this.setChanged();
         this.notifyObservers(new PlayerEvent(player, event, occured));
     }
 
