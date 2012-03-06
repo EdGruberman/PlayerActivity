@@ -30,8 +30,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (Main.idleKick != null) Main.idleKick.reset();
         if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
-        this.getServer().getScheduler().cancelTasks(this);
     }
 
     public void loadConfiguration() {
@@ -40,10 +40,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void loadIdleKick(final ConfigurationSection config) {
-        if (Main.idleKick != null) {
-            Main.idleKick.stop();
-            if (Main.idleKick.tracker != null) Main.idleKick.tracker.clear();
-        }
+        if (Main.idleKick != null) Main.idleKick.reset();
 
         if (!config.getBoolean("enabled", false)) return;
 

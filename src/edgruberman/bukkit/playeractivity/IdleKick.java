@@ -67,6 +67,11 @@ public final class IdleKick implements Runnable, Listener {
         return true;
     }
 
+    public void reset() {
+        this.stop();
+        this.tracker.clear();
+    }
+
     @Override
     public void run() {
         final long now = System.currentTimeMillis();
