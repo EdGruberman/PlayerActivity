@@ -12,8 +12,8 @@ IdleKick:
     warn:
         idle: 300 # seconds at which to warn player of kick; -1 to disable
         private: 'You will be kicked after %2$ds of being idle' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds
-        broadcast: '%3$s has been &6idle&_ for %1$ds' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds, 3 = Player Display Name
-        backBroadcast: '%2$s is &eback&_ after being idle for %1$ds' # 1 = Current Idle Seconds, 2 = Player Display Name
+        broadcast: '%3$s&_ has been &6idle&_ for %1$ds' # 1 = Current Idle Seconds, 2 = Kick Idle Seconds, 3 = Player Display Name
+        backBroadcast: '%2$s&_ is &eback&_ after being idle for %1$ds' # 1 = Current Idle Seconds, 2 = Player Display Name
     kick:
         idle: 600 # seconds of idle to kick; -1 to disable
         reason: 'Idle past limit of %1$d seconds' # 1 = Kick Idle Seconds
