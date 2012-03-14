@@ -33,16 +33,19 @@ public final class IdleKick implements Runnable, Listener {
     public final EventTracker tracker;
     private int taskId = -1;
     private final Map<Player, Long> idles = new HashMap<Player, Long>();
+    private final String permissionIgnore;
 
     IdleKick(final Plugin plugin){
         this.plugin = plugin;
         this.tracker = new EventTracker(plugin);
+        this.permissionIgnore = plugin.getDescription().getName().toLowerCase() + ".idlekick.ignore";
     }
 
     IdleKick(final Plugin plugin, final long frequency, final List<Interpreter> interpreters) {
         this.plugin = plugin;
         this.tracker = new EventTracker(plugin, interpreters);
         this.frequency = frequency;
+        this.permissionIgnore = plugin.getDescription().getName().toLowerCase() + ".idlekick.ignore";
     }
 
     public boolean start() {
@@ -76,6 +79,8 @@ public final class IdleKick implements Runnable, Listener {
     public void run() {
         final long now = System.currentTimeMillis();
         for (final Map.Entry<Player, Long> event : this.tracker.getLastAll().entrySet()) {
+            if (event.getKey().hasPermission(this.permissionIgnore)) continue;
+
             final Long idle = this.idles.get(event.getKey());
             final long last = (now - event.getValue()) / 1000;
 

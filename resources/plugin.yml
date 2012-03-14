@@ -4,3 +4,7 @@ depend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
 main: edgruberman.bukkit.playeractivity.Main
+permissions:
+    playeractivity.idlekick.ignore:
+        description: IdleKick will not warn or kick
+        default: false
