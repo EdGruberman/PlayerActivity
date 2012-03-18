@@ -9,9 +9,9 @@ public class ProjectileHitEvent extends Interpreter {
 
     @EventHandler
     public void onEvent(final org.bukkit.event.entity.ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity().getShooter() instanceof Player)) return;
 
-        this.player = (Player) event.getEntity();
+        this.player = (Player) event.getEntity().getShooter();
     }
 
 }
