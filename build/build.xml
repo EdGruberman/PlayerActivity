@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project default="Test (Build and Copy)" basedir="..">
+    
     <property name="src" location="src" />
     <property name="resources" location="resources" />
     <property name="stage" location="stage" />
@@ -19,14 +20,14 @@
         <copy file="${dist}/${plugin.name}.jar" todir="${bukkit.test}" />
     </target>
 
-    <target name="Build" description="Build existing version">
+    <target name="Build" description="Build existing version" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="build" operation="+" value="1" type="int" />
         </propertyfile>
         <antcall target="JAR Export" />
     </target>
 
-    <target name="Revision Alpha (#.#.+1a1)" description="Build first alpha of revision update">
+    <target name="Revision Alpha (#.#.+1a1)" description="Build first alpha of revision update" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="revision" operation="+" value="1" type="int" />
             <entry key="type" value="a" />
@@ -35,7 +36,7 @@
         <antcall target="Build" />
     </target>
 
-    <target name="Minor Alpha (#.+1.0a1)" description="Build first alpha of minor update">
+    <target name="Minor Alpha (#.+1.0a1)" description="Build first alpha of minor update" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="minor" operation="+" value="1" type="int" />
             <entry key="revision" value="0" type="int" />
@@ -45,7 +46,7 @@
         <antcall target="Build" />
     </target>
 
-    <target name="Major Alpha (+1.0.0a1)" description="Build first alpha of major update">
+    <target name="Major Alpha (+1.0.0a1)" description="Build first alpha of major update" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="major" operation="+" value="1" type="int" />
             <entry key="minor" value="0" type="int" />
@@ -56,7 +57,7 @@
         <antcall target="Build" />
     </target>
 
-    <target name="Beta (#.#.#b1)" description="Build first beta version">
+    <target name="Beta (#.#.#b1)" description="Build first beta version" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="type" value="b" />
             <entry key="build" value="0" type="int" />
@@ -64,7 +65,7 @@
         <antcall target="Build" />
     </target>
 
-    <target name="Release Candidate (#.#.#rc1)" description="Build first release candidate">
+    <target name="Release Candidate (#.#.#rc1)" description="Build first release candidate" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="type" value="rc" />
             <entry key="build" value="0" type="int" />
@@ -72,7 +73,7 @@
         <antcall target="Build" />
     </target>
 
-    <target name="Release (#.#.#)" description="Build full release">
+    <target name="Release (#.#.#)" description="Build full release" depends="-Existing Version">
         <propertyfile file="${version.properties}">
             <entry key="type" value="" />
             <entry key="build" value="" />
@@ -80,18 +81,26 @@
         <antcall target="JAR Export" />
     </target>
 
-    <target name="JAR Export" depends="-Get Version" description="Create standard plugin file">
+    <target name="JAR Export" description="Create standard plugin file" depends="-Get Version">
+        <echo message="Exporting JAR for version ${version}" />
+
         <delete dir="${stage}" />
-        <delete dir="${dist}" />
-
-        <copy file="${resources}/plugin.yml" tofile="${stage}/jar/plugin.yml" />
-        <replace file="${stage}/jar/plugin.yml">
-            <replacefilter token="@NAME@" value="${plugin.name}" />
-            <replacefilter token="@VERSION@" value="${version}" />
-            <replacefilter token="@AUTHOR@" value="${bukkit.author}" />
-        </replace>
-
         <mkdir dir="${stage}/jar" />
+
+        <copy todir="${stage}/jar" preservelastmodified="true">
+            <fileset dir="${resources}" includes="**/*.yml"/>
+            <filterset>
+                <filter token="NAME" value="${plugin.name}" />
+                <filter token="VERSION" value="${version}" />
+                <filter token="VERSION.TARGET" value="${version.target}" />
+                <filter token="AUTHOR" value="${bukkit.author}" />
+            </filterset>
+        </copy>
+        
+        <copy todir="${stage}/jar" preservelastmodified="true">
+            <fileset dir="${resources}" excludes="**/*.yml"/>
+        </copy>
+
         <javac srcdir="${src}" destdir="${stage}/jar" encoding="utf-8" debug="true" includeantruntime="false">
             <classpath refid="classpath" />
         </javac>
@@ -108,8 +117,7 @@
             </section>
         </manifest>
 
-        <antcall target="-Stage Defaults Directory" />
-
+        <delete dir="${dist}" />
         <mkdir dir="${dist}" />
         <jar basedir="${stage}/jar/" jarfile="${dist}/${plugin.name}.jar" manifest="${stage}/MANIFEST.MF" />
     </target>
@@ -119,23 +127,16 @@
         <javadoc sourcepath="${src}" destdir="${doc}" access="public" />
     </target>
 
-    <target name="-Get Version" description="Private Dependency Task (Do not use)">
+    <target name="-Get Version" description="Reads version into local property">
         <property file="${version.properties}" prefix="version" />
         <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}" />
-        <echo message="Current version is ${version}" />
+        <property name="version.target" value="${version.major}.${version.minor}.${version.revision}" />
     </target>
 
-    <target name="-Stage Defaults Directory" depends="-Check Defaults Exists" if="${defaults.exists}" description="Private Dependency Task (Do not use)">
-        <mkdir dir="${stage}/jar/defaults" />
-        <copy todir="${stage}/jar/defaults">
-            <fileset dir="${resources}/defaults" />
-        </copy>
-    </target>
-
-    <target name="-Check Defaults Exists" description="Private Dependency Task (Do not use)">
-        <available file="${resources}/defaults" type="dir" property="defaults.exists" />
-        <property name="defaults.exists" value="false" />
-        <echo message="${resources}/defaults exists = ${defaults.exists}" level="info" />
+    <target name="-Existing Version" description="Generates console output with version">
+        <property file="${version.properties}" prefix="existing" />
+        <property name="existing" value="${existing.major}.${existing.minor}.${existing.revision}${existing.type}${existing.build}" />
+        <echo message="Existing version ${existing}" />
     </target>
 
 </project>

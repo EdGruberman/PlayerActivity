@@ -2,17 +2,14 @@ package edgruberman.bukkit.playeractivity.filters;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 
 public class EntityDamageEvent extends Interpreter {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onEvent(final org.bukkit.event.entity.EntityDamageEvent event) {
-        if (event.isCancelled()) return;
-
         Player player = null;
         if (event.getEntity() instanceof Player) {
             player = (Player) event.getEntity();
@@ -27,7 +24,7 @@ public class EntityDamageEvent extends Interpreter {
             return;
         }
 
-        this.tracker.record(player, event);
+        this.player = player;
     }
 
 }

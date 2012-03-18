@@ -3,16 +3,21 @@ package edgruberman.bukkit.playeractivity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-public class PlayerEvent {
+/**
+ * Represents a player related activity that occurred.
+ */
+public class PlayerActivity {
 
     public final Player player;
     public final long occurred;
     public final Event event;
+    public final Long last;
 
-    PlayerEvent(final Player player, final Event event, final long occurred) {
+    PlayerActivity(final Player player, final Event event, final long occurred, final Long last) {
         this.player = player;
         this.event = event;
         this.occurred = occurred;
+        this.last = last;
     }
 
 }

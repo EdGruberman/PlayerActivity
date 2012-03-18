@@ -4,10 +4,10 @@ import org.bukkit.event.EventHandler;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 
-public class PlayerEggThrowEvent extends Interpreter {
+public class PlayerChangedWorldEvent extends Interpreter {
 
     @EventHandler
-    public void onEvent(final org.bukkit.event.player.PlayerEggThrowEvent event) {
+    public void onEvent(final org.bukkit.event.player.PlayerChangedWorldEvent event) {
         this.player = event.getPlayer();
     }
 

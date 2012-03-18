@@ -2,23 +2,25 @@ package edgruberman.bukkit.playeractivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-public final class EventTracker extends Observable implements Listener {
+public final class EventTracker implements Listener {
+
+    public final ActivityPublisher activityPublisher = new ActivityPublisher();
+    public final IdlePublisher idlePublisher = new IdlePublisher(this);
 
     private final Plugin plugin;
-    private final Map<Player, Long> last = new HashMap<Player, Long>();
     private final List<Interpreter> interpreters = new ArrayList<Interpreter>();
+    private EventPriority defaultPriority = EventPriority.MONITOR;
+    private boolean defaultIgnoreCancelled = true;
+    private final ActivityCleaner cleaner = new ActivityCleaner(this);
 
     public EventTracker(final Plugin plugin) {
         this(plugin, Collections.<Interpreter>emptyList());
@@ -26,7 +28,7 @@ public final class EventTracker extends Observable implements Listener {
 
     public EventTracker(final Plugin plugin, final List<Interpreter> interpreters) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        new ActivityCleaner(this);
         this.addInterpreters(interpreters);
     }
 
@@ -39,6 +41,7 @@ public final class EventTracker extends Observable implements Listener {
     }
 
     public boolean addInterpreter(final Interpreter interpreter) {
+        this.cleaner.start();
         this.interpreters.add(interpreter);
         interpreter.register(this);
         return true;
@@ -49,61 +52,46 @@ public final class EventTracker extends Observable implements Listener {
     }
 
     public void clear() {
-        for (final Interpreter filter : this.interpreters) filter.unregister();
+        // TODO when BUKKIT-1192 is implemented, move this back into Interpreter, make this EventExecutor and move ActivityCleaner/unregister into here
+        HandlerList.unregisterAll(this);
+        this.cleaner.stop();
+
         this.interpreters.clear();
-        this.last.clear();
+        this.activityPublisher.deleteObservers();
+        this.activityPublisher.last.clear();
+        this.idlePublisher.deleteObservers();
     }
 
     public Map<Player, Long> getLastAll() {
-        return this.last;
+        return this.activityPublisher.last;
     }
 
     public Long getLastFor(final Player player) {
-        return this.last.get(player);
+        return this.activityPublisher.last.get(player);
     }
 
-    /**
-     * Record last activity for player.
-     * (This could be called on high frequency events such as PLAYER_MOVE.)
-     *
-     * @param player player to record this as last activity for
-     * @param type event type that player engaged in
-     */
-    public void record(final Player player, final Event event) {
-        final long occured = System.currentTimeMillis();
-
-        this.last.put(player, occured);
-
-        if (this.countObservers() == 0) return;
-
-        this.setChanged();
-        this.notifyObservers(new PlayerEvent(player, event, occured));
+    public EventPriority getDefaultPriority() {
+        return this.defaultPriority;
     }
 
-    @EventHandler
-    public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.last.remove(event.getPlayer());
+    public boolean isDefaultIgnoreCancelled() {
+        return this.defaultIgnoreCancelled;
     }
 
-    // TODO gracefully manage a NoClassDefFoundError when initializing an existing Interpreter SubClass importing a class not found
+    public void setDefaultPriority(final EventPriority defaultPriority) {
+        this.defaultPriority = defaultPriority;
+    }
+
+    public void setDefaultIgnoreCancelled(final boolean defaultIgnoreCancelled) {
+        this.defaultIgnoreCancelled = defaultIgnoreCancelled;
+    }
+
+    // TODO gracefully manage a NoClassDefFoundError when initializing an existing Interpreter subclass importing a class not found
     public static Interpreter newInterpreter(final String className) {
+        // Find class
         Class<? extends Interpreter> subClass = null;
-
-        // Look in local package
-        try {
-            subClass = Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
-        } catch (final Exception e) {
-            // Ignore
-        }
-
-        // Look for a custom class
-        if (subClass == null) {
-            try {
-                subClass = Class.forName(className).asSubclass(Interpreter.class);
-            } catch (final Exception e) {
-                return null;
-            }
-        }
+        subClass = EventTracker.findInterpreter(className);
+        if (subClass == null) return null;
 
         // Instantiate class
         Interpreter interpreter;
@@ -114,6 +102,22 @@ public final class EventTracker extends Observable implements Listener {
         }
 
         return interpreter;
+    }
+
+    public static Class<? extends Interpreter> findInterpreter(final String className) {
+        // Look in local package
+        try {
+            return Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
+        } catch (final Exception e) {
+            // Ignore
+        }
+
+        // Look for a custom class
+        try {
+            return Class.forName(className).asSubclass(Interpreter.class);
+        } catch (final Exception e) {
+            return null;
+        }
     }
 
 }
