@@ -8,6 +8,8 @@ IdleKick:
         - PlayerToggleSneakEvent
         - PlayerItemHeldEvent
         - PlayerJoinEvent
+        - EnchantItemEvent
+        - PrepareItemEnchantEvent
     warn:
         idle: 300 # seconds at which to warn player of kick; -1 to disable
         private: 'You will be kicked after %2$s of being idle' # 1 = Current Idle Duration, 2 = Kick Idle Duration
