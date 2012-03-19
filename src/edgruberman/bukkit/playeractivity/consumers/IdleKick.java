@@ -87,7 +87,7 @@ public final class IdleKick implements Observer {
             if (activity.last == null || (activity.occurred - activity.last) < this.warnIdle || this.backBroadcast == null || activity.player.hasPermission(this.ignore))
                 return;
 
-            Main.messageManager.broadcast(String.format(this.backBroadcast, IdleKick.duration((activity.occurred - activity.last)), activity.player.getDisplayName()), MessageLevel.EVENT);
+            Main.messageManager.broadcast(String.format(this.backBroadcast, IdleKick.duration((activity.occurred - activity.last)), IdleKick.duration(this.kickIdle), activity.player.getDisplayName()), MessageLevel.EVENT);
             return;
         }
 
