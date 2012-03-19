@@ -17,7 +17,7 @@ public final class Main extends JavaPlugin {
     public static MessageManager messageManager;
     public static IdleKick idleKick = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.2.0a0";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.2.0a4";
     private ConfigurationFile configurationFile;
     private boolean firstEnable = true;
 
