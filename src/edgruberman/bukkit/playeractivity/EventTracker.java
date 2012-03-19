@@ -107,7 +107,7 @@ public final class EventTracker implements Listener {
     public static Class<? extends Interpreter> findInterpreter(final String className) {
         // Look in local package
         try {
-            return Class.forName("edgruberman.bukkit.playeractivity.filters." + className).asSubclass(Interpreter.class);
+            return Class.forName("edgruberman.bukkit.playeractivity.interpreters." + className).asSubclass(Interpreter.class);
         } catch (final Exception e) {
             // Ignore
         }
