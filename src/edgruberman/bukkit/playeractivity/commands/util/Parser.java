@@ -15,6 +15,7 @@ import org.bukkit.OfflinePlayer;
  */
 public class Parser {
 
+    // TODO prefer online players
     /**
      * Find matching player. Exact player name required if no trailing
      * asterisk. If trailing asterisk, then first player name found that starts

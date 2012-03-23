@@ -13,6 +13,12 @@ commands:
         description: Configures your status as active
         permission: playeractivity.back
         usage: /<command> - Set yourself as back
+    who:
+        description: View status of players
+        permission: playeractivity.who
+        usage: |
+            /<command> - Show current players
+            /<command> <Player> - Show player activity
 permissions:
     playeractivity.idlekick.ignore:
         description: IdleKick will not warn or kick
@@ -23,9 +29,22 @@ permissions:
     playeractivity.back:
         description: Can use back command
         default: false
+    playeractivity.who:
+        description: Can use who command
+        default: false
+        children:
+            playeractivity.who.list: true
+            playeractivity.who.detail: true
+    playeractivity.who.list:
+        description: Can use list action of who command
+        default: false
+    playeractivity.who.detail:
+        description: Can use detail action of who command
+        default: false
     playeractivity.awayback:
-        description: Can use away and back commands
+        description: Can use away, back, and who commands
         default: op
         children:
             playeractivity.away: true
             playeractivity.back: true
+            playeractivity.who: true

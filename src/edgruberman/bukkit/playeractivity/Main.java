@@ -13,6 +13,9 @@ import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
+import edgruberman.bukkit.playeractivity.commands.Who;
+import edgruberman.bukkit.playeractivity.commands.WhoDetail;
+import edgruberman.bukkit.playeractivity.commands.WhoList;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 
@@ -22,7 +25,7 @@ public final class Main extends JavaPlugin {
     public static IdleKick idleKick = null;
     public static AwayBack awayBack = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0a15";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b1";
     private ConfigurationFile configurationFile;
 
     @Override
@@ -35,6 +38,8 @@ public final class Main extends JavaPlugin {
         Main.messageManager = new MessageManager(this);
 
         this.configure();
+
+        new Who(this);
     }
 
     @Override
@@ -43,16 +48,30 @@ public final class Main extends JavaPlugin {
         if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
     }
 
+    private void setLoggingLevel() {
+        final String name = this.configurationFile.getConfig().getString("logLevel", "INFO");
+        Level level = MessageLevel.parse(name);
+        if (level == null) level = Level.INFO;
+
+        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
+        for (final Handler h : this.getLogger().getParent().getHandlers())
+            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
+
+        this.getLogger().setLevel(level);
+        this.getLogger().log(Level.CONFIG, "Logging level set to: " + this.getLogger().getLevel());
+    }
+
     public void configure() {
         final FileConfiguration config = this.configurationFile.getConfig();
         this.loadIdleKick(config.getConfigurationSection("idleKick"));
         this.loadAwayBack(config.getConfigurationSection("awayBack"));
+        this.loadWho(config.getConfigurationSection("who"));
     }
 
     private void loadIdleKick(final ConfigurationSection section) {
         if (Main.idleKick != null) Main.idleKick.stop();
 
-        if (!section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) return;
 
         final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
         for (final String className : section.getStringList("activity")) {
@@ -80,7 +99,7 @@ public final class Main extends JavaPlugin {
     private void loadAwayBack(final ConfigurationSection section) {
         if (Main.awayBack != null) Main.awayBack.stop();
 
-        if (!section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) return;
 
         if (Main.awayBack == null) Main.awayBack = new AwayBack(this);
         Main.awayBack.awayFormat = section.getString("away", Main.awayBack.awayFormat);
@@ -105,26 +124,30 @@ public final class Main extends JavaPlugin {
         Main.awayBack.start(interpreters);
     }
 
-    private void setLoggingLevel() {
-        final String name = this.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level = MessageLevel.parse(name);
-        if (level == null) level = Level.INFO;
+    private void loadWho(final ConfigurationSection section) {
+        if (section == null) return;
 
-        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
-        for (final Handler h : this.getLogger().getParent().getHandlers())
-            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
+        WhoList.format = section.getString("list.format", WhoList.format);
+        WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);
+        WhoList.name = section.getString("list.name", WhoList.name);
+        WhoList.away = section.getString("list.away", WhoList.away);
+        WhoList.idle = section.getString("list.idle", WhoList.idle);
 
-        this.getLogger().setLevel(level);
-        this.getLogger().log(Level.CONFIG, "Logging level set to: " + this.getLogger().getLevel());
+        WhoDetail.connected = section.getString("detail.connected", WhoDetail.connected);
+        WhoDetail.away = section.getString("detail.away", WhoDetail.away);
+        WhoDetail.idle = section.getString("detail.idle", WhoDetail.idle);
+        WhoDetail.disconnected = section.getString("detail.disconnected", WhoDetail.disconnected);
     }
 
     public static String duration(final long total) {
         final long totalSeconds = total / 1000;
-        final long hours = totalSeconds / 3600;
-        final long minutes = (totalSeconds % 3600) / 60;
+        final long days = totalSeconds / 86400;
+        final long hours = (totalSeconds % 86400) / 3600;
+        final long minutes = ((totalSeconds % 86400) % 3600) / 60;
         final long seconds = totalSeconds % 60;
         final StringBuilder sb = new StringBuilder();
-        if (hours > 0) sb.append(Long.toString(hours)).append("h");
+        if (days > 0) sb.append(Long.toString(days)).append("d");
+        if (hours > 0) sb.append((sb.length() > 0) ? " " : "").append(Long.toString(hours)).append("h");
         if (minutes > 0) sb.append((sb.length() > 0) ? " " : "").append(Long.toString(minutes)).append("m");
         if (seconds > 0) sb.append((sb.length() > 0) ? " " : "").append(Long.toString(seconds)).append("s");
         return sb.toString();
