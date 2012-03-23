@@ -4,7 +4,28 @@ depend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
 main: edgruberman.bukkit.playeractivity.Main
+commands:
+    away:
+        description: Configures your status as not active
+        permission: playeractivity.away
+        usage: /<command>[ <Reason>] - Set yourself as away
+    back:
+        description: Configures your status as active
+        permission: playeractivity.back
+        usage: /<command> - Set yourself as back
 permissions:
     playeractivity.idlekick.ignore:
         description: IdleKick will not warn or kick
         default: false
+    playeractivity.away:
+        description: Can use away command
+        default: false
+    playeractivity.back:
+        description: Can use back command
+        default: false
+    playeractivity.awayback:
+        description: Can use away and back commands
+        default: op
+        children:
+            playeractivity.away: true
+            playeractivity.back: true

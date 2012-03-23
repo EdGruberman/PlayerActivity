@@ -1,9 +1,1 @@
-send:
-    PLAYER:
-        level: RIGHTS
-    SERVER:
-        level: RIGHTS
-    WORLD:
-        level: RIGHTS
-    LOG:
-        level: RIGHTS
+version: 6.0.0

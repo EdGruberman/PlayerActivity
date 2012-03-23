@@ -1,4 +1,4 @@
-IdleKick:
+idleKick:
     enabled: false
     activity:
         - PlayerMoveEvent
@@ -11,13 +11,22 @@ IdleKick:
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
+        - AwayBack.PlayerBackCommand
     warn:
         idle: 300 # seconds at which to warn player of kick; -1 to disable
         private: 'You will be kicked after %2$s of being idle' # 1 = Current Idle Duration, 2 = Kick Idle Duration
         broadcast: '%3$s&_ has been &6idle&_ for %1$s' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
         backBroadcast: '%3$s&_ is &eback&_ after being idle for %1$s' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
+        awayBroadcastOverride: true
     kick:
         idle: 600 # seconds of idle to kick; -1 to disable
         reason: 'Idle for %1$s' # 1 = Kick Idle Duration
+awayBack:
+    enabled: false
+    activity:
+        - PlayerChatEvent
+    reason: 'no reason'
+    away: '%1$s&_ is &6away&_ for &7%2$s&_' # 1 = Player Display Name, 2 = Reason
+    back: '%1$s&_ is &eback&_ after %3$s for &7%2$s&_' # 1 = Player Display Name, 2 = Reason, 3 = Duration
 logLevel: INFO
-version: @VERSION.TARGET@
+version: @VERSION@

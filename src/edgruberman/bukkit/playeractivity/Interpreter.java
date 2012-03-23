@@ -31,7 +31,7 @@ public abstract class Interpreter implements EventExecutor {
             this.tracker.getPlugin().getLogger().log(Level.SEVERE, "Unable to invoke method: " + this.eventMethod.toString(), e);
         }
 
-        if (this.isCancelled || this.player == null) return;
+        if (this.player == null || this.isCancelled) return;
 
         this.tracker.activityPublisher.record(this.player, event);
     }
