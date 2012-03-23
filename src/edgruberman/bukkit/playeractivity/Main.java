@@ -25,7 +25,7 @@ public final class Main extends JavaPlugin {
     public static IdleKick idleKick = null;
     public static AwayBack awayBack = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b1";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b2";
     private ConfigurationFile configurationFile;
 
     @Override
