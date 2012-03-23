@@ -1,7 +1,15 @@
 package edgruberman.bukkit.playeractivity.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.playeractivity.Main;
@@ -11,7 +19,7 @@ import edgruberman.bukkit.playeractivity.commands.util.Handler;
 import edgruberman.bukkit.playeractivity.commands.util.Parser;
 import edgruberman.bukkit.playeractivity.consumers.AwayState;
 
-public final class WhoDetail extends Action {
+public final class WhoDetail extends Action implements Listener {
 
     public static String connected = null;
     public static String away = null;
@@ -20,6 +28,7 @@ public final class WhoDetail extends Action {
 
     WhoDetail(final Handler handler) {
         super(handler, "detail");
+        handler.command.getPlugin().getServer().getPluginManager().registerEvents(this, handler.command.getPlugin());
     }
 
     @Override
@@ -41,29 +50,42 @@ public final class WhoDetail extends Action {
             return false;
         }
 
-        final String duration = Main.duration(System.currentTimeMillis() - target.getLastPlayed());
         if (!target.isOnline()) {
+            final String duration = Main.duration(System.currentTimeMillis() - target.getLastPlayed());
             Main.messageManager.tell(context.sender, String.format(WhoDetail.disconnected, target.getName(), duration), MessageLevel.CONFIG, false);
             return true;
         }
 
-        Main.messageManager.tell(context.sender, this.connected(target.getPlayer(), duration), MessageLevel.CONFIG, false);
+        Main.messageManager.tell(context.sender, this.connected(target.getPlayer()), MessageLevel.CONFIG, false);
         return true;
     }
 
-    private String connected(final Player player, final String durationLast) {
-        final String connected = String.format(WhoDetail.connected, player.getDisplayName(), durationLast);
+    private String connected(final Player player) {
+        final long now = System.currentTimeMillis();
+        final String connected = String.format(WhoDetail.connected, player.getDisplayName(), Main.duration(now - this.joined.get(player)));
 
         if (Main.awayBack != null && Main.awayBack.isAway(player)) {
             final AwayState state = Main.awayBack.getAwayState(player);
-            return String.format(WhoDetail.away, connected, Main.duration(System.currentTimeMillis() - state.since), state.reason);
+            return String.format(WhoDetail.away, connected, Main.duration(now - state.since), state.reason);
         }
 
         if (Main.idleKick != null && Main.idleKick.warn.idlePublisher.getIdle().contains(player)) {
-            return String.format(WhoDetail.idle, connected, Main.duration(System.currentTimeMillis() - Main.idleKick.warn.getLastFor(player)));
+            return String.format(WhoDetail.idle, connected, Main.duration(now - Main.idleKick.warn.getLastFor(player)));
         }
 
-        return this.name;
+        return connected;
+    }
+
+    private final Map<Player, Long> joined = new HashMap<Player, Long>();
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        this.joined.put(event.getPlayer(), System.currentTimeMillis());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        this.joined.remove(event.getPlayer());
     }
 
 }
