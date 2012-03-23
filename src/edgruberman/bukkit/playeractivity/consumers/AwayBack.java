@@ -54,6 +54,7 @@ public class AwayBack implements Observer {
     public void stop() {
         this.setEnabled(false);
         this.back.clear();
+        this.away.clear();
     }
 
     public boolean setAway(final Player player, final String reason) {
