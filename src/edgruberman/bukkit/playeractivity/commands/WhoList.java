@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Message;
 import edgruberman.bukkit.playeractivity.commands.util.Action;
 import edgruberman.bukkit.playeractivity.commands.util.Context;
 import edgruberman.bukkit.playeractivity.commands.util.Handler;
@@ -30,7 +31,7 @@ public final class WhoList extends Action {
         for (final Player player : context.sender.getServer().getOnlinePlayers())
             list.add(this.tag(player));
 
-        Main.messageManager.tell(context.sender, String.format(WhoList.format, Parser.join(list, WhoList.delimiter)), MessageLevel.CONFIG, false);
+        Message.manager.tell(context.sender, String.format(WhoList.format, Parser.join(list, WhoList.delimiter)), MessageLevel.CONFIG, false);
         return true;
     }
 

@@ -9,8 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
-import edgruberman.bukkit.messagemanager.MessageManager;
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Who;
@@ -18,10 +16,10 @@ import edgruberman.bukkit.playeractivity.commands.WhoDetail;
 import edgruberman.bukkit.playeractivity.commands.WhoList;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
+import edgruberman.bukkit.playeractivity.dependencies.DependencyChecker;
 
 public final class Main extends JavaPlugin {
 
-    public static MessageManager messageManager;
     public static IdleKick idleKick = null;
     public static AwayBack awayBack = null;
 
@@ -29,13 +27,18 @@ public final class Main extends JavaPlugin {
     private ConfigurationFile configurationFile;
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
+        new DependencyChecker(this);
+
         this.configurationFile = new ConfigurationFile(this);
         this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
         this.configurationFile.load();
         this.setLoggingLevel();
+    }
 
-        Main.messageManager = new MessageManager(this);
+    @Override
+    public void onEnable() {
+        new Message(this);
 
         this.configure();
 
@@ -50,8 +53,8 @@ public final class Main extends JavaPlugin {
 
     private void setLoggingLevel() {
         final String name = this.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level = MessageLevel.parse(name);
-        if (level == null) level = Level.INFO;
+        Level level = Level.INFO;
+        try { level = Level.parse(name); } catch (final Exception e) {}
 
         // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
         for (final Handler h : this.getLogger().getParent().getHandlers())

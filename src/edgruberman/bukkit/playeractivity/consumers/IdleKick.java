@@ -14,6 +14,7 @@ import edgruberman.bukkit.playeractivity.EventTracker;
 import edgruberman.bukkit.playeractivity.IdlePublisher;
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Message;
 import edgruberman.bukkit.playeractivity.PlayerActivity;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 
@@ -91,7 +92,7 @@ public final class IdleKick implements Observer {
             if (Main.awayBack != null && this.awayBroadcastOverride && Main.awayBack.isAway(activity.player))
                 return;
 
-            Main.messageManager.broadcast(String.format(this.backBroadcast, Main.duration((activity.occurred - activity.last)), Main.duration(this.kickIdle), activity.player.getDisplayName()), MessageLevel.EVENT);
+            Message.manager.broadcast(String.format(this.backBroadcast, Main.duration((activity.occurred - activity.last)), Main.duration(this.kickIdle), activity.player.getDisplayName()), MessageLevel.EVENT);
             return;
         }
 
@@ -103,11 +104,11 @@ public final class IdleKick implements Observer {
         if (((IdlePublisher) o).getThreshold() == this.warnIdle) {
             if (this.warnBroadcast != null && (Main.awayBack == null || !this.awayBroadcastOverride || !Main.awayBack.isAway(idle.player))) {
                 final String messageBroadcast = String.format(this.warnBroadcast, Main.duration(idle.duration), Main.duration(this.kickIdle), idle.player.getDisplayName());
-                Main.messageManager.broadcast(messageBroadcast, MessageLevel.EVENT);
+                Message.manager.broadcast(messageBroadcast, MessageLevel.EVENT);
             }
             if (this.warnPrivate != null) {
                 final String messagePrivate = String.format(this.warnPrivate, Main.duration(idle.duration), Main.duration(this.kickIdle));
-                Main.messageManager.send(idle.player, messagePrivate, MessageLevel.WARNING);
+                Message.manager.send(idle.player, messagePrivate, MessageLevel.WARNING);
             }
             return;
         }

@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Message;
 import edgruberman.bukkit.playeractivity.commands.util.Action;
 import edgruberman.bukkit.playeractivity.commands.util.Context;
 import edgruberman.bukkit.playeractivity.commands.util.Handler;
@@ -46,17 +47,17 @@ public final class WhoDetail extends Action implements Listener {
     public boolean perform(final Context context) {
         final OfflinePlayer target = Parser.parsePlayer(context, (context.arguments.size() == 1 ? 0 : 1));
         if (target == null) {
-            Main.messageManager.tell(context.sender, "Unable to determine player", MessageLevel.WARNING, false);
+            Message.manager.tell(context.sender, "Unable to determine player", MessageLevel.WARNING, false);
             return false;
         }
 
         if (!target.isOnline()) {
             final String duration = Main.duration(System.currentTimeMillis() - target.getLastPlayed());
-            Main.messageManager.tell(context.sender, String.format(WhoDetail.disconnected, target.getName(), duration), MessageLevel.CONFIG, false);
+            Message.manager.tell(context.sender, String.format(WhoDetail.disconnected, target.getName(), duration), MessageLevel.CONFIG, false);
             return true;
         }
 
-        Main.messageManager.tell(context.sender, this.connected(target.getPlayer()), MessageLevel.CONFIG, false);
+        Message.manager.tell(context.sender, this.connected(target.getPlayer()), MessageLevel.CONFIG, false);
         return true;
     }
 
