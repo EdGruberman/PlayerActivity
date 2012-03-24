@@ -29,15 +29,15 @@ public final class Main extends JavaPlugin {
     @Override
     public void onLoad() {
         new DependencyChecker(this);
-
-        this.configurationFile = new ConfigurationFile(this);
-        this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
-        this.configurationFile.load();
-        this.setLoggingLevel();
     }
 
     @Override
     public void onEnable() {
+        this.configurationFile = new ConfigurationFile(this);
+        this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
+        this.configurationFile.load();
+        this.setLoggingLevel();
+
         new Message(this);
 
         this.configure();
@@ -53,8 +53,11 @@ public final class Main extends JavaPlugin {
 
     private void setLoggingLevel() {
         final String name = this.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level = Level.INFO;
-        try { level = Level.parse(name); } catch (final Exception e) {}
+        Level level;
+        try { level = Level.parse(name); } catch (final Exception e) {
+            level = Level.INFO;
+            this.getLogger().warning("Unrecognized java.util.logging.Level in \"" + this.configurationFile.getFile().getPath() + "\"; logLevel: " + name);
+        }
 
         // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
         for (final Handler h : this.getLogger().getParent().getHandlers())
