@@ -41,7 +41,7 @@ public final class WhoList extends Action {
         if (Main.awayBack != null && Main.awayBack.isAway(player))
             return String.format(WhoList.away, name);
 
-        if (Main.idleKick != null && Main.idleKick.warn.idlePublisher.getIdle().contains(player))
+        if (Main.idleNotify != null && Main.idleNotify.tracker.idlePublisher.getIdle().contains(player))
             return String.format(WhoList.idle, name);
 
         return name;

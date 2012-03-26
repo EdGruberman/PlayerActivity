@@ -16,14 +16,16 @@ import edgruberman.bukkit.playeractivity.commands.WhoDetail;
 import edgruberman.bukkit.playeractivity.commands.WhoList;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
+import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.dependencies.DependencyChecker;
 
 public final class Main extends JavaPlugin {
 
+    public static IdleNotify idleNotify = null;
     public static IdleKick idleKick = null;
     public static AwayBack awayBack = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b3";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b19";
     private ConfigurationFile configurationFile;
 
     @Override
@@ -41,8 +43,6 @@ public final class Main extends JavaPlugin {
         new Message(this);
 
         this.configure();
-
-        new Who(this);
     }
 
     @Override
@@ -69,9 +69,36 @@ public final class Main extends JavaPlugin {
 
     public void configure() {
         final FileConfiguration config = this.configurationFile.getConfig();
+        this.loadIdleNotify(config.getConfigurationSection("idleNotify"));
         this.loadIdleKick(config.getConfigurationSection("idleKick"));
         this.loadAwayBack(config.getConfigurationSection("awayBack"));
         this.loadWho(config.getConfigurationSection("who"));
+    }
+
+    private void loadIdleNotify(final ConfigurationSection section) {
+        if (Main.idleNotify != null) Main.idleNotify.stop();
+
+        if (section == null || !section.getBoolean("enabled", false)) return;
+
+        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
+        for (final String className : section.getStringList("activity")) {
+            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
+            if (interpreter == null) {
+                this.getLogger().log(Level.WARNING, "Unsupported IdleNotify.activity: " + className);
+                continue;
+            }
+
+            interpreters.add(interpreter);
+        }
+        if (interpreters.size() == 0) return;
+
+        if (Main.idleNotify == null) Main.idleNotify = new IdleNotify(this);
+        Main.idleNotify.idle = (long) section.getInt("idle", (int) Main.idleNotify.idle / 1000) * 1000;
+        Main.idleNotify.privateFormat = section.getString("private", Main.idleNotify.privateFormat);
+        Main.idleNotify.broadcast = section.getString("broadcast", Main.idleNotify.broadcast);
+        Main.idleNotify.backBroadcast = section.getString("backBroadcast", Main.idleNotify.backBroadcast);
+        Main.idleNotify.awayBroadcastOverride = section.getBoolean("awayBroadcastOverride", Main.idleNotify.awayBroadcastOverride);
+        Main.idleNotify.start(interpreters);
     }
 
     private void loadIdleKick(final ConfigurationSection section) {
@@ -92,13 +119,8 @@ public final class Main extends JavaPlugin {
         if (interpreters.size() == 0) return;
 
         if (Main.idleKick == null) Main.idleKick = new IdleKick(this);
-        Main.idleKick.warnIdle = (long) section.getInt("warn.idle", (int) Main.idleKick.warnIdle / 1000) * 1000;
-        Main.idleKick.warnPrivate = section.getString("warn.private", Main.idleKick.warnPrivate);
-        Main.idleKick.warnBroadcast = section.getString("warn.broadcast", Main.idleKick.warnBroadcast);
-        Main.idleKick.backBroadcast = section.getString("warn.backBroadcast", Main.idleKick.backBroadcast);
-        Main.idleKick.awayBroadcastOverride = section.getBoolean("warn.awayBroadcastOverride", Main.idleKick.awayBroadcastOverride);
-        Main.idleKick.kickIdle = (long) section.getInt("kick.idle", (int) Main.idleKick.kickIdle / 1000) * 1000;
-        Main.idleKick.kickReason = section.getString("kick.reason", Main.idleKick.kickReason);
+        Main.idleKick.idle = (long) section.getInt("idle", (int) Main.idleKick.idle / 1000) * 1000;
+        Main.idleKick.reason = section.getString("reason", Main.idleKick.reason);
         Main.idleKick.start(interpreters);
     }
 
@@ -131,7 +153,9 @@ public final class Main extends JavaPlugin {
     }
 
     private void loadWho(final ConfigurationSection section) {
-        if (section == null) return;
+        if (section == null || !section.getBoolean("enabled", false)) return;
+
+        new Who(this);
 
         WhoList.format = section.getString("list.format", WhoList.format);
         WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);

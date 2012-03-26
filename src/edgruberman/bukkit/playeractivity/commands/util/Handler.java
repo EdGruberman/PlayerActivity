@@ -67,7 +67,7 @@ public class Handler implements CommandExecutor  {
     private void setExecutorOf(final JavaPlugin plugin, final String label) {
         this.command = plugin.getCommand(label);
         if (this.command == null) {
-            this.command.getPlugin().getLogger().log(Level.WARNING, "Unable to register command: " + label);
+            plugin.getLogger().log(Level.WARNING, "Unable to register command: " + label);
             return;
         }
 

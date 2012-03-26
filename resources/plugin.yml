@@ -20,8 +20,17 @@ commands:
             /<command> - Show current players
             /<command> <Player> - Show player activity
 permissions:
-    playeractivity.idlekick.ignore:
-        description: IdleKick will not warn or kick
+    playeractivity.idle.ignore:
+        description: Player will not be notified or kicked if they go idle
+        default: false
+        children:
+            playeractivity.idle.ignore.notify: true
+            playeractivity.idle.ignore.kick: true
+    playeractivity.idle.ignore.notify:
+        description: IdleNotify will not notify if player goes idle
+        default: false
+    playeractivity.idle.ignore.kick:
+        description: IdleKick will not kick player if player goes idle
         default: false
     playeractivity.away:
         description: Can use away command
