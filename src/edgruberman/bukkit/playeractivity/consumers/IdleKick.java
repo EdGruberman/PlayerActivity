@@ -14,7 +14,7 @@ import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 
 /**
- * Warn and/or kick players for being idle.
+ * Kick players for being idle.
  */
 public final class IdleKick implements Observer {
 

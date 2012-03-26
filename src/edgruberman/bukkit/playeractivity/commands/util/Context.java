@@ -65,7 +65,7 @@ public class Context {
 
     @Override
     public String toString() {
-        return "Context [handler=" + this.handler + ", sender=" + this.sender + ", label=" + this.label + ", arguments=" + this.arguments + ", action=" + this.action + "]";
+        return "Context [handler=" + this.handler + ", sender=" + this.sender.getName() + ", label=" + this.label + ", arguments=" + this.arguments + ", action=" + this.action + "]";
     }
 
     /**

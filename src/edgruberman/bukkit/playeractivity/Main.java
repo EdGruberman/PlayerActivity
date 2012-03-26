@@ -134,9 +134,6 @@ public final class Main extends JavaPlugin {
         Main.awayBack.backFormat = section.getString("back", Main.awayBack.backFormat);
         Main.awayBack.defaultReason = section.getString("reason", Main.awayBack.defaultReason);
 
-        new Away(this);
-        new Back(this);
-
         final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
         for (final String className : section.getStringList("activity")) {
             final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
@@ -148,14 +145,14 @@ public final class Main extends JavaPlugin {
             interpreters.add(interpreter);
         }
         if (interpreters.size() == 0) return;
-
         Main.awayBack.start(interpreters);
+
+        new Away(this);
+        new Back(this);
     }
 
     private void loadWho(final ConfigurationSection section) {
         if (section == null || !section.getBoolean("enabled", false)) return;
-
-        new Who(this);
 
         WhoList.format = section.getString("list.format", WhoList.format);
         WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);
@@ -167,6 +164,8 @@ public final class Main extends JavaPlugin {
         WhoDetail.away = section.getString("detail.away", WhoDetail.away);
         WhoDetail.idle = section.getString("detail.idle", WhoDetail.idle);
         WhoDetail.disconnected = section.getString("detail.disconnected", WhoDetail.disconnected);
+
+        new Who(this);
     }
 
     public static String duration(final long total) {

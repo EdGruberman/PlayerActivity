@@ -179,7 +179,7 @@ public abstract class Action {
 
     @Override
     public String toString() {
-        return "Action [handler=" + this.handler + ", getNamePath()=" + this.getNamePath() + "]";
+        return "Action [handler=" + this.handler.toString() + ", getNamePath()=" + this.getNamePath() + "]";
     }
 
     /**

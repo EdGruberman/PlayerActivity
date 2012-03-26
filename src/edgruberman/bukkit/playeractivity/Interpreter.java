@@ -34,6 +34,10 @@ public abstract class Interpreter implements EventExecutor {
         if (this.player == null || this.isCancelled) return;
 
         this.tracker.activityPublisher.record(this.player, event);
+
+        // Reset for next event
+        this.player = null;
+        this.isCancelled = false;
     }
 
     /**

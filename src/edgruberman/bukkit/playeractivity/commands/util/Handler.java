@@ -76,7 +76,7 @@ public class Handler implements CommandExecutor  {
 
     @Override
     public String toString() {
-        return "Handler [command=" + this.command + "]";
+        return "Handler [command=" + this.command.getLabel() + "]";
     }
 
 }
