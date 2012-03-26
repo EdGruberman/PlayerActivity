@@ -8,6 +8,7 @@ idleNotify:
         - PlayerToggleSneakEvent
         - PlayerItemHeldEvent
         - PlayerJoinEvent
+        - PlayerChangedWorldEvent
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
@@ -27,6 +28,7 @@ idleKick:
         - PlayerToggleSneakEvent
         - PlayerItemHeldEvent
         - PlayerJoinEvent
+        - PlayerChangedWorldEvent
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
