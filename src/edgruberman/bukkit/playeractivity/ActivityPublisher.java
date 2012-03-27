@@ -31,4 +31,9 @@ public final class ActivityPublisher extends Observable {
         this.notifyObservers(new PlayerActivity(player, event, occurred, last));
     }
 
+    void clear() {
+        this.deleteObservers();
+        this.last.clear();
+    }
+
 }

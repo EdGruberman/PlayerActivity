@@ -48,6 +48,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         if (Main.idleKick != null) Main.idleKick.stop();
+        if (Main.idleNotify != null) Main.idleNotify.stop();
+        if (Main.awayBack != null) Main.awayBack.stop();
         if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
     }
 

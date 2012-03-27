@@ -57,9 +57,8 @@ public final class EventTracker implements Listener {
         this.cleaner.stop();
 
         this.interpreters.clear();
-        this.activityPublisher.deleteObservers();
-        this.activityPublisher.last.clear();
-        this.idlePublisher.deleteObservers();
+        this.activityPublisher.clear();
+        this.idlePublisher.clear();
     }
 
     public Map<Player, Long> getLastAll() {
