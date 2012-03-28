@@ -20,14 +20,14 @@ public final class Away extends Action {
     @Override
     public boolean perform(final Context context) {
         if (!(context.sender instanceof Player)) {
-            Message.manager.send(context.sender, "You must be a player in order to use this command", MessageLevel.SEVERE);
+            Message.manager.tell(context.sender, "You must be a player in order to use this command", MessageLevel.SEVERE, false);
             return true;
         }
 
         final Player player = (Player) context.sender;
         final AwayState state = Main.awayBack.getAwayState(player);
         if (state != null) {
-            Message.manager.send(context.sender, "You have been away " + Main.duration(System.currentTimeMillis() - state.since) + (state.reason != null ? " for " + state.reason : ""), MessageLevel.SEVERE);
+            Message.manager.tell(context.sender, "You have been away " + Main.duration(System.currentTimeMillis() - state.since) + (state.reason != null ? " for " + state.reason : ""), MessageLevel.SEVERE, false);
             return true;
         }
 

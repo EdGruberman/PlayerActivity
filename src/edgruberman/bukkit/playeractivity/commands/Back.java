@@ -19,14 +19,14 @@ public final class Back extends Action {
     @Override
     public boolean perform(final Context context) {
         if (!(context.sender instanceof Player)) {
-            Message.manager.send(context.sender, "You must be a player in order to use this command", MessageLevel.SEVERE);
+            Message.manager.tell(context.sender, "You must be a player in order to use this command", MessageLevel.SEVERE, false);
             return true;
         }
 
         final Player player = (Player) context.sender;
         final AwayState state = Main.awayBack.getAwayState(player);
         if (state == null) {
-            Message.manager.send(context.sender, "You are not currently away", MessageLevel.SEVERE);
+            Message.manager.tell(context.sender, "You are not currently away", MessageLevel.SEVERE, false);
             return true;
         }
 
