@@ -112,7 +112,8 @@ public final class IdlePublisher extends Observable implements Observer, Listene
 
     void clear() {
         this.deleteObservers();
-        for (final Player player : this.timers.keySet()) this.remove(player);
+        final List<Player> playerTimers = new ArrayList<Player>(this.timers.keySet());
+        for (final Player player : playerTimers) this.remove(player);
     }
 
 }

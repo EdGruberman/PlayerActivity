@@ -1,6 +1,6 @@
 name: @NAME@
 description: Track player based events
-softdepend: [MessageManager]
+softdepend: [MessageManager, Essentials]
 version: @VERSION@
 author: @AUTHOR@
 main: edgruberman.bukkit.playeractivity.Main
