@@ -26,7 +26,7 @@ public final class Main extends JavaPlugin {
     public static AwayBack awayBack = null;
     public static ListTag listTag = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0a0";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0a9";
     private ConfigurationFile configurationFile;
 
     @Override
@@ -104,6 +104,7 @@ public final class Main extends JavaPlugin {
         Main.awayBack.awayFormat = section.getString("away", Main.awayBack.awayFormat);
         Main.awayBack.backFormat = section.getString("back", Main.awayBack.backFormat);
         Main.awayBack.defaultReason = section.getString("reason", Main.awayBack.defaultReason);
+        Main.awayBack.mentionsFormat = section.getString("mentions", Main.awayBack.mentionsFormat);
 
         final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;

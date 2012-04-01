@@ -18,7 +18,7 @@ import edgruberman.bukkit.playeractivity.commands.util.Action;
 import edgruberman.bukkit.playeractivity.commands.util.Context;
 import edgruberman.bukkit.playeractivity.commands.util.Handler;
 import edgruberman.bukkit.playeractivity.commands.util.Parser;
-import edgruberman.bukkit.playeractivity.consumers.AwayState;
+import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class WhoDetail extends Action implements Listener {
 

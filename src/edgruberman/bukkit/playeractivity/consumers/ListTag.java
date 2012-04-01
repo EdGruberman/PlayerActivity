@@ -157,6 +157,16 @@ public class ListTag implements Observer, Listener {
     }
 
     @EventHandler
+    public void onPlayerAway(final PlayerAway event) {
+        this.setAway(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerBack(final PlayerBack event) {
+        this.unsetAway(event.getPlayer());
+    }
+
+    @EventHandler
     public void onPlayerBedEnter(final PlayerBedEnterEvent event) {
         this.setBed(event.getPlayer());
     }

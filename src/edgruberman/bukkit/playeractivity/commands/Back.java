@@ -8,7 +8,7 @@ import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.Message;
 import edgruberman.bukkit.playeractivity.commands.util.Action;
 import edgruberman.bukkit.playeractivity.commands.util.Context;
-import edgruberman.bukkit.playeractivity.consumers.AwayState;
+import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class Back extends Action {
 

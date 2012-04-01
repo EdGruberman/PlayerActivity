@@ -9,7 +9,7 @@ import edgruberman.bukkit.playeractivity.Message;
 import edgruberman.bukkit.playeractivity.commands.util.Action;
 import edgruberman.bukkit.playeractivity.commands.util.Context;
 import edgruberman.bukkit.playeractivity.commands.util.Parser;
-import edgruberman.bukkit.playeractivity.consumers.AwayState;
+import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class Away extends Action {
 
@@ -28,6 +28,7 @@ public final class Away extends Action {
         final AwayState state = Main.awayBack.getAwayState(player);
         if (state != null) {
             Message.manager.tell(context.sender, "You have been away " + Main.duration(System.currentTimeMillis() - state.since) + (state.reason != null ? " for " + state.reason : ""), MessageLevel.SEVERE, false);
+            if (Main.awayBack.mentions != null) Main.awayBack.mentions.tellMentions(player);
             return true;
         }
 

@@ -44,6 +44,7 @@ awayBack:
     reason: 'no reason'
     away: '%1$s&* is &6away&_ for &7%2$s' # 1 = Player Display Name, 2 = Away Reason
     back: '%1$s&* is &eback&_ after %3$s for &7%2$s' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
+    mentions: '&f%1$s&* has been &6away&_ %2$s for: &7%3$s' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
 who:
     enabled: false
     list:
