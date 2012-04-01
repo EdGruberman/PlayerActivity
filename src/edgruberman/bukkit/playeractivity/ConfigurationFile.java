@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -259,6 +260,22 @@ public final class ConfigurationFile {
      */
     public boolean isSaveQueued() {
         return (this.taskSave != null && this.owner.getServer().getScheduler().isQueued(this.taskSave));
+    }
+
+    public void setLoggingLevel() {
+        final String name = this.getConfig().getString("logLevel", "INFO");
+        Level level;
+        try { level = Level.parse(name); } catch (final Exception e) {
+            level = Level.INFO;
+            this.owner.getLogger().warning("Unrecognized java.util.logging.Level in \"" + this.getFile().getPath() + "\"; logLevel: " + name);
+        }
+
+        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
+        for (final Handler h : this.owner.getLogger().getParent().getHandlers())
+            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
+
+        this.owner.getLogger().setLevel(level);
+        this.owner.getLogger().log(Level.CONFIG, "Logging level set to: " + this.owner.getLogger().getLevel());
     }
 
     public FileVersion getVersion() {

@@ -13,10 +13,12 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.EventTracker;
 import edgruberman.bukkit.playeractivity.Interpreter;
+import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerActivity;
 
 public class AwayBack implements Observer {
 
+    public boolean overrideIdle = true;
     public String awayFormat = null;
     public String backFormat = null;
     public String defaultReason = null;
@@ -58,11 +60,13 @@ public class AwayBack implements Observer {
     }
 
     public boolean setAway(final Player player, final String reason) {
+        if (Main.listTag != null) Main.listTag.setAway(player);
         final AwayState state = new AwayState(player, System.currentTimeMillis(), reason);
         return this.away.put(player, state) == null;
     }
 
     public boolean setBack(final Player player) {
+        if (Main.listTag != null) Main.listTag.unsetAway(player);
         return this.away.remove(player) != null;
     }
 

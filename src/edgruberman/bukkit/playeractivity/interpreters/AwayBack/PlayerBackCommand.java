@@ -11,9 +11,7 @@ public class PlayerBackCommand extends Interpreter {
     public void onEvent(final org.bukkit.event.player.PlayerCommandPreprocessEvent event) {
         if (Main.awayBack == null || !Main.awayBack.isEnabled()) return;
 
-        if (Main.idleNotify == null || !Main.idleNotify.awayBroadcastOverride) return;
-
-        if (!Main.awayBack.isAway(event.getPlayer())) return;
+        if (!Main.awayBack.overrideIdle || !Main.awayBack.isAway(event.getPlayer())) return;
 
         final String message = event.getMessage().toLowerCase();
         if (!message.equals("/back") && !message.startsWith("/back ")) return;

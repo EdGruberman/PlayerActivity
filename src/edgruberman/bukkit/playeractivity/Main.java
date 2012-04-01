@@ -2,7 +2,6 @@ package edgruberman.bukkit.playeractivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +16,7 @@ import edgruberman.bukkit.playeractivity.commands.WhoList;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
+import edgruberman.bukkit.playeractivity.consumers.ListTag;
 import edgruberman.bukkit.playeractivity.dependencies.DependencyChecker;
 
 public final class Main extends JavaPlugin {
@@ -24,8 +24,9 @@ public final class Main extends JavaPlugin {
     public static IdleNotify idleNotify = null;
     public static IdleKick idleKick = null;
     public static AwayBack awayBack = null;
+    public static ListTag listTag = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.3.0b19";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0a0";
     private ConfigurationFile configurationFile;
 
     @Override
@@ -38,7 +39,7 @@ public final class Main extends JavaPlugin {
         this.configurationFile = new ConfigurationFile(this);
         this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
         this.configurationFile.load();
-        this.setLoggingLevel();
+        this.configurationFile.setLoggingLevel();
 
         new Message(this);
 
@@ -50,23 +51,8 @@ public final class Main extends JavaPlugin {
         if (Main.idleKick != null) Main.idleKick.stop();
         if (Main.idleNotify != null) Main.idleNotify.stop();
         if (Main.awayBack != null) Main.awayBack.stop();
+        if (Main.listTag != null) Main.listTag.stop();
         if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
-    }
-
-    private void setLoggingLevel() {
-        final String name = this.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level;
-        try { level = Level.parse(name); } catch (final Exception e) {
-            level = Level.INFO;
-            this.getLogger().warning("Unrecognized java.util.logging.Level in \"" + this.configurationFile.getFile().getPath() + "\"; logLevel: " + name);
-        }
-
-        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
-        for (final Handler h : this.getLogger().getParent().getHandlers())
-            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
-
-        this.getLogger().setLevel(level);
-        this.getLogger().log(Level.CONFIG, "Logging level set to: " + this.getLogger().getLevel());
     }
 
     public void configure() {
@@ -75,6 +61,7 @@ public final class Main extends JavaPlugin {
         this.loadIdleKick(config.getConfigurationSection("idleKick"));
         this.loadAwayBack(config.getConfigurationSection("awayBack"));
         this.loadWho(config.getConfigurationSection("who"));
+        this.loadListTag(config.getConfigurationSection("listTag"));
     }
 
     private void loadIdleNotify(final ConfigurationSection section) {
@@ -82,16 +69,7 @@ public final class Main extends JavaPlugin {
 
         if (section == null || !section.getBoolean("enabled", false)) return;
 
-        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
-        for (final String className : section.getStringList("activity")) {
-            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
-            if (interpreter == null) {
-                this.getLogger().log(Level.WARNING, "Unsupported IdleNotify.activity: " + className);
-                continue;
-            }
-
-            interpreters.add(interpreter);
-        }
+        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;
 
         if (Main.idleNotify == null) Main.idleNotify = new IdleNotify(this);
@@ -99,7 +77,6 @@ public final class Main extends JavaPlugin {
         Main.idleNotify.privateFormat = section.getString("private", Main.idleNotify.privateFormat);
         Main.idleNotify.broadcast = section.getString("broadcast", Main.idleNotify.broadcast);
         Main.idleNotify.backBroadcast = section.getString("backBroadcast", Main.idleNotify.backBroadcast);
-        Main.idleNotify.awayBroadcastOverride = section.getBoolean("awayBroadcastOverride", Main.idleNotify.awayBroadcastOverride);
         Main.idleNotify.start(interpreters);
     }
 
@@ -108,16 +85,7 @@ public final class Main extends JavaPlugin {
 
         if (section == null || !section.getBoolean("enabled", false)) return;
 
-        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
-        for (final String className : section.getStringList("activity")) {
-            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
-            if (interpreter == null) {
-                this.getLogger().log(Level.WARNING, "Unsupported IdleKick.activity: " + className);
-                continue;
-            }
-
-            interpreters.add(interpreter);
-        }
+        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;
 
         if (Main.idleKick == null) Main.idleKick = new IdleKick(this);
@@ -132,21 +100,14 @@ public final class Main extends JavaPlugin {
         if (section == null || !section.getBoolean("enabled", false)) return;
 
         if (Main.awayBack == null) Main.awayBack = new AwayBack(this);
+        Main.awayBack.overrideIdle = section.getBoolean("overrideIdle", Main.awayBack.overrideIdle);
         Main.awayBack.awayFormat = section.getString("away", Main.awayBack.awayFormat);
         Main.awayBack.backFormat = section.getString("back", Main.awayBack.backFormat);
         Main.awayBack.defaultReason = section.getString("reason", Main.awayBack.defaultReason);
 
-        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
-        for (final String className : section.getStringList("activity")) {
-            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
-            if (interpreter == null) {
-                this.getLogger().log(Level.WARNING, "Unsupported Away.activity: " + className);
-                continue;
-            }
-
-            interpreters.add(interpreter);
-        }
+        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;
+
         Main.awayBack.start(interpreters);
 
         new Away(this);
@@ -168,6 +129,36 @@ public final class Main extends JavaPlugin {
         WhoDetail.disconnected = section.getString("detail.disconnected", WhoDetail.disconnected);
 
         new Who(this);
+    }
+
+    private void loadListTag(final ConfigurationSection section) {
+        if (Main.listTag != null) Main.listTag.stop();
+
+        if (section == null || !section.getBoolean("enabled", false)) return;
+
+        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
+        if (interpreters.size() == 0) return;
+
+        if (Main.listTag == null) Main.listTag = new ListTag(this);
+        Main.listTag.idle = (long) section.getInt("idle", (int) Main.listTag.idle / 1000) * 1000;
+        Main.listTag.awayTag = section.getString("awayTag", Main.listTag.awayTag);
+        Main.listTag.idleTag = section.getString("idleTag", Main.listTag.idleTag);
+        Main.listTag.bedTag = section.getString("bedTag", Main.listTag.bedTag);
+        Main.listTag.start(interpreters);
+    }
+
+    private List<Class <? extends Interpreter>> findInterpreters(final List<String> classNames) {
+        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
+        for (final String className : classNames) {
+            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
+            if (interpreter == null) {
+                this.getLogger().log(Level.WARNING, "Unsupported activity: " + className);
+                continue;
+            }
+
+            interpreters.add(interpreter);
+        }
+        return interpreters;
     }
 
     public static String duration(final long total) {

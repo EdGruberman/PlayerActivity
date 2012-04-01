@@ -26,7 +26,6 @@ public final class IdleNotify implements Observer {
     public String privateFormat = null;
     public String broadcast = null;
     public String backBroadcast = null;
-    public boolean awayBroadcastOverride = true;
 
     public final EventTracker tracker;
     private final String ignore;
@@ -68,7 +67,7 @@ public final class IdleNotify implements Observer {
             if (activity.last == null || (activity.occurred - activity.last) < this.idle || this.backBroadcast == null || activity.player.hasPermission(this.ignore))
                 return;
 
-            if (Main.awayBack != null && this.awayBroadcastOverride && Main.awayBack.isAway(activity.player))
+            if (Main.awayBack != null && Main.awayBack.overrideIdle && Main.awayBack.isAway(activity.player))
                 return;
 
             final String kickIdle = (Main.idleKick != null ? Main.duration(Main.idleKick.idle) : null);
@@ -80,7 +79,7 @@ public final class IdleNotify implements Observer {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (idle.player.hasPermission(this.ignore)) return;
 
-        if (this.broadcast != null && (Main.awayBack == null || !this.awayBroadcastOverride || !Main.awayBack.isAway(idle.player))) {
+        if (this.broadcast != null && (Main.awayBack == null || !Main.awayBack.overrideIdle || !Main.awayBack.isAway(idle.player))) {
             final String kickIdle = (Main.idleKick != null ? Main.duration(Main.idleKick.idle) : null);
             final String messageBroadcast = String.format(this.broadcast, Main.duration(idle.duration), kickIdle, idle.player.getDisplayName());
             Message.manager.broadcast(messageBroadcast, MessageLevel.EVENT);

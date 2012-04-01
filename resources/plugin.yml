@@ -26,11 +26,15 @@ permissions:
         children:
             playeractivity.idle.ignore.notify: true
             playeractivity.idle.ignore.kick: true
+            playeractivity.idle.ignore.listtag: true
     playeractivity.idle.ignore.notify:
         description: IdleNotify will not notify if player goes idle
         default: false
     playeractivity.idle.ignore.kick:
         description: IdleKick will not kick player if player goes idle
+        default: false
+    playeractivity.idle.ignore.listtag:
+        description: ListTag will not tag player if player goes idle
         default: false
     playeractivity.away:
         description: Can use away command
