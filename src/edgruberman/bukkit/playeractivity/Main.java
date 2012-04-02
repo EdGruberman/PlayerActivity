@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.playeractivity.commands.Away;
@@ -29,6 +28,8 @@ public final class Main extends JavaPlugin {
     private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0a9";
     private ConfigurationFile configurationFile;
 
+    private static Main that = null;
+
     @Override
     public void onLoad() {
         new DependencyChecker(this);
@@ -36,6 +37,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Main.that = this;
+
         this.configurationFile = new ConfigurationFile(this);
         this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
         this.configurationFile.load();
@@ -43,7 +46,7 @@ public final class Main extends JavaPlugin {
 
         new Message(this);
 
-        this.configure();
+        this.configure(this.configurationFile.getConfig());
     }
 
     @Override
@@ -55,8 +58,7 @@ public final class Main extends JavaPlugin {
         if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
     }
 
-    public void configure() {
-        final FileConfiguration config = this.configurationFile.getConfig();
+    public void configure(final ConfigurationSection config) {
         this.loadIdleNotify(config.getConfigurationSection("idleNotify"));
         this.loadIdleKick(config.getConfigurationSection("idleKick"));
         this.loadAwayBack(config.getConfigurationSection("awayBack"));
@@ -64,10 +66,29 @@ public final class Main extends JavaPlugin {
         this.loadListTag(config.getConfigurationSection("listTag"));
     }
 
+    public static boolean enable(final String consumer) {
+        final ConfigurationSection section = Main.that.configurationFile.getConfig().getConfigurationSection(consumer);
+        if (section == null) return false;
+
+        section.set("enabled", true);
+
+        if (consumer.equalsIgnoreCase("idleKick")) Main.that.loadIdleKick(section);
+        else if (consumer.equalsIgnoreCase("idleNotify")) Main.that.loadIdleNotify(section);
+        else if (consumer.equalsIgnoreCase("awayBack")) Main.that.loadAwayBack(section);
+        else if (consumer.equalsIgnoreCase("listTag")) Main.that.loadListTag(section);
+        else return false;
+
+        Main.that.configurationFile.save();
+        return true;
+    }
+
     private void loadIdleNotify(final ConfigurationSection section) {
         if (Main.idleNotify != null) Main.idleNotify.stop();
 
-        if (section == null || !section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) {
+            Main.idleNotify = null;
+            return;
+        }
 
         final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;
@@ -83,7 +104,10 @@ public final class Main extends JavaPlugin {
     private void loadIdleKick(final ConfigurationSection section) {
         if (Main.idleKick != null) Main.idleKick.stop();
 
-        if (section == null || !section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) {
+            Main.idleKick = null;
+            return;
+        }
 
         final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;
@@ -97,7 +121,10 @@ public final class Main extends JavaPlugin {
     private void loadAwayBack(final ConfigurationSection section) {
         if (Main.awayBack != null) Main.awayBack.stop();
 
-        if (section == null || !section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) {
+            Main.awayBack = null;
+            return;
+        }
 
         if (Main.awayBack == null) Main.awayBack = new AwayBack(this);
         Main.awayBack.overrideIdle = section.getBoolean("overrideIdle", Main.awayBack.overrideIdle);
@@ -117,6 +144,7 @@ public final class Main extends JavaPlugin {
 
     private void loadWho(final ConfigurationSection section) {
         if (section == null || !section.getBoolean("enabled", false)) return;
+        // TODO unregister command if disabled
 
         WhoList.format = section.getString("list.format", WhoList.format);
         WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);
@@ -135,7 +163,10 @@ public final class Main extends JavaPlugin {
     private void loadListTag(final ConfigurationSection section) {
         if (Main.listTag != null) Main.listTag.stop();
 
-        if (section == null || !section.getBoolean("enabled", false)) return;
+        if (section == null || !section.getBoolean("enabled", false)) {
+            Main.listTag = null;
+            return;
+        }
 
         final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
         if (interpreters.size() == 0) return;

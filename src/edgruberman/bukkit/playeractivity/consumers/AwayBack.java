@@ -30,7 +30,6 @@ public class AwayBack implements Observer, Listener {
 
     private final Plugin plugin;
     private final Map<Player, AwayState> away = new HashMap<Player, AwayState>();
-    private boolean enabled = false;
     public Mentions mentions = null;
 
     public AwayBack(final Plugin plugin) {
@@ -40,8 +39,6 @@ public class AwayBack implements Observer, Listener {
 
     public boolean start(final List<Class<? extends Interpreter>> interpreters) {
         if (this.backFormat == null) return false;
-
-        this.enabled = true;
 
         final List<Interpreter> instances = new ArrayList<Interpreter>();
         for (final Class<? extends Interpreter> iClass : interpreters)
@@ -67,7 +64,6 @@ public class AwayBack implements Observer, Listener {
             this.mentions.stop();
             this.mentions = null;
         }
-        this.enabled = false;
         this.back.clear();
         this.away.clear();
     }
@@ -100,10 +96,6 @@ public class AwayBack implements Observer, Listener {
 
     public Set<Player> getAway() {
         return this.away.keySet();
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
     }
 
     @Override
