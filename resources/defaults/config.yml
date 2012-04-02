@@ -56,7 +56,7 @@ who:
     detail:
         connected: '&f%1$s&* connected %2$s ago' # 1 = Player Display Name, 2 = Last Connected Duration
         away: '%1$s and has been &6away&_ %2$s for: &7%3$s' # 1 = Formatted connected, 2 = Away Duration, 3 = Reason
-        idle: '%1$s and has been &6idle&_ %1$s' # 1 = Formatted connected, 2 = Idle Duration
+        idle: '%1$s and has been &6idle&_ %2$s' # 1 = Formatted connected, 2 = Idle Duration
         disconnected: '%1$s&* disconnected %2$s ago' # 1 = Player Name, 2 = Last Connected Duration
 listTag:
     enabled: false
