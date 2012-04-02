@@ -3,7 +3,6 @@ package edgruberman.bukkit.playeractivity.consumers;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -12,7 +11,6 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageDisplay;
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 import edgruberman.bukkit.playeractivity.Main;
@@ -62,8 +60,6 @@ public class Mentions implements Listener {
 
                 final AwayState state = Main.awayBack.getAwayState(away);
                 final String response = String.format(this.awayBack.mentionsFormat, state.player.getDisplayName(), Main.duration(now - state.since), state.reason);
-                System.out.println(response);
-                System.out.println(MessageDisplay.translate(ChatColor.GREEN, response));
                 MessageManager.of(this.plugin).tell(event.getPlayer(), response, MessageLevel.STATUS);
             }
         }
