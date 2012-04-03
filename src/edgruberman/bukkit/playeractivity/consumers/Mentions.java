@@ -43,7 +43,7 @@ public class Mentions implements Listener {
         String mentions = "";
         for (final Map.Entry<Player, Long> mention : this.mentions.get(player).entrySet()) {
             if (mentions.length() != 0) mentions += ", ";
-            mentions += "&f" + mention.getKey().getDisplayName() + "&* (" + Main.duration(now - mention.getValue()) + ")";
+            mentions += "&f" + mention.getKey().getDisplayName() + "&_ (" + Main.duration(now - mention.getValue()) + ")";
         }
 
         final String mentionedBy = String.format("Your name was mentioned by: %s", mentions);
