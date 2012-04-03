@@ -11,7 +11,7 @@ public class PlayerIdle {
     public final long last;
     public final long duration;
 
-    PlayerIdle(final Player player, final long last, final long duration) {
+    public PlayerIdle(final Player player, final long last, final long duration) {
         this.player = player;
         this.last = last;
         this.duration = duration;

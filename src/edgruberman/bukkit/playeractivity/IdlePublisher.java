@@ -10,12 +10,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 /**
  * Monitors for PlayerActivity from the ActivityPublisher and when no activity resets the timer, generates a PlayerIdle event.
  */
-public final class IdlePublisher extends Observable implements Observer, Listener {
+public final class IdlePublisher extends Observable implements Observer {
 
     final EventTracker tracker;
     final List<Player> idle = new ArrayList<Player>();
@@ -70,6 +69,15 @@ public final class IdlePublisher extends Observable implements Observer, Listene
                 }
                 , delay
         );
+    }
+
+    /**
+     * Reset idle status for a list of players.
+     *
+     * @param players who to reset idle status on
+     */
+    public void reset(final List<Player> players) {
+        for (final Player player : players) this.tracker.activityPublisher.record(player, null);
     }
 
     @Override

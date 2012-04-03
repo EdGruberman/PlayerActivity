@@ -14,7 +14,7 @@ import org.bukkit.plugin.EventExecutor;
 /**
  * Interprets the player involved in a player related Event and time of activity.
  */
-public abstract class Interpreter implements EventExecutor {
+public class Interpreter implements EventExecutor {
 
     protected EventTracker tracker;
     protected Player player = null;

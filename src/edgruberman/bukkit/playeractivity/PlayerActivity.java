@@ -13,7 +13,7 @@ public class PlayerActivity {
     public final Event event;
     public final Long last;
 
-    PlayerActivity(final Player player, final Event event, final long occurred, final Long last) {
+    public PlayerActivity(final Player player, final Event event, final long occurred, final Long last) {
         this.player = player;
         this.event = event;
         this.occurred = occurred;
