@@ -12,6 +12,8 @@ import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Who;
 import edgruberman.bukkit.playeractivity.commands.WhoDetail;
 import edgruberman.bukkit.playeractivity.commands.WhoList;
+import edgruberman.bukkit.playeractivity.commands.util.Action;
+import edgruberman.bukkit.playeractivity.commands.util.Handler;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
@@ -51,6 +53,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        for (final Action action : this.actionsAwayBack) action.handler.unregister();
+        if (this.handlerWho != null) this.handlerWho.unregister();
         if (Main.idleKick != null) Main.idleKick.stop();
         if (Main.idleNotify != null) Main.idleNotify.stop();
         if (Main.awayBack != null) Main.awayBack.stop();
@@ -118,11 +122,14 @@ public final class Main extends JavaPlugin {
         Main.idleKick.start(interpreters);
     }
 
+    private final List<Action> actionsAwayBack = new ArrayList<Action>();
     private void loadAwayBack(final ConfigurationSection section) {
         if (Main.awayBack != null) Main.awayBack.stop();
 
         if (section == null || !section.getBoolean("enabled", false)) {
             Main.awayBack = null;
+            for (final Action action : this.actionsAwayBack) action.handler.unregister();
+            this.actionsAwayBack.clear();
             return;
         }
 
@@ -138,13 +145,16 @@ public final class Main extends JavaPlugin {
 
         Main.awayBack.start(interpreters);
 
-        new Away(this);
-        new Back(this);
+        this.actionsAwayBack.add(new Away(this, section.getString("commands.away", "away")));
+        this.actionsAwayBack.add(new Back(this, section.getString("commands.back", "back")));
     }
 
+    private Handler handlerWho = null;
     private void loadWho(final ConfigurationSection section) {
-        if (section == null || !section.getBoolean("enabled", false)) return;
-        // TODO unregister command if disabled
+        if (section == null || !section.getBoolean("enabled", false)) {
+            if (this.handlerWho != null) this.handlerWho.unregister();
+            return;
+        }
 
         WhoList.format = section.getString("list.format", WhoList.format);
         WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);
@@ -157,7 +167,7 @@ public final class Main extends JavaPlugin {
         WhoDetail.idle = section.getString("detail.idle", WhoDetail.idle);
         WhoDetail.disconnected = section.getString("detail.disconnected", WhoDetail.disconnected);
 
-        new Who(this);
+        this.handlerWho = new Who(this, section.getString("commands.who", "who"));
     }
 
     private void loadListTag(final ConfigurationSection section) {

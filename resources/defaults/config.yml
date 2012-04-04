@@ -36,6 +36,9 @@ idleKick:
     reason: 'Idle for %1$s' # 1 = Kick Idle Duration
 awayBack:
     enabled: false
+    commands:
+        away: away
+        back: back
     overrideIdle: true
     activity:
         - PlayerChatEvent
@@ -47,6 +50,8 @@ awayBack:
     mentions: '&f%1$s&_ has been &6away&_ %2$s for: &7%3$s' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
 who:
     enabled: false
+    commands:
+        who: who
     list:
         format: 'Who: %1$s' # 1 = Player List
         delimiter: ', '

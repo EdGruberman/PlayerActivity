@@ -25,10 +25,11 @@ public abstract class Action {
      * command that uses only plugin.command for permission.
      *
      * @param plugin command owner
-     * @param label command label
+     * @param name command name
+     * @param reference command definition in plugin.yml command-reference section
      */
-    protected Action(final JavaPlugin plugin, final String label) {
-        this(new Handler(plugin, label), label, (String) null);
+    protected Action(final JavaPlugin plugin, final String name, final String reference) {
+        this(new Handler(plugin, name, reference), name, (String) null);
         this.setDefault();
     }
 

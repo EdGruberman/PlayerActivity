@@ -12,8 +12,8 @@ import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class Back extends Action {
 
-    public Back(final JavaPlugin plugin) {
-        super(plugin, "back");
+    public Back(final JavaPlugin plugin, final String name) {
+        super(plugin, name, "back");
     }
 
     @Override

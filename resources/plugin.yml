@@ -1,16 +1,16 @@
 name: @NAME@
 description: Track player based events
-softdepend: [MessageManager, Essentials]
+softdepend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
 main: edgruberman.bukkit.playeractivity.Main
-commands:
+command-reference:
     away:
-        description: Configures your status as not active
+        description: Configure your status as not active
         permission: playeractivity.away
         usage: /<command>[ <Reason>] - Set yourself as away
     back:
-        description: Configures your status as active
+        description: Configure your status as no longer away
         permission: playeractivity.back
         usage: /<command> - Set yourself as back
     who:

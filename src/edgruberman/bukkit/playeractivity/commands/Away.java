@@ -13,8 +13,8 @@ import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class Away extends Action {
 
-    public Away(final JavaPlugin plugin) {
-        super(plugin, "away");
+    public Away(final JavaPlugin plugin, final String name) {
+        super(plugin, name, "away");
     }
 
     @Override
