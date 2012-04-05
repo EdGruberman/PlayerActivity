@@ -1,8 +1,12 @@
 package edgruberman.bukkit.playeractivity.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
@@ -27,8 +31,16 @@ public final class WhoList extends Action {
 
     @Override
     public boolean perform(final Context context) {
+        final List<Player> sorted = Arrays.asList(context.sender.getServer().getOnlinePlayers());
+        Collections.sort(sorted, new Comparator<Player>() {
+            @Override
+            public int compare(final Player p1, final Player p2) {
+                return ChatColor.stripColor(p1.getDisplayName()).compareTo(ChatColor.stripColor(p2.getDisplayName()));
+            }
+        });
+
         final List<String> list = new ArrayList<String>();
-        for (final Player player : context.sender.getServer().getOnlinePlayers())
+        for (final Player player : sorted)
             list.add(this.tag(player));
 
         Message.manager.tell(context.sender, String.format(WhoList.format, Parser.join(list, WhoList.delimiter)), MessageLevel.CONFIG, false);
