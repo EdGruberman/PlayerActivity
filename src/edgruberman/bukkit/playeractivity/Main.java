@@ -27,7 +27,7 @@ public final class Main extends JavaPlugin {
     public static AwayBack awayBack = null;
     public static ListTag listTag = null;
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0a23";
+    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0";
     private ConfigurationFile configurationFile;
 
     private static Main that = null;
