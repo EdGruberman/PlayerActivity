@@ -70,7 +70,7 @@ public final class WhoDetail extends Action implements Listener {
             return String.format(WhoDetail.away, connected, Main.duration(now - state.since), state.reason);
         }
 
-        if (Main.idleNotify != null && Main.idleNotify.tracker.idlePublisher.getIdle().contains(player)) {
+        if (Main.idleNotify != null && Main.listTag.tracker.idlePublisher.getIdle().contains(player)) {
             return String.format(WhoDetail.idle, connected, Main.duration(now - Main.idleNotify.tracker.getLastFor(player)));
         }
 
