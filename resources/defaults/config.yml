@@ -53,7 +53,7 @@ who:
     commands:
         who: who
     list:
-        format: 'Who: %1$s' # 1 = Player List
+        format: 'Who: %1$s (=%2$d)' # 1 = Player List, 2 = Player Count
         delimiter: ', '
         name: '&f%s&_' # 1 = Player Display Name
         away: '%1$s&6#Away&_' # 1 = Formatted name
