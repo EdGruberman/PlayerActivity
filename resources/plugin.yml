@@ -20,6 +20,24 @@ command-reference:
             /<command> - Show current players
             /<command> <Player> - Show player activity
 permissions:
+    playeractivity.hide:
+        description: Player will be hidden from all automatic status/notifications
+        default: false
+        children:
+            playeractivity.who.hide: true
+            playeractivity.idle.ignore: true
+    playeractivity.who.hide:
+        description: Player will be hidden from who command
+        default: false
+        children:
+            playeractivity.who.hide.list: true
+            playeractivity.who.hide.detail: true
+    playeractivity.who.hide.list:
+        description: Player will be hidden from who list command
+        default: false
+    playeractivity.who.hide.detail:
+        description: Player will be hidden from who detail command
+        default: false
     playeractivity.idle.ignore:
         description: Player will not be notified or kicked if they go idle
         default: false

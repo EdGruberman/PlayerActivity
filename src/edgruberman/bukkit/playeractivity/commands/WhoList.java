@@ -41,7 +41,8 @@ public final class WhoList extends Action {
 
         final List<String> list = new ArrayList<String>();
         for (final Player player : sorted)
-            list.add(this.tag(player));
+            if (!player.hasPermission("playeractivity.who.hide.list"))
+                list.add(this.tag(player));
 
         Message.manager.tell(context.sender, String.format(WhoList.format, Parser.join(list, WhoList.delimiter), list.size()), MessageLevel.CONFIG, false);
         return true;

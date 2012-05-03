@@ -51,7 +51,7 @@ public final class WhoDetail extends Action implements Listener {
             return false;
         }
 
-        if (!target.isOnline()) {
+        if (!target.isOnline() || target.getPlayer().hasPermission("playeractivity.who.hide.detail")) {
             final String duration = Main.duration(System.currentTimeMillis() - target.getLastPlayed());
             Message.manager.tell(context.sender, String.format(WhoDetail.disconnected, target.getName(), duration), MessageLevel.CONFIG, false);
             return true;
