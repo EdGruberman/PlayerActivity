@@ -10,10 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Who;
-import edgruberman.bukkit.playeractivity.commands.WhoDetail;
-import edgruberman.bukkit.playeractivity.commands.WhoList;
-import edgruberman.bukkit.playeractivity.commands.util.Action;
-import edgruberman.bukkit.playeractivity.commands.util.Handler;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
@@ -49,12 +45,16 @@ public final class Main extends JavaPlugin {
         new Message(this);
 
         this.configure(this.configurationFile.getConfig());
+
+        this.getCommand("playeractivity:who").setExecutor(new Who(this));
+        if (Main.awayBack != null) {
+            this.getCommand("playeractivity:away").setExecutor(new Away(Main.awayBack.defaultReason));
+            this.getCommand("playeractivity:back").setExecutor(new Back());
+        }
     }
 
     @Override
     public void onDisable() {
-        for (final Action action : this.actionsAwayBack) action.handler.unregister();
-        if (this.handlerWho != null) this.handlerWho.unregister();
         if (Main.idleKick != null) Main.idleKick.stop();
         if (Main.idleNotify != null) Main.idleNotify.stop();
         if (Main.awayBack != null) Main.awayBack.stop();
@@ -122,14 +122,11 @@ public final class Main extends JavaPlugin {
         Main.idleKick.start(interpreters);
     }
 
-    private final List<Action> actionsAwayBack = new ArrayList<Action>();
     private void loadAwayBack(final ConfigurationSection section) {
         if (Main.awayBack != null) Main.awayBack.stop();
 
         if (section == null || !section.getBoolean("enabled", false)) {
             Main.awayBack = null;
-            for (final Action action : this.actionsAwayBack) action.handler.unregister();
-            this.actionsAwayBack.clear();
             return;
         }
 
@@ -144,30 +141,23 @@ public final class Main extends JavaPlugin {
         if (interpreters.size() == 0) return;
 
         Main.awayBack.start(interpreters);
-
-        this.actionsAwayBack.add(new Away(this, section.getString("commands.away", "away")));
-        this.actionsAwayBack.add(new Back(this, section.getString("commands.back", "back")));
     }
 
-    private Handler handlerWho = null;
     private void loadWho(final ConfigurationSection section) {
         if (section == null || !section.getBoolean("enabled", false)) {
-            if (this.handlerWho != null) this.handlerWho.unregister();
             return;
         }
 
-        WhoList.format = section.getString("list.format", WhoList.format);
-        WhoList.delimiter = section.getString("list.delimiter", WhoList.delimiter);
-        WhoList.name = section.getString("list.name", WhoList.name);
-        WhoList.away = section.getString("list.away", WhoList.away);
-        WhoList.idle = section.getString("list.idle", WhoList.idle);
+        Who.format = section.getString("list.format", Who.format);
+        Who.delimiter = section.getString("list.delimiter", Who.delimiter);
+        Who.name = section.getString("list.name", Who.name);
+        Who.away = section.getString("list.away", Who.away);
+        Who.idle = section.getString("list.idle", Who.idle);
 
-        WhoDetail.connected = section.getString("detail.connected", WhoDetail.connected);
-        WhoDetail.away = section.getString("detail.away", WhoDetail.away);
-        WhoDetail.idle = section.getString("detail.idle", WhoDetail.idle);
-        WhoDetail.disconnected = section.getString("detail.disconnected", WhoDetail.disconnected);
-
-        this.handlerWho = new Who(this, section.getString("commands.who", "who"));
+        Who.connected = section.getString("detail.connected", Who.connected);
+        Who.detailAway = section.getString("detail.away", Who.away);
+        Who.detailIdle = section.getString("detail.idle", Who.idle);
+        Who.disconnected = section.getString("detail.disconnected", Who.disconnected);
     }
 
     private void loadListTag(final ConfigurationSection section) {

@@ -4,21 +4,22 @@ softdepend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@
-command-reference:
-    away:
+commands:
+    'playeractivity:away':
+        aliases: [away, afk]
         description: Configure your status as not active
         permission: playeractivity.away
-        usage: /<command>[ <Reason>] - Set yourself as away
-    back:
+        usage: /<command>[ <Reason>]
+    'playeractivity:back':
+        aliases: back
         description: Configure your status as no longer away
         permission: playeractivity.back
-        usage: /<command> - Set yourself as back
-    who:
+        usage: /<command>
+    'playeractivity:who':
+        aliases: who
         description: View status of players
         permission: playeractivity.who
-        usage: |
-            /<command> - Show current players
-            /<command> <Player> - Show player activity
+        usage: /<command>[ <Player>]
 permissions:
     playeractivity.hide:
         description: Player will be hidden from all automatic status/notifications
@@ -28,15 +29,6 @@ permissions:
             playeractivity.idle.ignore: true
     playeractivity.who.hide:
         description: Player will be hidden from who command
-        default: false
-        children:
-            playeractivity.who.hide.list: true
-            playeractivity.who.hide.detail: true
-    playeractivity.who.hide.list:
-        description: Player will be hidden from who list command
-        default: false
-    playeractivity.who.hide.detail:
-        description: Player will be hidden from who detail command
         default: false
     playeractivity.idle.ignore:
         description: Player will not be notified or kicked if they go idle
@@ -62,15 +54,6 @@ permissions:
         default: false
     playeractivity.who:
         description: Can use who command
-        default: false
-        children:
-            playeractivity.who.list: true
-            playeractivity.who.detail: true
-    playeractivity.who.list:
-        description: Can use list action of who command
-        default: false
-    playeractivity.who.detail:
-        description: Can use detail action of who command
         default: false
     playeractivity.awayback:
         description: Can use away, back, and who commands
