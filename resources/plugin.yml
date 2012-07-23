@@ -3,7 +3,7 @@ description: Track player based events
 softdepend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
-main: edgruberman.bukkit.playeractivity.Main
+main: @MAIN@
 command-reference:
     away:
         description: Configure your status as not active

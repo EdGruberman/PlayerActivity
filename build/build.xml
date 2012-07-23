@@ -7,6 +7,7 @@
     <property name="dist" location="dist" />
     <property name="doc" location="doc" />
 
+    <basename property="project.name" file="${basedir}" />
     <property name="version.properties" location="${ant.file}/../version.properties" />
     <property file="${ant.file}/../plugin.properties" prefix="plugin" />
 
@@ -17,7 +18,7 @@
 
     <target name="Test (Build and Copy)" description="Build existing version and copy JAR to test server">
         <antcall target="Build" />
-        <copy file="${dist}/${plugin.name}.jar" todir="${bukkit.test}" />
+        <copy file="${dist}/${project.name}.jar" todir="${bukkit.test}" />
     </target>
 
     <target name="Build" description="Build existing version" depends="-Existing Version">
@@ -90,10 +91,11 @@
         <copy todir="${stage}/jar" preservelastmodified="true">
             <fileset dir="${resources}" includes="**/*.yml"/>
             <filterset>
-                <filter token="NAME" value="${plugin.name}" />
+                <filter token="NAME" value="${project.name}" />
                 <filter token="VERSION" value="${version}" />
                 <filter token="VERSION.TARGET" value="${version.target}" />
                 <filter token="AUTHOR" value="${bukkit.author}" />
+                <filter token="MAIN" value="${plugin.main}" />
             </filterset>
         </copy>
         
@@ -107,7 +109,7 @@
 
         <manifest file="${stage}/MANIFEST.MF">
             <section name="${plugin.implementation-name}">
-                <attribute name="Specification-Title" value="${plugin.name}" />
+                <attribute name="Specification-Title" value="${project.name}" />
                 <attribute name="Specification-Version" value="${version.major}.${version.minor}" />
                 <attribute name="Specification-Vendor" value="${bukkit.author}" />
                 <attribute name="Implementation-Title" value="${plugin.implementation-title}" />
@@ -119,7 +121,7 @@
 
         <delete dir="${dist}" />
         <mkdir dir="${dist}" />
-        <jar basedir="${stage}/jar/" jarfile="${dist}/${plugin.name}.jar" manifest="${stage}/MANIFEST.MF" />
+        <jar basedir="${stage}/jar/" jarfile="${dist}/${project.name}.jar" manifest="${stage}/MANIFEST.MF" />
     </target>
 
     <target name="Javadoc Export" description="Create documentation based on code comments">
