@@ -20,6 +20,9 @@ commands:
         description: View status of players
         permission: playeractivity.who
         usage: /<command>[ <Player>]
+    'playeractivity:reload':
+        description: Reload PlayerActivity plugin
+        permission: playeractivity.reload
 permissions:
     playeractivity.hide:
         description: Player will be hidden from all automatic status/notifications
@@ -57,8 +60,11 @@ permissions:
         default: false
     playeractivity.awayback:
         description: Can use away, back, and who commands
-        default: op
+        default: true
         children:
             playeractivity.away: true
             playeractivity.back: true
             playeractivity.who: true
+    playeractivity.reload:
+        description: Can use reload command
+        default: op

@@ -29,15 +29,11 @@ public final class EventTracker implements Listener {
     public EventTracker(final Plugin plugin, final List<Interpreter> interpreters) {
         this.plugin = plugin;
         new ActivityCleaner(this);
-        this.addInterpreters(interpreters);
+        for (final Interpreter interpreter : interpreters) this.addInterpreter(interpreter);
     }
 
     public Plugin getPlugin() {
         return this.plugin;
-    }
-
-    public void addInterpreters(final List<Interpreter> interpreters) {
-        for (final Interpreter interpreter : interpreters) this.addInterpreter(interpreter);
     }
 
     public boolean addInterpreter(final Interpreter interpreter) {
@@ -85,25 +81,15 @@ public final class EventTracker implements Listener {
         this.defaultIgnoreCancelled = defaultIgnoreCancelled;
     }
 
-    // TODO gracefully manage a NoClassDefFoundError when initializing an existing Interpreter subclass importing a class not found
-    public static Interpreter newInterpreter(final String className) {
-        // Find class
+    public static Interpreter newInterpreter(final String className) throws ClassNotFoundException, ClassCastException, InstantiationException, IllegalAccessException {
         Class<? extends Interpreter> subClass = null;
         subClass = EventTracker.findInterpreter(className);
         if (subClass == null) return null;
 
-        // Instantiate class
-        Interpreter interpreter;
-        try {
-            interpreter = subClass.newInstance();
-        } catch (final Exception e) {
-            return null;
-        }
-
-        return interpreter;
+        return subClass.newInstance();
     }
 
-    public static Class<? extends Interpreter> findInterpreter(final String className) {
+    public static Class<? extends Interpreter> findInterpreter(final String className) throws ClassNotFoundException, ClassCastException {
         // Look in local package
         try {
             return Class.forName("edgruberman.bukkit.playeractivity.interpreters." + className).asSubclass(Interpreter.class);
@@ -112,11 +98,7 @@ public final class EventTracker implements Listener {
         }
 
         // Look for a custom class
-        try {
-            return Class.forName(className).asSubclass(Interpreter.class);
-        } catch (final Exception e) {
-            return null;
-        }
+        return Class.forName(className).asSubclass(Interpreter.class);
     }
 
 }

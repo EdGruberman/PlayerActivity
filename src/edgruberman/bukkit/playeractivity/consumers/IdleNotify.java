@@ -1,61 +1,49 @@
 package edgruberman.bukkit.playeractivity.consumers;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
 import edgruberman.bukkit.playeractivity.EventTracker;
-import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Message;
+import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerActivity;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 
-/**
- * Notify when a player goes idle.
- */
+/** Notify when a player goes idle */
 public final class IdleNotify implements Observer {
 
-    public long idle = -1;
-    public String privateFormat = null;
-    public String broadcast = null;
-    public String backBroadcast = null;
-
+    public final long idle;
     public final EventTracker tracker;
+    public AwayBack awayBack = null;
+    public IdleKick idleKick = null;
+
+    private final Messenger messenger;
     private final String ignore;
 
-    private final Plugin plugin;
+    public IdleNotify(final Plugin plugin, final ConfigurationSection config, final Messenger messenger, final String ignore) {
+        this.messenger = messenger;
+        this.ignore = ignore;
+        this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-    public IdleNotify(final Plugin plugin) {
-        this.plugin = plugin;
         this.tracker = new EventTracker(plugin);
-        this.ignore = plugin.getDescription().getName().toLowerCase() + ".idle.ignore.notify";
-    }
+        for (final String className : config.getStringList("activity"))
+            try {
+                this.tracker.addInterpreter(EventTracker.newInterpreter(className));
+            } catch (final Exception e) {
+                plugin.getLogger().warning("Unable to create interpreter for IdleNotify activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+            }
 
-    public boolean start(final List<Class<? extends Interpreter>> interpreters) {
-        if ((this.idle <= 0) || interpreters.size() == 0) return false;
-
+        this.tracker.activityPublisher.addObserver(this);
         this.tracker.idlePublisher.setThreshold(this.idle);
         this.tracker.idlePublisher.addObserver(this);
-        this.tracker.activityPublisher.addObserver(this);
-        final List<Interpreter> instances = new ArrayList<Interpreter>();
-        for (final Class<? extends Interpreter> iClass : interpreters)
-            try {
-                instances.add(iClass.newInstance());
-            } catch (final Exception e) {
-                this.plugin.getLogger().log(Level.WARNING, "Unable to create activity interpreter: " + iClass.getName(), e);
-            }
-        this.tracker.addInterpreters(instances);
-        return true;
     }
 
-    public void stop() {
+    public void unload() {
         this.tracker.clear();
     }
 
@@ -64,14 +52,12 @@ public final class IdleNotify implements Observer {
         // Back
         if (o instanceof ActivityPublisher) {
             final PlayerActivity activity = (PlayerActivity) arg;
-            if (activity.last == null || (activity.occurred - activity.last) < this.idle || this.backBroadcast == null || activity.player.hasPermission(this.ignore))
-                return;
+            if (activity.last == null || (activity.occurred - activity.last) < this.idle) return;
 
-            if (Main.awayBack != null && Main.awayBack.overrideIdle && Main.awayBack.isAway(activity.player))
-                return;
+            if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
 
-            final String kickIdle = (Main.idleKick != null ? Main.duration(Main.idleKick.idle) : null);
-            Message.manager.broadcast(String.format(this.backBroadcast, Main.duration((activity.occurred - activity.last)), kickIdle, activity.player.getDisplayName()), MessageLevel.EVENT);
+            final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
+            this.messenger.broadcast("idleBackBroadcast", Main.readableDuration((activity.occurred - activity.last)), kickIdle, activity.player.getDisplayName());
             return;
         }
 
@@ -79,19 +65,23 @@ public final class IdleNotify implements Observer {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (idle.player.hasPermission(this.ignore)) return;
 
-        if (this.broadcast != null && (Main.awayBack == null || !Main.awayBack.overrideIdle || !Main.awayBack.isAway(idle.player))) {
-            final String kickIdle = (Main.idleKick != null ? Main.duration(Main.idleKick.idle) : null);
-            final String messageBroadcast = String.format(this.broadcast, Main.duration(idle.duration), kickIdle, idle.player.getDisplayName());
-            Message.manager.broadcast(messageBroadcast, MessageLevel.EVENT);
+        if (!this.isAwayOverriding(idle.player)) {
+            final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
+            this.messenger.broadcast("idleBroadcast", Main.readableDuration(idle.duration), kickIdle, idle.player.getDisplayName());
         }
 
-        if (this.privateFormat != null) {
-            final String kickIdle = (Main.idleKick != null ? Main.duration(Main.idleKick.idle) : null);
-            final String messagePrivate = String.format(this.privateFormat, Main.duration(idle.duration), kickIdle);
-            Message.manager.send(idle.player, messagePrivate, MessageLevel.WARNING);
-        }
+        final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
+        this.messenger.tell(idle.player, "idleNotify", Main.readableDuration(idle.duration), kickIdle);
 
         return;
+    }
+
+    private boolean isAwayOverriding(final Player player) {
+        if (this.awayBack == null) return false;
+
+        if (!this.awayBack.overrideIdle) return false;
+
+        return this.awayBack.isAway(player);
     }
 
 }

@@ -1,16 +1,14 @@
 package edgruberman.bukkit.playeractivity.consumers;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.EventTracker;
-import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 
 /**
@@ -18,37 +16,30 @@ import edgruberman.bukkit.playeractivity.PlayerIdle;
  */
 public final class IdleKick implements Observer {
 
-    public long idle = -1;
-    public String reason = null;
-
+    public final long idle;
     public final EventTracker tracker;
+
+    private final Messenger messenger;
     private final String ignore;
 
-    private final Plugin plugin;
+    public IdleKick(final Plugin plugin, final ConfigurationSection config, final Messenger messenger, final String ignore) {
+        this.messenger = messenger;
+        this.ignore = ignore;
+        this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-    public IdleKick(final Plugin plugin) {
-        this.plugin = plugin;
         this.tracker = new EventTracker(plugin);
-        this.ignore = plugin.getDescription().getName().toLowerCase() + ".idle.ignore.kick";
-    }
-
-    public boolean start(final List<Class<? extends Interpreter>> interpreters) {
-        if ((this.idle <= 0) || interpreters.size() == 0) return false;
+        for (final String className : config.getStringList("activity"))
+            try {
+                this.tracker.addInterpreter(EventTracker.newInterpreter(className));
+            } catch (final Exception e) {
+                plugin.getLogger().warning("Unable to create interpreter for IdleKick activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+            }
 
         this.tracker.idlePublisher.setThreshold(this.idle);
         this.tracker.idlePublisher.addObserver(this);
-        final List<Interpreter> instances = new ArrayList<Interpreter>();
-        for (final Class<? extends Interpreter> iClass : interpreters)
-            try {
-                instances.add(iClass.newInstance());
-            } catch (final Exception e) {
-                this.plugin.getLogger().log(Level.WARNING, "Unable to create activity interpreter: " + iClass.getName(), e);
-            }
-        this.tracker.addInterpreters(instances);
-        return true;
     }
 
-    public void stop() {
+    public void unload() {
         this.tracker.clear();
     }
 
@@ -57,7 +48,8 @@ public final class IdleKick implements Observer {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (idle.player.hasPermission(this.ignore)) return;
 
-        final String message = (this.reason != null ? String.format(this.reason, Main.duration(this.idle)) : null);
+        final String reason = this.messenger.getFormat("+idleKickReason");
+        final String message = (reason != null ? String.format(reason, Main.readableDuration(this.idle)) : null);
         idle.player.kickPlayer(message);
     }
 

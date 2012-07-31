@@ -1,204 +1,168 @@
 package edgruberman.bukkit.playeractivity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
+import edgruberman.bukkit.playeractivity.commands.Reload;
 import edgruberman.bukkit.playeractivity.commands.Who;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.ListTag;
-import edgruberman.bukkit.playeractivity.dependencies.DependencyChecker;
 
 public final class Main extends JavaPlugin {
 
-    public static IdleNotify idleNotify = null;
-    public static IdleKick idleKick = null;
-    public static AwayBack awayBack = null;
-    public static ListTag listTag = null;
+    private static final Version MINIMUM_CONFIGURATION = new Version("2.0.0");
 
-    private static final String MINIMUM_CONFIGURATION_VERSION = "1.4.0";
-    private ConfigurationFile configurationFile;
+    public IdleNotify idleNotify = null;
+    public IdleKick idleKick = null;
+    public AwayBack awayBack = null;
+    public ListTag listTag = null;
 
-    private static Main that = null;
-
-    @Override
-    public void onLoad() {
-        new DependencyChecker(this);
-    }
+    private Messenger messenger;
 
     @Override
     public void onEnable() {
-        Main.that = this;
+        this.reloadConfig();
+        this.messenger = Messenger.load(this, "messages");
 
-        this.configurationFile = new ConfigurationFile(this);
-        this.configurationFile.setMinVersion(Main.MINIMUM_CONFIGURATION_VERSION);
-        this.configurationFile.load();
-        this.configurationFile.setLoggingLevel();
+        if (this.getConfig().getBoolean("idleNotify.enabled"))
+            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.messenger, "playeractivity.idle.ignore.notify");
 
-        new Message(this);
-
-        this.configure(this.configurationFile.getConfig());
-
-        this.getCommand("playeractivity:who").setExecutor(new Who(this));
-        if (Main.awayBack != null) {
-            this.getCommand("playeractivity:away").setExecutor(new Away(Main.awayBack.defaultReason));
-            this.getCommand("playeractivity:back").setExecutor(new Back());
+        if (this.getConfig().getBoolean("idleKick.enabled")) {
+            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idleKick"), this.messenger, "playeractivity.idle.ignore.kick");
+            if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
         }
+
+        if (this.getConfig().getBoolean("listTag.enabled"))
+            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("listTag"), this.messenger, "playeractivity.idle.ignore.listtag");
+
+        if (this.getConfig().getBoolean("awayBack.enabled")) {
+            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("awayBack"), this.messenger);
+            if (this.awayBack.overrideIdle) {
+                this.awayBack.idleNotify = this.idleNotify;
+                if (this.idleNotify != null) this.idleNotify.awayBack = this.awayBack;
+            }
+            if (this.listTag != null) this.listTag.awayBack = this.awayBack;
+            this.getCommand("playeractivity:away").setExecutor(new Away(this.messenger, this.awayBack));
+            this.getCommand("playeractivity:back").setExecutor(new Back(this.messenger, this.awayBack));
+        }
+
+        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.messenger, this.awayBack, this.idleNotify, this.listTag));
+        this.getCommand("playeractivity:reload").setExecutor(new Reload(this, this.messenger));
     }
 
     @Override
     public void onDisable() {
-        if (Main.idleKick != null) Main.idleKick.stop();
-        if (Main.idleNotify != null) Main.idleNotify.stop();
-        if (Main.awayBack != null) Main.awayBack.stop();
-        if (Main.listTag != null) Main.listTag.stop();
-        if (this.configurationFile.isSaveQueued()) this.configurationFile.save();
+        if (this.idleNotify != null) this.idleNotify.unload();
+        if (this.idleKick != null) this.idleKick.unload();
+        if (this.awayBack != null) this.awayBack.unload();
+        if (this.listTag != null) this.listTag.unload();
+        this.messenger = null;
     }
 
-    public void configure(final ConfigurationSection config) {
-        this.loadIdleNotify(config.getConfigurationSection("idleNotify"));
-        this.loadIdleKick(config.getConfigurationSection("idleKick"));
-        this.loadAwayBack(config.getConfigurationSection("awayBack"));
-        this.loadWho(config.getConfigurationSection("who"));
-        this.loadListTag(config.getConfigurationSection("listTag"));
-    }
-
-    public static boolean enable(final String consumer) {
-        final ConfigurationSection section = Main.that.configurationFile.getConfig().getConfigurationSection(consumer);
-        if (section == null) return false;
-
-        section.set("enabled", true);
-
-        if (consumer.equalsIgnoreCase("idleKick")) Main.that.loadIdleKick(section);
-        else if (consumer.equalsIgnoreCase("idleNotify")) Main.that.loadIdleNotify(section);
-        else if (consumer.equalsIgnoreCase("awayBack")) Main.that.loadAwayBack(section);
-        else if (consumer.equalsIgnoreCase("listTag")) Main.that.loadListTag(section);
-        else return false;
-
-        Main.that.configurationFile.save();
+    @Override
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        this.messenger.tell(sender, "commandDisabled", label);
         return true;
     }
 
-    private void loadIdleNotify(final ConfigurationSection section) {
-        if (Main.idleNotify != null) Main.idleNotify.stop();
+    @Override
+    public void reloadConfig() {
+        this.saveDefaultConfig();
+        super.reloadConfig();
+        this.setLogLevel(this.getConfig().getString("logLevel"));
 
-        if (section == null || !section.getBoolean("enabled", false)) {
-            Main.idleNotify = null;
+        final Version version = new Version(this.getConfig().getString("version"));
+        if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) return;
+
+        this.archiveConfig("config.yml", version);
+        this.saveDefaultConfig();
+        this.reloadConfig();
+    }
+
+    @Override
+    public void saveDefaultConfig() {
+        this.extractConfig("config.yml", false);
+    }
+
+    private void archiveConfig(final String resource, final Version version) {
+        final String backupName = "%1$s - Archive version %2$s - %3$tY%3$tm%3$tdT%3$tH%3$tM%3$tS.yml";
+        final File backup = new File(this.getDataFolder(), String.format(backupName, resource.replaceAll("(?i)\\.yml$", ""), version, new Date()));
+        final File existing = new File(this.getDataFolder(), resource);
+
+        if (!existing.renameTo(backup))
+            throw new IllegalStateException("Unable to archive configuration file \"" + existing.getPath() + "\" with version \"" + version + "\" to \"" + backup.getPath() + "\"");
+
+        this.getLogger().warning("Archived configuration file \"" + existing.getPath() + "\" with version \"" + version + "\" to \"" + backup.getPath() + "\"");
+    }
+
+    private void extractConfig(final String resource, final boolean replace) {
+        final Charset source = Charset.forName("UTF-8");
+        final Charset target = Charset.defaultCharset();
+        if (target.equals(source)) {
+            super.saveResource(resource, replace);
             return;
         }
 
-        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
-        if (interpreters.size() == 0) return;
+        final File config = new File(this.getDataFolder(), resource);
+        if (config.exists()) return;
 
-        if (Main.idleNotify == null) Main.idleNotify = new IdleNotify(this);
-        Main.idleNotify.idle = (long) section.getInt("idle", (int) Main.idleNotify.idle / 1000) * 1000;
-        Main.idleNotify.privateFormat = section.getString("private", Main.idleNotify.privateFormat);
-        Main.idleNotify.broadcast = section.getString("broadcast", Main.idleNotify.broadcast);
-        Main.idleNotify.backBroadcast = section.getString("backBroadcast", Main.idleNotify.backBroadcast);
-        Main.idleNotify.start(interpreters);
+        final char[] cbuf = new char[1024]; int read;
+        try {
+            final Reader in = new BufferedReader(new InputStreamReader(this.getResource(resource), source));
+            final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(config), target));
+            while((read = in.read(cbuf)) > 0) out.write(cbuf, 0, read);
+            out.close(); in.close();
+
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Could not extract configuration file \"" + resource + "\" to " + config.getPath() + "\";" + e.getClass().getName() + ": " + e.getMessage());
+        }
     }
 
-    private void loadIdleKick(final ConfigurationSection section) {
-        if (Main.idleKick != null) Main.idleKick.stop();
-
-        if (section == null || !section.getBoolean("enabled", false)) {
-            Main.idleKick = null;
-            return;
+    private void setLogLevel(final String name) {
+        Level level;
+        try { level = Level.parse(name); } catch (final Exception e) {
+            level = Level.INFO;
+            this.getLogger().warning("Log level defaulted to " + level.getName() + "; Unrecognized java.util.logging.Level: " + name);
         }
 
-        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
-        if (interpreters.size() == 0) return;
+        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it
+        for (final Handler h : this.getLogger().getParent().getHandlers())
+            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
 
-        if (Main.idleKick == null) Main.idleKick = new IdleKick(this);
-        Main.idleKick.idle = (long) section.getInt("idle", (int) Main.idleKick.idle / 1000) * 1000;
-        Main.idleKick.reason = section.getString("reason", Main.idleKick.reason);
-        Main.idleKick.start(interpreters);
+        this.getLogger().setLevel(level);
+        this.getLogger().config("Log level set to: " + this.getLogger().getLevel());
     }
 
-    private void loadAwayBack(final ConfigurationSection section) {
-        if (Main.awayBack != null) Main.awayBack.stop();
+    public static String readableDuration(final long ms) {
+        long total = TimeUnit.MILLISECONDS.toSeconds(ms);
 
-        if (section == null || !section.getBoolean("enabled", false)) {
-            Main.awayBack = null;
-            return;
-        }
+        final long seconds = total % 60;
+        total /= 60;
+        final long minutes = total % 60;
+        total /= 60;
+        final long hours = total % 24;
+        total /= 24;
+        final long days = total;
 
-        if (Main.awayBack == null) Main.awayBack = new AwayBack(this);
-        Main.awayBack.overrideIdle = section.getBoolean("overrideIdle", Main.awayBack.overrideIdle);
-        Main.awayBack.awayFormat = section.getString("away", Main.awayBack.awayFormat);
-        Main.awayBack.backFormat = section.getString("back", Main.awayBack.backFormat);
-        Main.awayBack.defaultReason = section.getString("reason", Main.awayBack.defaultReason);
-        Main.awayBack.mentionsFormat = section.getString("mentions", Main.awayBack.mentionsFormat);
-
-        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
-        if (interpreters.size() == 0) return;
-
-        Main.awayBack.start(interpreters);
-    }
-
-    private void loadWho(final ConfigurationSection section) {
-        if (section == null || !section.getBoolean("enabled", false)) {
-            return;
-        }
-
-        Who.format = section.getString("list.format", Who.format);
-        Who.delimiter = section.getString("list.delimiter", Who.delimiter);
-        Who.name = section.getString("list.name", Who.name);
-        Who.away = section.getString("list.away", Who.away);
-        Who.idle = section.getString("list.idle", Who.idle);
-
-        Who.connected = section.getString("detail.connected", Who.connected);
-        Who.detailAway = section.getString("detail.away", Who.away);
-        Who.detailIdle = section.getString("detail.idle", Who.idle);
-        Who.disconnected = section.getString("detail.disconnected", Who.disconnected);
-    }
-
-    private void loadListTag(final ConfigurationSection section) {
-        if (Main.listTag != null) Main.listTag.stop();
-
-        if (section == null || !section.getBoolean("enabled", false)) {
-            Main.listTag = null;
-            return;
-        }
-
-        final List<Class <? extends Interpreter>> interpreters = this.findInterpreters(section.getStringList("activity"));
-        if (interpreters.size() == 0) return;
-
-        if (Main.listTag == null) Main.listTag = new ListTag(this);
-        Main.listTag.idle = (long) section.getInt("idle", (int) Main.listTag.idle / 1000) * 1000;
-        Main.listTag.awayTag = section.getString("awayTag", Main.listTag.awayTag);
-        Main.listTag.idleTag = section.getString("idleTag", Main.listTag.idleTag);
-        Main.listTag.bedTag = section.getString("bedTag", Main.listTag.bedTag);
-        Main.listTag.start(interpreters);
-    }
-
-    private List<Class <? extends Interpreter>> findInterpreters(final List<String> classNames) {
-        final List<Class <? extends Interpreter>> interpreters = new ArrayList<Class <? extends Interpreter>>();
-        for (final String className : classNames) {
-            final Class <? extends Interpreter> interpreter = EventTracker.findInterpreter(className);
-            if (interpreter == null) {
-                this.getLogger().log(Level.WARNING, "Unsupported activity: " + className);
-                continue;
-            }
-
-            interpreters.add(interpreter);
-        }
-        return interpreters;
-    }
-
-    public static String duration(final long total) {
-        final long totalSeconds = total / 1000;
-        final long days = totalSeconds / 86400;
-        final long hours = (totalSeconds % 86400) / 3600;
-        final long minutes = ((totalSeconds % 86400) % 3600) / 60;
-        final long seconds = totalSeconds % 60;
         final StringBuilder sb = new StringBuilder();
         if (days > 0) sb.append(Long.toString(days)).append("d");
         if (hours > 0) sb.append((sb.length() > 0) ? " " : "").append(Long.toString(hours)).append("h");

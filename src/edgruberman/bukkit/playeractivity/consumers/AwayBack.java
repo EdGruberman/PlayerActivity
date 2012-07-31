@@ -1,69 +1,50 @@
 package edgruberman.bukkit.playeractivity.consumers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.EventTracker;
-import edgruberman.bukkit.playeractivity.Interpreter;
+import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerActivity;
 
 public class AwayBack implements Observer, Listener {
 
-    public boolean overrideIdle = true;
-    public String awayFormat = null;
-    public String backFormat = null;
-    public String defaultReason = null;
-    public String mentionsFormat = null;
-
+    public final boolean overrideIdle;
     public final EventTracker back;
+    public final Mentions mentions;
+    public IdleNotify idleNotify = null;
 
-    private final Plugin plugin;
+    private final Messenger messenger;
     private final Map<Player, AwayState> away = new HashMap<Player, AwayState>();
-    public Mentions mentions = null;
 
-    public AwayBack(final Plugin plugin) {
-        this.plugin = plugin;
+    public AwayBack(final Plugin plugin, final ConfigurationSection config, final Messenger messenger) {
+        this.messenger = messenger;
+        this.overrideIdle = config.getBoolean("overrideIdle");
+
         this.back = new EventTracker(plugin);
-    }
-
-    public boolean start(final List<Class<? extends Interpreter>> interpreters) {
-        if (this.backFormat == null) return false;
-
-        final List<Interpreter> instances = new ArrayList<Interpreter>();
-        for (final Class<? extends Interpreter> iClass : interpreters)
+        for (final String className : config.getStringList("activity"))
             try {
-                instances.add(iClass.newInstance());
+                this.back.addInterpreter(EventTracker.newInterpreter(className));
             } catch (final Exception e) {
-                this.plugin.getLogger().log(Level.WARNING, "Unable to create activity interpreter: " + iClass.getName(), e);
+                plugin.getLogger().warning("Unable to create interpreter for AwayBack activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
             }
-        this.back.addInterpreters(instances);
 
         this.back.activityPublisher.addObserver(this);
 
-        if (this.mentionsFormat != null) {
-            this.mentions = new Mentions(this.plugin, this);
-            this.mentions.start();
-        }
-
-        return true;
+        this.mentions = (config.getBoolean("mentions") ? new Mentions(plugin, this.messenger, this) : null);
     }
 
-    public void stop() {
-        if (this.mentions != null) {
-            this.mentions.stop();
-            this.mentions = null;
-        }
+    public void unload() {
+        if (this.mentions != null) this.mentions.unload();
         this.back.clear();
         this.away.clear();
     }
@@ -77,12 +58,16 @@ public class AwayBack implements Observer, Listener {
     }
 
     public boolean setBack(final Player player) {
-        final AwayState state = this.away.remove(player);
+        final AwayState state = this.away.get(player);
         if (state == null) return false;
 
         final PlayerBack custom = new PlayerBack(state.player, state.since, state.reason);
-        Bukkit.getServer().getPluginManager().callEvent(custom);
 
+        // Force IdleNotify to process activity before away status is removed
+        if (this.overrideIdle && this.idleNotify != null) this.idleNotify.tracker.activityPublisher.record(player, custom);
+
+        this.away.remove(player);
+        Bukkit.getServer().getPluginManager().callEvent(custom);
         return true;
     }
 
@@ -107,7 +92,7 @@ public class AwayBack implements Observer, Listener {
     }
 
     /**
-     * Current status of an away player.
+     * Current status of an away player
      */
     public class AwayState {
 

@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.dependencies;
+package edgruberman.bukkit.playeractivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

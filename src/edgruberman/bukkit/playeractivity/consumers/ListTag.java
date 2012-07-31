@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -15,54 +16,43 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageDisplay;
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
 import edgruberman.bukkit.playeractivity.EventTracker;
-import edgruberman.bukkit.playeractivity.Interpreter;
-import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerActivity;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 
 public class ListTag implements Observer, Listener {
 
-    public long idle = -1;
-    public String awayTag = null;
-    public String idleTag = null;
-    public String bedTag = null;
-
+    public final long idle;
     public final EventTracker tracker;
+    public AwayBack awayBack = null;
 
-    private final Plugin plugin;
+    private final Messenger messenger;
     private final List<Player> playersInBed = new ArrayList<Player>();
-
     private final String ignore;
 
-    public ListTag(final Plugin plugin) {
-        this.plugin = plugin;
+    public ListTag(final Plugin plugin, final ConfigurationSection config, final Messenger messenger, final String ignore) {
+        this.messenger = messenger;
+        this.ignore = ignore;
+        this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
+
         this.tracker = new EventTracker(plugin);
-        this.ignore = plugin.getDescription().getName().toLowerCase() + ".idle.ignore.listtag";
-    }
+        for (final String className : config.getStringList("activity"))
+            try {
+                this.tracker.addInterpreter(EventTracker.newInterpreter(className));
+            } catch (final Exception e) {
+                plugin.getLogger().warning("Unable to create interpreter for ListTag activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+            }
 
-    public boolean start(final List<Class<? extends Interpreter>> interpreters) {
-        if ((this.idle <= 0) || interpreters.size() == 0) return false;
-
+        this.tracker.activityPublisher.addObserver(this);
         this.tracker.idlePublisher.setThreshold(this.idle);
         this.tracker.idlePublisher.addObserver(this);
-        this.tracker.activityPublisher.addObserver(this);
-        final List<Interpreter> instances = new ArrayList<Interpreter>();
-        for (final Class<? extends Interpreter> iClass : interpreters)
-            try {
-                instances.add(iClass.newInstance());
-            } catch (final Exception e) {
-                this.plugin.getLogger().log(Level.WARNING, "Unable to create activity interpreter: " + iClass.getName(), e);
-            }
-        this.tracker.addInterpreters(instances);
 
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-        return true;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public void stop() {
+    public void unload() {
         HandlerList.unregisterAll(this);
         this.tracker.clear();
         this.playersInBed.clear();
@@ -76,13 +66,15 @@ public class ListTag implements Observer, Listener {
             if (activity.last == null || (activity.occurred - activity.last) < this.idle || activity.player.hasPermission(this.ignore))
                 return;
 
+            if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
+
             this.unsetIdle(activity.player);
             return;
         }
 
         // Idle
         final PlayerIdle idle = (PlayerIdle) arg;
-        if (idle.player.hasPermission(this.ignore)) return;
+        if (this.isAwayOverriding(idle.player) || idle.player.hasPermission(this.ignore)) return;
 
         this.setIdle(idle.player);
         return;
@@ -90,11 +82,11 @@ public class ListTag implements Observer, Listener {
 
     private void setTag(final Player player, final String tag) {
         final String name = player.getName().substring(0, Math.min(player.getName().length(), 16 - tag.length()));
-        player.setPlayerListName(MessageDisplay.translate(name + tag));
+        player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', name + tag));
     }
 
     public void setAway(final Player player) {
-        this.setTag(player, this.awayTag);
+        this.setTag(player, this.messenger.getFormat("listTag.+away"));
     }
 
     public void unsetAway(final Player player) {
@@ -112,15 +104,10 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setIdle(final Player player) {
-        if (Main.awayBack != null && Main.awayBack.overrideIdle && Main.awayBack.isAway(player))
-            return;
-
-        this.setTag(player, this.idleTag);
+        this.setTag(player, this.messenger.getFormat("listTag.+idle"));
     }
 
     public void unsetIdle(final Player player) {
-        if (Main.awayBack != null && Main.awayBack.isAway(player)) return;
-
         if (this.playersInBed.contains(player)) {
             this.setBed(player);
             return;
@@ -129,12 +116,20 @@ public class ListTag implements Observer, Listener {
         this.resetListName(player);
     }
 
+    private boolean isAwayOverriding(final Player player) {
+        if (this.awayBack == null) return false;
+
+        if (!this.awayBack.overrideIdle) return false;
+
+        return this.awayBack.isAway(player);
+    }
+
     public void setBed(final Player player) {
-        this.setTag(player, this.bedTag);
+        this.setTag(player, this.messenger.getFormat("listTag.+bed"));
     }
 
     public void unsetBed(final Player player) {
-        if (Main.awayBack != null && Main.awayBack.isAway(player)) {
+        if (this.awayBack != null && this.awayBack.isAway(player)) {
             this.setAway(player);
             return;
         }

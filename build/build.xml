@@ -115,7 +115,6 @@
                 <attribute name="Implementation-Title" value="${plugin.implementation-title}" />
                 <attribute name="Implementation-Version" value="${version.revision}${version.type}${version.build}" />
                 <attribute name="Implementation-Vendor" value="${bukkit.author}" />
-                <attribute name="Class-Path" value="${plugin.manifest-classpath}" />
             </section>
         </manifest>
 

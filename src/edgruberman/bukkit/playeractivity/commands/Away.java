@@ -1,45 +1,48 @@
 package edgruberman.bukkit.playeractivity.commands;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Message;
+import edgruberman.bukkit.playeractivity.Messenger;
+import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
-public final class Away extends Executor {
+public final class Away implements CommandExecutor {
 
-    private final String defaultReason;
+    private final Messenger messenger;
+    private final AwayBack awayBack;
 
-    public Away(final String defaultReason) {
-        this.defaultReason = defaultReason;
+    public Away(final Messenger messenger, final AwayBack awayBack) {
+        this.messenger = messenger;
+        this.awayBack = awayBack;
     }
 
     @Override
-    protected boolean execute(final CommandSender sender, final Command command, final String label, final List<String> args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            Message.manager.tell(sender, "You must be a player in order to use this command", MessageLevel.SEVERE, false);
+            this.messenger.tell(sender, "requiresPlayer");
             return true;
         }
 
         final Player player = (Player) sender;
-        final AwayState state = Main.awayBack.getAwayState(player);
+        final AwayState state = this.awayBack.getAwayState(player);
         if (state != null) {
-            Message.manager.tell(sender, "You have been away " + Main.duration(System.currentTimeMillis() - state.since) + (state.reason != null ? " for " + state.reason : ""), MessageLevel.SEVERE, false);
-            if (Main.awayBack.mentions != null) Main.awayBack.mentions.tellMentions(player);
+            this.messenger.tell(sender, "awayAlready", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.messenger.getFormat("awayDefaultReason") : state.reason));
+            if (this.awayBack.mentions != null) this.awayBack.mentions.tellMentions(player);
             return true;
         }
 
-        String reason = this.defaultReason;
-        if (args.size() >= 1) reason = Away.join(args, " ");
+        String reason = this.messenger.getFormat("+awayDefaultReason");
+        if (args.length >= 1) reason = Away.join(Arrays.asList(args), " ");
 
-        Main.awayBack.setAway(player, reason);
-        Message.manager.broadcast(String.format(Main.awayBack.awayFormat, player.getDisplayName(), reason), MessageLevel.EVENT);
+        this.awayBack.setAway(player, reason);
+        this.messenger.broadcast("awayBroadcast", player.getDisplayName(), reason);
         return true;
     }
 

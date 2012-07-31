@@ -11,27 +11,23 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
-import edgruberman.bukkit.messagemanager.MessageManager;
 import edgruberman.bukkit.playeractivity.Main;
+import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public class Mentions implements Listener {
 
-    private final Plugin plugin;
+    private final Messenger messenger;
     private final AwayBack awayBack;
     private final Map<Player, Map<Player, Long>> mentions = new HashMap<Player, Map<Player, Long>>();
 
-    public Mentions(final Plugin plugin, final AwayBack awayBack) {
-        this.plugin = plugin;
+    public Mentions(final Plugin plugin, final Messenger messenger, final AwayBack awayBack) {
+        this.messenger = messenger;
         this.awayBack = awayBack;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public void start() {
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-    }
-
-    public void stop() {
+    public void unload() {
         HandlerList.unregisterAll(this);
         this.mentions.clear();
     }
@@ -42,38 +38,36 @@ public class Mentions implements Listener {
         final long now = System.currentTimeMillis();
         String mentions = "";
         for (final Map.Entry<Player, Long> mention : this.mentions.get(player).entrySet()) {
-            if (mentions.length() != 0) mentions += ", ";
-            mentions += "&f" + mention.getKey().getDisplayName() + "&_ (" + Main.duration(now - mention.getValue()) + ")";
+            if (mentions.length() != 0) mentions += this.messenger.getFormat("mentionsSummary.+delimiter");
+            mentions += String.format(this.messenger.getFormat("mentionsSummary.+player"), mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
         }
 
-        final String mentionedBy = String.format("Your name was mentioned by: %s", mentions);
-        MessageManager.of(this.plugin).tell(player, mentionedBy, MessageLevel.STATUS);
+        this.messenger.tell(player, "mentionsSummary.format", mentions);
     }
 
     @EventHandler
-    public void onPlayerChat(final PlayerChatEvent event) {
+    public void onPlayerChat(final PlayerChatEvent chat) {
         final long now = System.currentTimeMillis();
         for (final Player away : this.awayBack.getAway()) {
-            if (event.getMessage().contains(away.getName())) {
+            if (chat.getMessage().contains(away.getName())) {
                 if (!this.mentions.containsKey(away)) this.mentions.put(away, new HashMap<Player, Long>());
-                this.mentions.get(away).put(event.getPlayer(), now);
+                this.mentions.get(away).put(chat.getPlayer(), now);
 
-                final AwayState state = Main.awayBack.getAwayState(away);
-                final String response = String.format(this.awayBack.mentionsFormat, state.player.getDisplayName(), Main.duration(now - state.since), state.reason);
-                MessageManager.of(this.plugin).tell(event.getPlayer(), response, MessageLevel.STATUS);
+                final AwayState state = this.awayBack.getAwayState(away);
+                this.messenger.tell(chat.getPlayer(), "mentions", state.player.getDisplayName(), Main.readableDuration(now - state.since), state.reason);
             }
         }
     }
 
     @EventHandler
-    public void onPlayerBack(final PlayerBack event) {
-        this.tellMentions(event.getPlayer());
-        this.mentions.remove(event.getPlayer());
+    public void onPlayerBack(final PlayerBack back) {
+        this.tellMentions(back.getPlayer());
+        this.mentions.remove(back.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.mentions.remove(event.getPlayer());
+    public void onPlayerQuit(final PlayerQuitEvent quit) {
+        this.mentions.remove(quit.getPlayer());
     }
 
 }

@@ -1,0 +1,89 @@
+logLevel: INFO
+idleNotify:
+    enabled: false
+    idle: 600 # threshold when to notify (seconds)
+    activity:
+        - PlayerMoveEvent
+        - PlayerChatEvent
+        - PlayerInteractEvent
+        - PlayerDropItemEvent
+        - PlayerToggleSneakEvent
+        - PlayerItemHeldEvent
+        - PlayerJoinEvent
+        - PlayerChangedWorldEvent
+        - EnchantItemEvent
+        - PrepareItemEnchantEvent
+        - InventoryClickEvent
+idleKick:
+    enabled: false
+    idle: 1200 # threshold when to kick (seconds)
+    activity:
+        - PlayerMoveEvent
+        - PlayerChatEvent
+        - PlayerInteractEvent
+        - PlayerDropItemEvent
+        - PlayerToggleSneakEvent
+        - PlayerItemHeldEvent
+        - PlayerJoinEvent
+        - PlayerChangedWorldEvent
+        - EnchantItemEvent
+        - PrepareItemEnchantEvent
+        - InventoryClickEvent
+awayBack:
+    enabled: false
+    overrideIdle: true
+    mentions: true
+    activity:
+        - PlayerChatEvent
+        - PlayerBedEnterEvent
+        - PlayerBedLeaveEvent
+listTag:
+    enabled: false
+    idle: 60 # threshold when to apply idle tag (seconds)
+    activity:
+        - PlayerMoveEvent
+        - PlayerChatEvent
+        - PlayerInteractEvent
+        - PlayerDropItemEvent
+        - PlayerToggleSneakEvent
+        - PlayerItemHeldEvent
+        - PlayerJoinEvent
+        - PlayerChangedWorldEvent
+        - EnchantItemEvent
+        - PrepareItemEnchantEvent
+        - InventoryClickEvent
+messages:
+    requiresPlayer: '-> Command cancelled when §cnot in-game player'
+    commandDisabled: '-> Command §cdisabled' # 2 = Label
+    playerNotFound: '-> Player §enot found'
+    reload: '-> PlayerActivity plugin §2reloaded'
+    awayAlready: '-> You have §ealready been away§r %2$s for %3$s' # 2 = Duration, 3 = Reason
+    +awayDefaultReason: 'no reason'
+    awayBroadcast: '§8%1$tH:%1$tM:%1$tS %2$s§8 is §3away§8 for §7%3$s' # 2 = Player Display Name, 3 = Away Reason
+    backBroadcast: '§8%1$tH:%1$tM:%1$tS %2$s§8 is §6back§8 after §7%3$s§8 for §7%4$s' # 2 = Player Display Name, 3 = Away Reason, 4 = Away Duration
+    backNotAway: '-> You are §enot currently away'
+    mentions: '-> %2$s§r has been §3away§r %3$s for: §7%4$s' # 2 = Player Display Name, 3 = Away Duration, 4 = Reason
+    mentionsSummary:
+        format: '-> Your name was §dmentioned§r by: %2s' # 2 = Players
+        +player: '%1$s §8(%2$s ago)§r' # 1 = Display Name, 2 = Duration Since Last Mention
+        +delimiter: ', '
+    who:
+        list:
+            format: '-> §2Who:§r %2$s §8(%3$d)' # 2 = Players, 3 = Count
+            +player: '%1$s§r' # 1 = Display Name
+            +tagAway: '%1$s§3#Away§r' # 1 = Formatted player
+            +tagIdle: '%1$s§3#Idle§r' # 1 = Formatted player
+            +delimiter: '§7,§r '
+        connected: '-> %2$s§r connected %3$s ago' # 2 = Display Name, 3 = Last Connected Duration
+        connectedAway: '-> %2$s§r connected %3$s ago and has been §3away§r %4$s for: §7%5$s' # 2 = Display Name, 3 = Last Connected Duration, 4 = Away Duration, 5 = Reason
+        connectedIdle: '-> %2$s§r connected %3$s ago and has been §3idle§r %4$s' # 2 = Display Name, 3 = Last Connected Duration, 4 = Idle Duration
+        disconnected: '-> %2$s§r §9disconnected§r %3$s ago' # 2 = Player Name, 2 = Last Disconnected Duration
+    idleNotify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
+    idleBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 has been &3idle§8 for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
+    idleBackBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 is &6back§8 after being idle for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
+    idleKickReason: 'Idle for %1$s' # 1 = Kick Idle Duration
+    listTag:
+        +away: '§3#Away'
+        +idle: '§3#Idle'
+        +bed: '§5#Bed'
+version: @VERSION@
