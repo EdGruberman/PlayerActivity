@@ -79,8 +79,8 @@ messages:
         connectedIdle: '-> %2$s§r connected %3$s ago and has been §3idle§r %4$s' # 2 = Display Name, 3 = Last Connected Duration, 4 = Idle Duration
         disconnected: '-> %2$s§r §9disconnected§r %3$s ago' # 2 = Player Name, 2 = Last Disconnected Duration
     idleNotify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
-    idleBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 has been &3idle§8 for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
-    idleBackBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 is &6back§8 after being idle for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
+    idleBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 has been §3idle§8 for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
+    idleBackBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 is §6back§8 after being idle for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
     idleKickReason: 'Idle for %1$s' # 1 = Kick Idle Duration
     listTag:
         +away: '§3#Away'
