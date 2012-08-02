@@ -54,6 +54,7 @@ public class ListTag implements Observer, Listener {
 
     public void unload() {
         HandlerList.unregisterAll(this);
+        for (final Player player : Bukkit.getOnlinePlayers()) this.resetListName(player);
         this.tracker.clear();
         this.playersInBed.clear();
     }
