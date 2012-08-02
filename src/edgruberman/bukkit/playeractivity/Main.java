@@ -90,7 +90,7 @@ public final class Main extends JavaPlugin {
         super.reloadConfig();
         this.setLogLevel(this.getConfig().getString("logLevel"));
 
-        final Version version = new Version(this.getConfig().getString("version"));
+        final Version version = new Version(this.getConfig().isSet("version") ? this.getConfig().getString("version") : null);
         if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) return;
 
         this.archiveConfig("config.yml", version);
