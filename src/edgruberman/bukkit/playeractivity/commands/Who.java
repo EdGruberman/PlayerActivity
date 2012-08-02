@@ -36,12 +36,14 @@ public final class Who implements CommandExecutor, Listener {
     private final AwayBack awayBack;
     private final IdleNotify idleNotify;
     private final ListTag listTag;
+    private final Map<Player, Long> joined = new HashMap<Player, Long>();
 
     public Who(final Plugin plugin, final Messenger messenger, final AwayBack awayBack, final IdleNotify idleNotify, final ListTag listTag) {
         this.messenger = messenger;
         this.awayBack = awayBack;
         this.idleNotify = idleNotify;
         this.listTag = listTag;
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -51,7 +53,7 @@ public final class Who implements CommandExecutor, Listener {
 
         if (args.length == 0) {
             final List<Player> sorted = Arrays.asList(sender.getServer().getOnlinePlayers());
-            Collections.sort(sorted, new ColorStrippedStringComparator());
+            Collections.sort(sorted, new ColorStrippedDisplayNameComparator());
 
             final List<String> list = new ArrayList<String>();
             for (final Player player : sorted)
@@ -78,7 +80,7 @@ public final class Who implements CommandExecutor, Listener {
         }
 
         final long now = System.currentTimeMillis();
-        final String connected =  Main.readableDuration(now - this.joined.get(target.getPlayer()));
+        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.messenger.getFormat("who.+unknownConnected"));
 
         // Away
         if (this.awayBack != null && this.awayBack.isAway(target.getPlayer())) {
@@ -110,8 +112,6 @@ public final class Who implements CommandExecutor, Listener {
         return name;
     }
 
-    private final Map<Player, Long> joined = new HashMap<Player, Long>();
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         this.joined.put(event.getPlayer(), System.currentTimeMillis());
@@ -139,7 +139,7 @@ public final class Who implements CommandExecutor, Listener {
         return sb.toString();
     }
 
-    private final class ColorStrippedStringComparator implements Comparator<Player> {
+    private final class ColorStrippedDisplayNameComparator implements Comparator<Player> {
 
         @Override
         public int compare(final Player p1, final Player p2) {
