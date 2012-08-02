@@ -78,22 +78,23 @@ public final class Who implements CommandExecutor, Listener {
         }
 
         final long now = System.currentTimeMillis();
+        final String connected =  Main.readableDuration(now - this.joined.get(target.getPlayer()));
 
         // Away
         if (this.awayBack != null && this.awayBack.isAway(target.getPlayer())) {
             final AwayState state = this.awayBack.getAwayState(target.getPlayer());
-            this.messenger.tell(sender, "who.connectedAway", target.getPlayer().getDisplayName(), Main.readableDuration(now - state.since), state.reason);
+            this.messenger.tell(sender, "who.connectedAway", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
             return true;
         }
 
         // Idle
         if (this.idleNotify != null && this.listTag.tracker.idlePublisher.getIdle().contains(target.getPlayer())) {
-            this.messenger.tell(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
+            this.messenger.tell(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
             return true;
         }
 
         // Connected
-        this.messenger.tell(sender, "who.connected", target.getPlayer().getDisplayName(), Main.readableDuration(now - this.joined.get(target.getPlayer())));
+        this.messenger.tell(sender, "who.connected", target.getPlayer().getDisplayName(), connected);
         return true;
     }
 
