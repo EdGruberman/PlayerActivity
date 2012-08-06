@@ -1,14 +1,13 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.event.EventHandler;
-
-import edgruberman.bukkit.playeractivity.Interpreter;
+import org.bukkit.event.EventPriority;
 
 public class PlayerEggThrowEvent extends Interpreter {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.player.PlayerEggThrowEvent event) {
-        this.player = event.getPlayer();
+        this.record(event.getPlayer(), event);
     }
 
 }

@@ -17,15 +17,16 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.Messenger;
-import edgruberman.bukkit.playeractivity.PlayerActivity;
+import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
+import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 public class ListTag implements Observer, Listener {
 
     public final long idle;
-    public final EventTracker tracker;
+    public final StatusTracker tracker;
     public AwayBack awayBack = null;
 
     private final Messenger messenger;
@@ -37,17 +38,17 @@ public class ListTag implements Observer, Listener {
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-        this.tracker = new EventTracker(plugin);
+        this.tracker = new StatusTracker(plugin);
         for (final String className : config.getStringList("activity"))
             try {
-                this.tracker.addInterpreter(EventTracker.newInterpreter(className));
+                this.tracker.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
                 plugin.getLogger().warning("Unable to create interpreter for ListTag activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
             }
 
-        this.tracker.activityPublisher.addObserver(this);
-        this.tracker.idlePublisher.setThreshold(this.idle);
-        this.tracker.idlePublisher.addObserver(this);
+        this.tracker.register(this, PlayerActive.class);
+        this.tracker.setIdleThreshold(this.idle);
+        this.tracker.register(this, PlayerIdle.class);
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -63,7 +64,7 @@ public class ListTag implements Observer, Listener {
     public void update(final Observable o, final Object arg) {
         // Back from idle
         if (o instanceof ActivityPublisher) {
-            final PlayerActivity activity = (PlayerActivity) arg;
+            final PlayerActive activity = (PlayerActive) arg;
             if (activity.last == null || (activity.occurred - activity.last) < this.idle || activity.player.hasPermission(this.ignore))
                 return;
 
@@ -91,7 +92,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void unsetAway(final Player player) {
-        if (this.tracker.idlePublisher.getIdle().contains(player)) {
+        if (this.tracker.getIdle().contains(player)) {
             this.setIdle(player);
             return;
         }
@@ -135,7 +136,7 @@ public class ListTag implements Observer, Listener {
             return;
         }
 
-        if (this.tracker.idlePublisher.getIdle().contains(player)) {
+        if (this.tracker.getIdle().contains(player)) {
             this.setIdle(player);
             return;
         }

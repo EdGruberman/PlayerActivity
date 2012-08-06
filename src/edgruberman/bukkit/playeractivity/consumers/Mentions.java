@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -46,7 +46,7 @@ public class Mentions implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(final PlayerChatEvent chat) {
+    public void onPlayerChat(final AsyncPlayerChatEvent chat) {
         final long now = System.currentTimeMillis();
         for (final Player away : this.awayBack.getAway()) {
             if (chat.getMessage().contains(away.getName())) {

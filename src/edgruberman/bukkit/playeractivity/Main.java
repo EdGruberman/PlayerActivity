@@ -29,7 +29,7 @@ import edgruberman.bukkit.playeractivity.consumers.ListTag;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("2.0.0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0a0");
 
     public IdleNotify idleNotify = null;
     public IdleKick idleKick = null;

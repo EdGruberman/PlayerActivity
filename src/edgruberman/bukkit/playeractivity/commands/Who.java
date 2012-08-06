@@ -90,7 +90,7 @@ public final class Who implements CommandExecutor, Listener {
         }
 
         // Idle
-        if (this.idleNotify != null && this.listTag.tracker.idlePublisher.getIdle().contains(target.getPlayer())) {
+        if (this.idleNotify != null && this.listTag.tracker.getIdle().contains(target.getPlayer())) {
             this.messenger.tell(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
             return true;
         }
@@ -106,7 +106,7 @@ public final class Who implements CommandExecutor, Listener {
         if (this.awayBack != null && this.awayBack.isAway(player))
             return String.format(this.messenger.getFormat("who.list.+tagAway"), name);
 
-        if (this.listTag != null && this.listTag.tracker.idlePublisher.getIdle().contains(player))
+        if (this.listTag != null && this.listTag.tracker.getIdle().contains(player))
             return String.format(this.messenger.getFormat("who.list.+tagIdle"), name);
 
         return name;

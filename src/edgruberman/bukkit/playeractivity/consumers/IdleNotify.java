@@ -8,17 +8,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.Messenger;
-import edgruberman.bukkit.playeractivity.PlayerActivity;
+import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
+import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
-/** Notify when a player goes idle */
+/** notify when a player goes idle */
 public final class IdleNotify implements Observer {
 
     public final long idle;
-    public final EventTracker tracker;
+    public final StatusTracker tracker;
     public AwayBack awayBack = null;
     public IdleKick idleKick = null;
 
@@ -30,17 +31,17 @@ public final class IdleNotify implements Observer {
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-        this.tracker = new EventTracker(plugin);
+        this.tracker = new StatusTracker(plugin);
         for (final String className : config.getStringList("activity"))
             try {
-                this.tracker.addInterpreter(EventTracker.newInterpreter(className));
+                this.tracker.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
                 plugin.getLogger().warning("Unable to create interpreter for IdleNotify activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
             }
 
-        this.tracker.activityPublisher.addObserver(this);
-        this.tracker.idlePublisher.setThreshold(this.idle);
-        this.tracker.idlePublisher.addObserver(this);
+        this.tracker.register(this, PlayerActive.class);
+        this.tracker.setIdleThreshold(this.idle);
+        this.tracker.register(this, PlayerIdle.class);
     }
 
     public void unload() {
@@ -51,7 +52,7 @@ public final class IdleNotify implements Observer {
     public void update(final Observable o, final Object arg) {
         // Back
         if (o instanceof ActivityPublisher) {
-            final PlayerActivity activity = (PlayerActivity) arg;
+            final PlayerActive activity = (PlayerActive) arg;
             if (activity.last == null || (activity.occurred - activity.last) < this.idle) return;
 
             if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;

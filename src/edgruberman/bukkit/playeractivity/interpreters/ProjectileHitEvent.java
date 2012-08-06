@@ -2,16 +2,15 @@ package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-
-import edgruberman.bukkit.playeractivity.Interpreter;
+import org.bukkit.event.EventPriority;
 
 public class ProjectileHitEvent extends Interpreter {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.entity.ProjectileHitEvent event) {
         if (!(event.getEntity().getShooter() instanceof Player)) return;
 
-        this.player = (Player) event.getEntity().getShooter();
+        this.record((Player) event.getEntity().getShooter(), event);
     }
 
 }

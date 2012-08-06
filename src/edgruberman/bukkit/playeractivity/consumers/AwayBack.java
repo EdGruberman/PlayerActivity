@@ -12,14 +12,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.EventTracker;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.Messenger;
-import edgruberman.bukkit.playeractivity.PlayerActivity;
+import edgruberman.bukkit.playeractivity.PlayerActive;
+import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 public class AwayBack implements Observer, Listener {
 
     public final boolean overrideIdle;
-    public final EventTracker back;
+    public final StatusTracker back;
     public final Mentions mentions;
     public IdleNotify idleNotify = null;
 
@@ -30,15 +31,15 @@ public class AwayBack implements Observer, Listener {
         this.messenger = messenger;
         this.overrideIdle = config.getBoolean("overrideIdle");
 
-        this.back = new EventTracker(plugin);
+        this.back = new StatusTracker(plugin);
         for (final String className : config.getStringList("activity"))
             try {
-                this.back.addInterpreter(EventTracker.newInterpreter(className));
+                this.back.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
                 plugin.getLogger().warning("Unable to create interpreter for AwayBack activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
             }
 
-        this.back.activityPublisher.addObserver(this);
+        this.back.register(this, PlayerActive.class);
 
         this.mentions = (config.getBoolean("mentions") ? new Mentions(plugin, this.messenger, this) : null);
     }
@@ -61,12 +62,12 @@ public class AwayBack implements Observer, Listener {
         final AwayState state = this.away.get(player);
         if (state == null) return false;
 
-        final PlayerBack custom = new PlayerBack(state.player, state.since, state.reason);
-
         // Force IdleNotify to process activity before away status is removed
-        if (this.overrideIdle && this.idleNotify != null) this.idleNotify.tracker.activityPublisher.record(player, custom);
+        if (this.overrideIdle && this.idleNotify != null) this.idleNotify.tracker.record(player, PlayerBack.class);
 
         this.away.remove(player);
+
+        final PlayerBack custom = new PlayerBack(state.player, state.since, state.reason);
         Bukkit.getServer().getPluginManager().callEvent(custom);
         return true;
     }
@@ -85,15 +86,15 @@ public class AwayBack implements Observer, Listener {
 
     @Override
     public void update(final Observable o, final Object arg) {
-        final PlayerActivity activity = (PlayerActivity) arg;
+        final PlayerActive activity = (PlayerActive) arg;
         if (!this.isAway(activity.player)) return;
 
         activity.player.performCommand("back");
     }
 
-    /**
-     * Current status of an away player
-     */
+
+
+    /** current status of an away player */
     public class AwayState {
 
         public final Player player;

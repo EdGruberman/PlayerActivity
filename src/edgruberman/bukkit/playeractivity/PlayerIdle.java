@@ -2,18 +2,14 @@ package edgruberman.bukkit.playeractivity;
 
 import org.bukkit.entity.Player;
 
-/**
- * Represents a player that has not recorded any monitored activity for a period.
- */
-public class PlayerIdle {
+/** player status indicating player has not recorded any monitored activity for a period */
+public class PlayerIdle extends PlayerStatus {
 
-    public final Player player;
-    public final long last;
+    /** the difference, measured in milliseconds, between the time the player went idle and the player's last monitored activity */
     public final long duration;
 
-    public PlayerIdle(final Player player, final long last, final long duration) {
-        this.player = player;
-        this.last = last;
+    public PlayerIdle(final Player player, final long last, final long occurred, final long duration) {
+        super(player, last, occurred);
         this.duration = duration;
     }
 

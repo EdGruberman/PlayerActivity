@@ -4,7 +4,7 @@ idleNotify:
     idle: 600 # threshold when to notify (seconds)
     activity:
         - PlayerMoveEvent
-        - PlayerChatEvent
+        - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
         - PlayerToggleSneakEvent
@@ -19,7 +19,7 @@ idleKick:
     idle: 1200 # threshold when to kick (seconds)
     activity:
         - PlayerMoveEvent
-        - PlayerChatEvent
+        - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
         - PlayerToggleSneakEvent
@@ -34,7 +34,7 @@ awayBack:
     overrideIdle: true
     mentions: true
     activity:
-        - PlayerChatEvent
+        - AsyncPlayerChatEvent
         - PlayerBedEnterEvent
         - PlayerBedLeaveEvent
 listTag:
@@ -42,7 +42,7 @@ listTag:
     idle: 60 # threshold when to apply idle tag (seconds)
     activity:
         - PlayerMoveEvent
-        - PlayerChatEvent
+        - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
         - PlayerToggleSneakEvent
