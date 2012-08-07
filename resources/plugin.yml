@@ -1,6 +1,6 @@
 name: @NAME@
 description: Track player based events
-softdepend: [MessageManager]
+softdepend: [TimeService]
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@
