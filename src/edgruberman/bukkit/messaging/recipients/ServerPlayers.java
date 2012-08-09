@@ -24,7 +24,7 @@ public class ServerPlayers extends PermissionSubscribers {
     public class ServerConfirmation extends Confirmation {
 
         public ServerConfirmation(final String message, final int count) {
-            super(Level.FINER, count, "[BROADCAST(%2$d)] %1$s", message, count);
+            super(Level.FINEST, count, "[BROADCAST(%2$d)] %1$s", message, count);
 
         }
 
