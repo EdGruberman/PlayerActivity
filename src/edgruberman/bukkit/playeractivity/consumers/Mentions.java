@@ -11,18 +11,18 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public class Mentions implements Listener {
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final AwayBack awayBack;
     private final Map<Player, Map<Player, Long>> mentions = new HashMap<Player, Map<Player, Long>>();
 
-    public Mentions(final Plugin plugin, final Messenger messenger, final AwayBack awayBack) {
-        this.messenger = messenger;
+    public Mentions(final Plugin plugin, final ConfigurationCourier courier, final AwayBack awayBack) {
+        this.courier = courier;
         this.awayBack = awayBack;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -38,11 +38,11 @@ public class Mentions implements Listener {
         final long now = System.currentTimeMillis();
         String mentions = "";
         for (final Map.Entry<Player, Long> mention : this.mentions.get(player).entrySet()) {
-            if (mentions.length() != 0) mentions += this.messenger.getFormat("mentionsSummary.+delimiter");
-            mentions += String.format(this.messenger.getFormat("mentionsSummary.+player"), mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
+            if (mentions.length() != 0) mentions += this.courier.format("mentionsSummary.+delimiter");
+            mentions += this.courier.format("mentionsSummary.+player", mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
         }
 
-        this.messenger.tell(player, "mentionsSummary.format", mentions);
+        this.courier.send(player, "mentionsSummary.format", mentions);
     }
 
     @EventHandler
@@ -54,7 +54,7 @@ public class Mentions implements Listener {
                 this.mentions.get(away).put(chat.getPlayer(), now);
 
                 final AwayState state = this.awayBack.getAwayState(away);
-                this.messenger.tell(chat.getPlayer(), "mentions", state.player.getDisplayName(), Main.readableDuration(now - state.since), state.reason);
+                this.courier.send(chat.getPlayer(), "mentions", state.player.getDisplayName(), Main.readableDuration(now - state.since), state.reason);
             }
         }
     }

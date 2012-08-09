@@ -16,11 +16,11 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.plugin.Plugin;
 
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
-import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 public class ListTag implements Observer, Listener {
@@ -29,12 +29,12 @@ public class ListTag implements Observer, Listener {
     public final StatusTracker tracker;
     public AwayBack awayBack = null;
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final List<Player> playersInBed = new ArrayList<Player>();
     private final String ignore;
 
-    public ListTag(final Plugin plugin, final ConfigurationSection config, final Messenger messenger, final String ignore) {
-        this.messenger = messenger;
+    public ListTag(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier, final String ignore) {
+        this.courier = courier;
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
@@ -88,7 +88,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setAway(final Player player) {
-        this.setTag(player, this.messenger.getFormat("listTag.+away"));
+        this.setTag(player, this.courier.format("listTag.+away"));
     }
 
     public void unsetAway(final Player player) {
@@ -106,7 +106,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setIdle(final Player player) {
-        this.setTag(player, this.messenger.getFormat("listTag.+idle"));
+        this.setTag(player, this.courier.format("listTag.+idle"));
     }
 
     public void unsetIdle(final Player player) {
@@ -127,7 +127,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setBed(final Player player) {
-        this.setTag(player, this.messenger.getFormat("listTag.+bed"));
+        this.setTag(player, this.courier.format("listTag.+bed"));
     }
 
     public void unsetBed(final Player player) {

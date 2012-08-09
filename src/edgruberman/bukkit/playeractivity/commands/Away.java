@@ -8,41 +8,41 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 
 public final class Away implements CommandExecutor {
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final AwayBack awayBack;
 
-    public Away(final Messenger messenger, final AwayBack awayBack) {
-        this.messenger = messenger;
+    public Away(final ConfigurationCourier courier, final AwayBack awayBack) {
+        this.courier = courier;
         this.awayBack = awayBack;
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            this.messenger.tell(sender, "requiresPlayer");
+            this.courier.send(sender, "requiresPlayer");
             return true;
         }
 
         final Player player = (Player) sender;
         final AwayState state = this.awayBack.getAwayState(player);
         if (state != null) {
-            this.messenger.tell(sender, "awayAlready", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.messenger.getFormat("awayDefaultReason") : state.reason));
+            this.courier.send(sender, "awayAlready", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.courier.format("+awayDefaultReason") : state.reason));
             if (this.awayBack.mentions != null) this.awayBack.mentions.tellMentions(player);
             return true;
         }
 
-        String reason = this.messenger.getFormat("+awayDefaultReason");
+        String reason = this.courier.format("+awayDefaultReason");
         if (args.length >= 1) reason = Away.join(Arrays.asList(args), " ");
 
         this.awayBack.setAway(player, reason);
-        this.messenger.broadcast("awayBroadcast", player.getDisplayName(), reason);
+        this.courier.broadcast("awayBroadcast", player.getDisplayName(), reason);
         return true;
     }
 

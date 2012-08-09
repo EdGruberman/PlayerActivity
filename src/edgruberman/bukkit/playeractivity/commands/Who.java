@@ -23,8 +23,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
@@ -32,14 +32,14 @@ import edgruberman.bukkit.playeractivity.consumers.ListTag;
 
 public final class Who implements CommandExecutor, Listener {
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final AwayBack awayBack;
     private final IdleNotify idleNotify;
     private final ListTag listTag;
     private final Map<Player, Long> joined = new HashMap<Player, Long>();
 
-    public Who(final Plugin plugin, final Messenger messenger, final AwayBack awayBack, final IdleNotify idleNotify, final ListTag listTag) {
-        this.messenger = messenger;
+    public Who(final Plugin plugin, final ConfigurationCourier courier, final AwayBack awayBack, final IdleNotify idleNotify, final ListTag listTag) {
+        this.courier = courier;
         this.awayBack = awayBack;
         this.idleNotify = idleNotify;
         this.listTag = listTag;
@@ -60,7 +60,7 @@ public final class Who implements CommandExecutor, Listener {
                 if (!player.hasPermission("playeractivity.who.hide"))
                     list.add(this.tag(player));
 
-            this.messenger.tell(sender, "who.list.format", Who.join(list, this.messenger.getFormat("who.list.+delimiter")), list.size());
+            this.courier.send(sender, "who.list.format", Who.join(list, this.courier.format("who.list.+delimiter")), list.size());
             return true;
         }
 
@@ -68,46 +68,46 @@ public final class Who implements CommandExecutor, Listener {
 
         final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         if (target == null) {
-            this.messenger.tell(sender, "playerNotFound", args[0]);
+            this.courier.send(sender, "playerNotFound", args[0]);
             return true;
         }
 
         // Disconnected
         if (!target.isOnline() || target.getPlayer().hasPermission("playeractivity.who.hide")) {
             final String duration = Main.readableDuration(System.currentTimeMillis() - target.getLastPlayed());
-            this.messenger.tell(sender, "who.disconnected", target.getName(), duration);
+            this.courier.send(sender, "who.disconnected", target.getName(), duration);
             return true;
         }
 
         final long now = System.currentTimeMillis();
-        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.messenger.getFormat("who.+unknownConnected"));
+        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.courier.format("who.+unknownConnected"));
 
         // Away
         if (this.awayBack != null && this.awayBack.isAway(target.getPlayer())) {
             final AwayState state = this.awayBack.getAwayState(target.getPlayer());
-            this.messenger.tell(sender, "who.connectedAway", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
+            this.courier.send(sender, "who.connectedAway", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
             return true;
         }
 
         // Idle
         if (this.idleNotify != null && this.listTag.tracker.getIdle().contains(target.getPlayer())) {
-            this.messenger.tell(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
+            this.courier.send(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
             return true;
         }
 
         // Connected
-        this.messenger.tell(sender, "who.connected", target.getPlayer().getDisplayName(), connected);
+        this.courier.send(sender, "who.connected", target.getPlayer().getDisplayName(), connected);
         return true;
     }
 
     private String tag(final Player player) {
-        final String name = String.format(this.messenger.getFormat("who.list.+player"), player.getDisplayName());
+        final String name = String.format(this.courier.format("who.list.+player"), player.getDisplayName());
 
         if (this.awayBack != null && this.awayBack.isAway(player))
-            return String.format(this.messenger.getFormat("who.list.+tagAway"), name);
+            return String.format(this.courier.format("who.list.+tagAway"), name);
 
         if (this.listTag != null && this.listTag.tracker.getIdle().contains(player))
-            return String.format(this.messenger.getFormat("who.list.+tagIdle"), name);
+            return String.format(this.courier.format("who.list.+tagIdle"), name);
 
         return name;
     }

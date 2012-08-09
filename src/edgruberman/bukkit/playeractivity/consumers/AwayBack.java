@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.Messenger;
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.PlayerActive;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 public class AwayBack implements Observer, Listener {
@@ -24,11 +24,11 @@ public class AwayBack implements Observer, Listener {
     public final Mentions mentions;
     public IdleNotify idleNotify = null;
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final Map<Player, AwayState> away = new HashMap<Player, AwayState>();
 
-    public AwayBack(final Plugin plugin, final ConfigurationSection config, final Messenger messenger) {
-        this.messenger = messenger;
+    public AwayBack(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier) {
+        this.courier = courier;
         this.overrideIdle = config.getBoolean("overrideIdle");
 
         this.back = new StatusTracker(plugin);
@@ -41,7 +41,7 @@ public class AwayBack implements Observer, Listener {
 
         this.back.register(this, PlayerActive.class);
 
-        this.mentions = (config.getBoolean("mentions") ? new Mentions(plugin, this.messenger, this) : null);
+        this.mentions = (config.getBoolean("mentions") ? new Mentions(plugin, this.courier, this) : null);
     }
 
     public void unload() {

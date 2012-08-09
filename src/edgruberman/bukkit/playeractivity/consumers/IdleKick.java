@@ -6,10 +6,10 @@ import java.util.Observer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.StatusTracker;
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.Messenger;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
+import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 /** kick players for being idle */
@@ -18,11 +18,11 @@ public final class IdleKick implements Observer {
     public final long idle;
     public final StatusTracker tracker;
 
-    private final Messenger messenger;
+    private final ConfigurationCourier courier;
     private final String ignore;
 
-    public IdleKick(final Plugin plugin, final ConfigurationSection config, final Messenger messenger, final String ignore) {
-        this.messenger = messenger;
+    public IdleKick(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier, final String ignore) {
+        this.courier = courier;
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
@@ -47,7 +47,7 @@ public final class IdleKick implements Observer {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (idle.player.hasPermission(this.ignore)) return;
 
-        final String reason = this.messenger.getFormat("+idleKickReason");
+        final String reason = this.courier.format("+idleKickReason");
         final String message = (reason != null ? String.format(reason, Main.readableDuration(this.idle)) : null);
         idle.player.kickPlayer(message);
     }

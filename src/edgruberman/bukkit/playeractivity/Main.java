@@ -18,6 +18,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Reload;
@@ -36,37 +38,37 @@ public final class Main extends JavaPlugin {
     public AwayBack awayBack = null;
     public ListTag listTag = null;
 
-    private Messenger messenger;
+    private ConfigurationCourier courier;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.messenger = Messenger.load(this, "messages");
+        this.courier = new TimestampedConfigurationCourier(this, "messages");
 
         if (this.getConfig().getBoolean("idleNotify.enabled"))
-            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.messenger, "playeractivity.idle.ignore.notify");
+            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.courier, "playeractivity.idle.ignore.notify");
 
         if (this.getConfig().getBoolean("idleKick.enabled")) {
-            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idleKick"), this.messenger, "playeractivity.idle.ignore.kick");
+            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idleKick"), this.courier, "playeractivity.idle.ignore.kick");
             if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
         }
 
         if (this.getConfig().getBoolean("listTag.enabled"))
-            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("listTag"), this.messenger, "playeractivity.idle.ignore.listtag");
+            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("listTag"), this.courier, "playeractivity.idle.ignore.listtag");
 
         if (this.getConfig().getBoolean("awayBack.enabled")) {
-            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("awayBack"), this.messenger);
+            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("awayBack"), this.courier);
             if (this.awayBack.overrideIdle) {
                 this.awayBack.idleNotify = this.idleNotify;
                 if (this.idleNotify != null) this.idleNotify.awayBack = this.awayBack;
             }
             if (this.listTag != null) this.listTag.awayBack = this.awayBack;
-            this.getCommand("playeractivity:away").setExecutor(new Away(this.messenger, this.awayBack));
-            this.getCommand("playeractivity:back").setExecutor(new Back(this.messenger, this.awayBack));
+            this.getCommand("playeractivity:away").setExecutor(new Away(this.courier, this.awayBack));
+            this.getCommand("playeractivity:back").setExecutor(new Back(this.courier, this.awayBack));
         }
 
-        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.messenger, this.awayBack, this.idleNotify, this.listTag));
-        this.getCommand("playeractivity:reload").setExecutor(new Reload(this, this.messenger));
+        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.courier, this.awayBack, this.idleNotify, this.listTag));
+        this.getCommand("playeractivity:reload").setExecutor(new Reload(this, this.courier));
     }
 
     @Override
@@ -75,12 +77,12 @@ public final class Main extends JavaPlugin {
         if (this.idleKick != null) this.idleKick.unload();
         if (this.awayBack != null) this.awayBack.unload();
         if (this.listTag != null) this.listTag.unload();
-        this.messenger = null;
+        this.courier = null;
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-        this.messenger.tell(sender, "commandDisabled", label);
+        this.courier.send(sender, "commandDisabled", label);
         return true;
     }
 
