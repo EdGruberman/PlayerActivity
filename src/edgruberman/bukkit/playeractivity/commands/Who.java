@@ -101,13 +101,13 @@ public final class Who implements CommandExecutor, Listener {
     }
 
     private String tag(final Player player) {
-        final String name = String.format(this.courier.format("who.list.+player"), player.getDisplayName());
+        final String name = this.courier.format("who.list.+player", player.getDisplayName());
 
         if (this.awayBack != null && this.awayBack.isAway(player))
-            return String.format(this.courier.format("who.list.+tagAway"), name);
+            return this.courier.format("who.list.+tagAway", name);
 
         if (this.listTag != null && this.listTag.tracker.getIdle().contains(player))
-            return String.format(this.courier.format("who.list.+tagIdle"), name);
+            return this.courier.format("who.list.+tagIdle", name);
 
         return name;
     }

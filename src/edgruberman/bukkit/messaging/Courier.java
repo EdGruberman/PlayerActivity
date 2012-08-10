@@ -13,7 +13,7 @@ import edgruberman.bukkit.messaging.recipients.WorldPlayers;
 /** handles plugin registration to log message delivery */
 public class Courier {
 
-    protected final Plugin plugin;
+    public final Plugin plugin;
 
     public Courier(final Plugin plugin) {
         this.plugin = plugin;
