@@ -11,6 +11,7 @@ import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 /** monitors for PlayerActive from the ActivityPublisher and generates a PlayerIdle event when not active for a period */
 public final class IdlePublisher extends Observable implements Observer {
@@ -19,7 +20,7 @@ public final class IdlePublisher extends Observable implements Observer {
     final List<Player> idle = new ArrayList<Player>();
     final Map<Player, Timer> timers = new HashMap<Player, Timer>();
 
-    long threshold = -1;
+    long threshold = 60000; // milliseconds
 
     IdlePublisher(final StatusTracker tracker) {
         this.tracker = tracker;
@@ -28,6 +29,16 @@ public final class IdlePublisher extends Observable implements Observer {
     @Override
     public void addObserver(final Observer o) {
         super.addObserver(o);
+
+        // pull last known activity (or use now if none) to start idle timer in case no further activity from player
+        for (final Player player : Bukkit.getServer().getOnlinePlayers())
+            if (!this.timers.keySet().contains(player)) {
+                Long occurred = this.tracker.activityPublisher.last.get(player);
+                if (occurred == null) occurred = System.currentTimeMillis();
+                this.update(this, new PlayerActive(player, null, occurred, Event.class));
+            }
+
+
         this.tracker.activityPublisher.addObserver(this);
     }
 
@@ -39,11 +50,9 @@ public final class IdlePublisher extends Observable implements Observer {
         this.tracker.activityPublisher.deleteObserver(this);
     }
 
-    /** process PlayerStatus from ActivityPublisher */
+    /** process PlayerActivity from ActivityPublisher */
     @Override
     public void update(final Observable o, final Object arg) {
-        if (this.threshold <= 0) return;
-
         final PlayerActive active = (PlayerActive) arg;
         this.idle.remove(active.player);
         this.scheduleIdleCheck(active.player, active.occurred);

@@ -116,9 +116,4 @@ public final class StatusTracker implements Listener {
         return this.idlePublisher.idle;
     }
 
-    /** reset idle status for a list of players */
-    public void resetIdle(final List<Player> players) {
-        for (final Player player : players) this.record(player, null);
-    }
-
 }
