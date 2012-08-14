@@ -6,11 +6,11 @@ import java.util.Observer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 /** kick players for being idle */
 public final class IdleKick implements Observer {

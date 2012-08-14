@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 public final class Reload implements CommandExecutor {
 
@@ -21,7 +21,7 @@ public final class Reload implements CommandExecutor {
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         this.plugin.onDisable();
         this.plugin.onEnable();
-        this.courier.send(sender, "reload");
+        this.courier.send(sender, "reload", this.plugin.getName());
         return true;
     }
 

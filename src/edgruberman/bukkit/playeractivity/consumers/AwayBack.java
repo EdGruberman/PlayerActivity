@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 public class AwayBack implements Observer, Listener {
 

@@ -16,12 +16,12 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.ActivityPublisher;
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 public class ListTag implements Observer, Listener {
 

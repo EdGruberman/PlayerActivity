@@ -5,10 +5,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 public final class Back implements CommandExecutor {
 
@@ -23,7 +23,7 @@ public final class Back implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            this.courier.send(sender, "requiresPlayer");
+            this.courier.send(sender, "requiresPlayer", label);
             return true;
         }
 

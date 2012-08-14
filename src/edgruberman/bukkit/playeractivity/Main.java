@@ -18,8 +18,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
-import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Reload;
@@ -28,10 +26,12 @@ import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.ListTag;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.couriers.TimestampedConfigurationCourier;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0a0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0b11");
 
     public IdleNotify idleNotify = null;
     public IdleKick idleKick = null;
@@ -146,7 +146,7 @@ public final class Main extends JavaPlugin {
             this.getLogger().warning("Log level defaulted to " + level.getName() + "; Unrecognized java.util.logging.Level: " + name);
         }
 
-        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it
+        // only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it
         for (final Handler h : this.getLogger().getParent().getHandlers())
             if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
 

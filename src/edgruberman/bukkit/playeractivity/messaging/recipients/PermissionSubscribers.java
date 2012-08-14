@@ -1,4 +1,4 @@
-package edgruberman.bukkit.messaging.recipients;
+package edgruberman.bukkit.playeractivity.messaging.recipients;
 
 import java.util.logging.Level;
 
@@ -6,10 +6,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.Recipients;
-import edgruberman.bukkit.messaging.messages.Confirmation;
+import edgruberman.bukkit.playeractivity.messaging.Message;
+import edgruberman.bukkit.playeractivity.messaging.Recipients;
+import edgruberman.bukkit.playeractivity.messaging.messages.Confirmation;
 
+/**
+ * {@link org.bukkit.permissions.Permissible}s that have the specified permission at message delivery time
+ *
+ * @author EdGruberman (ed@rjump.com)
+ * @version 1.0.0
+ */
 public class PermissionSubscribers implements Recipients {
 
     protected String permission;
@@ -19,26 +25,17 @@ public class PermissionSubscribers implements Recipients {
     }
 
     @Override
-    public Confirmation send(final Message message) {
+    public Confirmation deliver(final Message message) {
         int count = 0;
         for (final Permissible permissible : Bukkit.getPluginManager().getPermissionSubscriptions(this.permission))
             if (permissible instanceof CommandSender && permissible.hasPermission(this.permission)) {
                 final CommandSender target = (CommandSender) permissible;
-                target.sendMessage(message.formatFor(target));
+                target.sendMessage(message.format(target).toString());
                 count++;
             }
 
-        return new PermissionSubscribersConfirmation(message, count);
-    }
-
-
-
-    public class PermissionSubscribersConfirmation extends Confirmation {
-
-        public PermissionSubscribersConfirmation(final Message message, final int count) {
-            super(Level.FINER, count, "[PUBLISH@%2$s(%3$d)] %1$s", message, PermissionSubscribers.this.permission, count);
-        }
-
+        return new Confirmation(Level.FINER, count
+                , "[PUBLISH@{1}({2})] {0}", message, PermissionSubscribers.this.permission, count);
     }
 
 }

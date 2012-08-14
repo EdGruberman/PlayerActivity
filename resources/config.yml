@@ -53,36 +53,36 @@ listTag:
         - PrepareItemEnchantEvent
         - InventoryClickEvent
 messages:
-    requiresPlayer: '-> Command cancelled when §cnot in-game player'
-    commandDisabled: '-> Command §cdisabled' # 2 = Label
-    playerNotFound: '-> Player §enot found'
-    reload: '-> PlayerActivity plugin §2reloaded'
-    awayAlready: '-> You have §ealready been away§r %2$s for %3$s' # 2 = Duration, 3 = Reason
+    requiresPlayer: '-> §cOnly in-game players§r can use the {1} command' #1 = Command Label
+    commandDisabled: '-> Command §cdisabled§r: {1}' # 1 = Command Label
+    playerNotFound: '-> Player §enot found§r: {1}' # 1 = <Player>
+    reload: '-> {1} plugin §2reloaded' # 1 = Plugin Name
+    awayAlready: '-> You have §ealready been away§r {1} for {2}' # 1 = Duration, 2 = Reason
     +awayDefaultReason: 'no reason'
-    awayBroadcast: '§8%1$tH:%1$tM:%1$tS %2$s§8 is §3away§8 for §7%3$s' # 2 = Player Display Name, 3 = Away Reason
-    backBroadcast: '§8%1$tH:%1$tM:%1$tS %2$s§8 is §6back§8 after §7%3$s§8 for §7%4$s' # 2 = Player Display Name, 3 = Away Reason, 4 = Away Duration
+    awayBroadcast: '§8{0,time,HH:mm:ss} {1}§8 is §3away§8 for §7{2}' # 1 = Player Display Name, 2 = Away Reason
+    backBroadcast: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
     backNotAway: '-> You are §enot currently away'
-    mentions: '-> %2$s§r has been §3away§r %3$s for: §7%4$s' # 2 = Player Display Name, 3 = Away Duration, 4 = Reason
+    mentions: '-> {1}§r has been §3away§r {2} for: §7{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
     mentionsSummary:
-        format: '-> Your name was §dmentioned§r by: %2s' # 2 = Players
-        +player: '%1$s §8(%2$s ago)§r' # 1 = Display Name, 2 = Duration Since Last Mention
+        format: '-> Your name was §dmentioned§r by: {1}' # 1 = Players
+        +player: '{0} §8({1} ago)§r' # 0 = Display Name, 1 = Duration Since Last Mention
         +delimiter: ', '
     who:
         list:
-            format: '-> §2Who:§r %2$s §8(%3$d)' # 2 = Players, 3 = Count
-            +player: '%1$s§r' # 1 = Display Name
-            +tagAway: '%1$s§3#Away§r' # 1 = Formatted player
-            +tagIdle: '%1$s§3#Idle§r' # 1 = Formatted player
+            format: '-> §2Who:§r {1} §8({2})' # 1 = Players, 2 = Count
+            +player: '{0}§r' # 0 = Display Name
+            +tagAway: '{0}§3#Away§r' # 0 = Formatted player
+            +tagIdle: '{0}§3#Idle§r' # 0 = Formatted player
             +delimiter: '§7,§r '
-        connected: '-> %2$s§r connected %3$s ago' # 2 = Display Name, 3 = Last Connected Duration
-        connectedAway: '-> %2$s§r connected %3$s ago and has been §3away§r %4$s for: §7%5$s' # 2 = Display Name, 3 = Last Connected Duration, 4 = Away Duration, 5 = Reason
-        connectedIdle: '-> %2$s§r connected %3$s ago and has been §3idle§r %4$s' # 2 = Display Name, 3 = Last Connected Duration, 4 = Idle Duration
-        disconnected: '-> %2$s§r §9disconnected§r %3$s ago' # 2 = Player Name, 2 = Last Disconnected Duration
+        connected: '-> {1}§r connected {2} ago' # 1 = Display Name, 2 = Last Connected Duration
+        connectedAway: '-> {1}§r connected {2} ago and has been §3away§r {3} for: §7{4}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Away Duration, 4 = Reason
+        connectedIdle: '-> {1}§r connected {2} ago and has been §3idle§r {3}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Idle Duration
+        disconnected: '-> {1}§r §9disconnected§r {2} ago' # 1 = Player Name, 2 = Last Disconnected Duration
         +unknownConnected: '§osome time§r'
     idleNotify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
-    idleBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 has been §3idle§8 for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
-    idleBackBroadcast: '§8%1$tH:%1$tM:%1$tS %4$s§8 is §6back§8 after being idle for %2$s' # 2 = Current Idle Duration, 3 = Kick Idle Duration, 4 = Player Display Name
-    idleKickReason: 'Idle for %1$s' # 1 = Kick Idle Duration
+    idleBroadcast: '§8{0,time,HH:mm:ss} {3}§8 has been §3idle§8 for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
+    idleBackBroadcast: '§8{0,time,HH:mm:ss} {3}§8 is §6back§8 after being idle for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
+    +idleKickReason: 'Idle for {0}' # 0 = Kick Idle Duration
     listTag:
         +away: '§3#Away'
         +idle: '§3#Idle'

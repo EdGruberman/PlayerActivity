@@ -23,12 +23,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.ListTag;
+import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
 
 public final class Who implements CommandExecutor, Listener {
 
