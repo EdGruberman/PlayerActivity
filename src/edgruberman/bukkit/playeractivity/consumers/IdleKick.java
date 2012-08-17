@@ -10,7 +10,7 @@ import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
-import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 /** kick players for being idle */
 public final class IdleKick implements Observer {

@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.messaging.recipients;
+package edgruberman.bukkit.playeractivity.messaging;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -6,17 +6,13 @@ import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.playeractivity.messaging.Message;
-import edgruberman.bukkit.playeractivity.messaging.Recipients;
-import edgruberman.bukkit.playeractivity.messaging.messages.Confirmation;
-
 /**
  * players in a world at message delivery time
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 1.0.0
+ * @version 2.0.0
  */
-public class WorldPlayers implements Recipients {
+public class WorldPlayers extends Recipients {
 
     protected final World world;
 
@@ -31,8 +27,7 @@ public class WorldPlayers implements Recipients {
                 player.sendMessage(message.format(player).toString());
 
         final int count = players.size();
-        return new Confirmation(Level.FINE, count
-                , "[WORLD%{1}({2})] {0}", message, WorldPlayers.this.world.getName(), count);
+        return new Confirmation(Level.FINE, count, "[WORLD%{1}({2})] {0}", message, WorldPlayers.this.world.getName(), count);
     }
 
 }

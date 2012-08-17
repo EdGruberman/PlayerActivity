@@ -28,7 +28,7 @@ import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.ListTag;
-import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public final class Who implements CommandExecutor, Listener {
 

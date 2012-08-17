@@ -1,15 +1,13 @@
-package edgruberman.bukkit.playeractivity.messaging.messages;
+package edgruberman.bukkit.playeractivity.messaging;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
-import edgruberman.bukkit.playeractivity.messaging.Message;
 
 /**
  * summary of {@link Message} delivery
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 1.0.0
+ * @version 2.0.0
  */
 public class Confirmation extends Message {
 

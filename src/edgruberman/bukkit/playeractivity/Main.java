@@ -26,8 +26,7 @@ import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.ListTag;
-import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
-import edgruberman.bukkit.playeractivity.messaging.couriers.TimestampedConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public final class Main extends JavaPlugin {
 
@@ -43,7 +42,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.courier = new TimestampedConfigurationCourier(this, "messages");
+        this.courier = ConfigurationCourier.Factory.create(this).setBase("messages").build();
 
         if (this.getConfig().getBoolean("idleNotify.enabled"))
             this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.courier, "playeractivity.idle.ignore.notify");

@@ -21,7 +21,7 @@ import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
-import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public class ListTag implements Observer, Listener {
 

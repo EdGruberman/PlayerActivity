@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.messaging.recipients;
+package edgruberman.bukkit.playeractivity.messaging;
 
 import java.util.logging.Level;
 
@@ -6,17 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
-import edgruberman.bukkit.playeractivity.messaging.Message;
-import edgruberman.bukkit.playeractivity.messaging.Recipients;
-import edgruberman.bukkit.playeractivity.messaging.messages.Confirmation;
-
 /**
  * {@link org.bukkit.permissions.Permissible}s that have the specified permission at message delivery time
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 1.0.0
+ * @version 2.0.0
  */
-public class PermissionSubscribers implements Recipients {
+public class PermissionSubscribers extends Recipients {
 
     protected String permission;
 
@@ -34,8 +30,7 @@ public class PermissionSubscribers implements Recipients {
                 count++;
             }
 
-        return new Confirmation(Level.FINER, count
-                , "[PUBLISH@{1}({2})] {0}", message, PermissionSubscribers.this.permission, count);
+        return new Confirmation(Level.FINER, count, "[PUBLISH@{1}({2})] {0}", message, PermissionSubscribers.this.permission, count);
     }
 
 }

@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
-import edgruberman.bukkit.playeractivity.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public final class Away implements CommandExecutor {
 
