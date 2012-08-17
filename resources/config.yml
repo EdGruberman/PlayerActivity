@@ -3,7 +3,7 @@ idleNotify:
     enabled: false
     idle: 600 # threshold when to notify (seconds)
     activity:
-        - PlayerMoveEvent
+        - PlayerMoveBlockEvent
         - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
@@ -18,7 +18,7 @@ idleKick:
     enabled: false
     idle: 1200 # threshold when to kick (seconds)
     activity:
-        - PlayerMoveEvent
+        - PlayerMoveBlockEvent
         - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
@@ -41,7 +41,7 @@ listTag:
     enabled: false
     idle: 60 # threshold when to apply idle tag (seconds)
     activity:
-        - PlayerMoveEvent
+        - PlayerMoveBlockEvent
         - AsyncPlayerChatEvent
         - PlayerInteractEvent
         - PlayerDropItemEvent
