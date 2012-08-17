@@ -53,6 +53,18 @@ public class Interpreter implements Listener {
         HandlerList.unregisterAll(this);
     }
 
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        return this.getClass() != obj.getClass();
+    }
+
 
 
     // ---- Utility Class ----

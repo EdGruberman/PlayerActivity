@@ -1,11 +1,12 @@
 package edgruberman.bukkit.playeractivity;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 public final class StatusTracker implements Listener {
 
     final Plugin plugin;
-    final List<Interpreter> interpreters = new ArrayList<Interpreter>();
+    final Set<Interpreter> interpreters = new HashSet<Interpreter>();
     final ActivityPublisher activityPublisher = new ActivityPublisher();
     final IdlePublisher idlePublisher = new IdlePublisher(this);
 
@@ -48,13 +49,17 @@ public final class StatusTracker implements Listener {
     }
 
     public boolean addInterpreter(final Interpreter interpreter) {
-        this.interpreters.add(interpreter);
+        if (!this.interpreters.add(interpreter)) {
+            this.plugin.getLogger().warning("Duplicate interpreter specified for: " + interpreter.getClass());
+            return false;
+        }
+
         interpreter.register(this);
         return true;
     }
 
-    public List<Interpreter> getInterpreters() {
-        return this.interpreters;
+    public Set<Interpreter> getInterpreters() {
+        return Collections.unmodifiableSet(this.interpreters);
     }
 
     public Observable register(final Observer observer, final Class<? extends PlayerStatus> status) {
