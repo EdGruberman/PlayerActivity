@@ -55,22 +55,25 @@ public class PlayerMoveBlockEvent extends PlayerEvent {
 
     public static class MovementTracker extends DynamicEventGenerator implements Listener {
 
-        private Plugin plugin = null;
-        private final Map<Player, Location> last = new HashMap<Player, Location>();
+        private static Plugin plugin = null;
 
-        public void initialize(final Plugin plugin) {
-            if (this.plugin != null) throw new IllegalStateException("MovementTracker already initialized by " + this.plugin.getName());
+        public static void initialize(final Plugin plugin) {
+            if (MovementTracker.plugin != null)
+                ((MovementTracker) PlayerMoveBlockEvent.handlers).stop();
 
-            this.plugin = plugin;
-            if (this.getRegisteredListeners().length >= 1) this.start();
+            MovementTracker.plugin = plugin;
+            if (PlayerMoveBlockEvent.handlers.getRegisteredListeners().length >= 1)
+                ((MovementTracker) PlayerMoveBlockEvent.handlers).start();
         }
+
+        private final Map<Player, Location> last = new HashMap<Player, Location>();
 
         @Override
         protected void start() {
-            if (this.plugin == null) return;
+            if (MovementTracker.plugin == null) return;
 
             for (final Player player : Bukkit.getOnlinePlayers()) this.last.put(player, player.getLocation());
-            Bukkit.getPluginManager().registerEvents(this, this.plugin);
+            Bukkit.getPluginManager().registerEvents(this, MovementTracker.plugin);
         }
 
         @Override
@@ -81,10 +84,10 @@ public class PlayerMoveBlockEvent extends PlayerEvent {
 
         @EventHandler
         public void onPluginDisable(final PluginDisableEvent disabled) {
-            if (disabled.getPlugin() != this.plugin) return;
+            if (disabled.getPlugin() != MovementTracker.plugin) return;
 
             this.stop();
-            this.plugin = null;
+            MovementTracker.plugin = null;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -2,8 +2,10 @@ package edgruberman.bukkit.playeractivity;
 
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
@@ -34,6 +36,8 @@ public final class Main extends CustomPlugin {
     public void onEnable() {
         this.reloadConfig();
         this.courier = ConfigurationCourier.Factory.create(this).setBase("messages").build();
+
+        PlayerMoveBlockEvent.MovementTracker.initialize(this);
 
         if (this.getConfig().getBoolean("idleNotify.enabled"))
             this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.courier, "playeractivity.idle.ignore.notify");
@@ -67,6 +71,10 @@ public final class Main extends CustomPlugin {
         if (this.idleKick != null) this.idleKick.unload();
         if (this.awayBack != null) this.awayBack.unload();
         if (this.listTag != null) this.listTag.unload();
+
+        HandlerList.unregisterAll(this);
+        Bukkit.getScheduler().cancelTasks(this);
+
         this.courier = null;
     }
 
