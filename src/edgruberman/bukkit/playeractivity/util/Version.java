@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity;
+package edgruberman.bukkit.playeractivity.util;
 
 
 import java.util.ArrayList;
