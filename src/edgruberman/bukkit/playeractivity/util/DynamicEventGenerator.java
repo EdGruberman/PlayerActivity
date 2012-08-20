@@ -25,20 +25,23 @@ public abstract class DynamicEventGenerator extends HandlerList {
 
     @Override
     public synchronized void unregister(final RegisteredListener listener) {
+        final int before = this.getRegisteredListeners().length;
         super.unregister(listener);
-        if (this.getRegisteredListeners().length == 0) this.stop();
+        if (this.getRegisteredListeners().length == 0 && before > 0) this.stop();
     }
 
     @Override
     public synchronized void unregister(final Plugin plugin) {
+        final int before = this.getRegisteredListeners().length;
         super.unregister(plugin);
-        if (this.getRegisteredListeners().length == 0) this.stop();
+        if (this.getRegisteredListeners().length == 0 && before > 0) this.stop();
     }
 
     @Override
     public synchronized void unregister(final Listener listener) {
+        final int before = this.getRegisteredListeners().length;
         super.unregister(listener);
-        if (this.getRegisteredListeners().length == 0) this.stop();
+        if (this.getRegisteredListeners().length == 0 && before > 0) this.stop();
     }
 
 }
