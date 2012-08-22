@@ -31,7 +31,7 @@ public final class IdleKick implements Observer {
             try {
                 this.tracker.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
-                plugin.getLogger().warning("Unable to create interpreter for IdleKick activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+                plugin.getLogger().warning("Unable to create interpreter for IdleKick activity: " + className + "; " + e);
             }
 
         this.tracker.setIdleThreshold(this.idle);

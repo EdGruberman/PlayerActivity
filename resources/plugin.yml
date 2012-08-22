@@ -15,7 +15,7 @@ commands:
         permission: playeractivity.back
         usage: /<command>
     'playeractivity:who':
-        aliases: who
+        aliases: [who, players, whois]
         description: View status of players
         permission: playeractivity.who
         usage: /<command>[ <Player>]

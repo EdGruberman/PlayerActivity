@@ -100,8 +100,12 @@ public final class Who implements CommandExecutor, Listener {
         return true;
     }
 
+    // # 0 = Name, 1 = Display Name, 2 = List Name, 3 = Equivalence (1:Name=Display,2:Name=List,4:Display=List)
     private String tag(final Player player) {
-        final String name = this.courier.format("who.list.+player", player.getDisplayName());
+        int equivalence = ( player.getName().equals(player.getDisplayName()) ? 1 : 0 );
+        equivalence += ( player.getName().equals(player.getPlayerListName()) ? 2 : 0 );
+        equivalence += ( player.getDisplayName().equals(player.getPlayerListName()) ? 4 : 0 );
+        final String name = this.courier.format("who.list.+player", player.getName(), player.getDisplayName(), player.getPlayerListName(), equivalence);
 
         if (this.awayBack != null && this.awayBack.isAway(player))
             return this.courier.format("who.list.+tagAway", name);

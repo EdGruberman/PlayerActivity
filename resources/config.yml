@@ -69,10 +69,8 @@ messages:
         +delimiter: ', '
     who:
         list:
-            format: '-> §2Who§r: {2,choice,0#§7No one online|1#{1} §8({2})}' # 1 = Players, 2 = Count
-            +player: '{0}§r' # 0 = Display Name
-            +tagAway: '{0}§3#Away§r' # 0 = Formatted player
-            +tagIdle: '{0}§3#Idle§r' # 0 = Formatted player
+            format: '-> §2Players§r: {2,choice,0#§7None|1#{1} §8({2})}' # 1 = Players, 2 = Count
+            +player: '{0}§r' # 0 = Name, 1 = Display Name, 2 = List Name, 3 = Name Equivalence (1:Name=Display,2:Name=List,4:Display=List)
             +delimiter: '§7,§r '
         connected: '-> {1}§r connected {2} ago' # 1 = Display Name, 2 = Last Connected Duration
         connectedAway: '-> {1}§r connected {2} ago and has been §3away§r {3} for: §7{4}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Away Duration, 4 = Reason

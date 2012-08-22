@@ -39,7 +39,7 @@ public class AwayBack implements Observer, Listener {
             try {
                 this.back.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
-                plugin.getLogger().warning("Unable to create interpreter for AwayBack activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+                plugin.getLogger().warning("Unable to create interpreter for AwayBack activity: " + className + "; " + e);
             }
 
         this.back.register(this, PlayerActive.class);

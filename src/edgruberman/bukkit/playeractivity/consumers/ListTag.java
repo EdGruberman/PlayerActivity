@@ -43,7 +43,7 @@ public class ListTag implements Observer, Listener {
             try {
                 this.tracker.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
-                plugin.getLogger().warning("Unable to create interpreter for ListTag activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+                plugin.getLogger().warning("Unable to create interpreter for ListTag activity: " + className + "; " + e);
             }
 
         this.tracker.register(this, PlayerActive.class);

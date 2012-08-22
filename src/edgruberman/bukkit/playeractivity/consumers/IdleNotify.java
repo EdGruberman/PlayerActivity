@@ -36,7 +36,7 @@ public final class IdleNotify implements Observer {
             try {
                 this.tracker.addInterpreter(Interpreter.create(className));
             } catch (final Exception e) {
-                plugin.getLogger().warning("Unable to create interpreter for IdleNotify activity: " + className + "; " + e.getClass().getName() + "; " + e.getMessage());
+                plugin.getLogger().warning("Unable to create interpreter for IdleNotify activity: " + className + "; " + e);
             }
 
         this.tracker.register(this, PlayerActive.class);

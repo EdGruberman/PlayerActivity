@@ -108,7 +108,7 @@ public class CustomPlugin extends JavaPlugin {
             if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
 
         this.getLogger().setLevel(level);
-        this.getLogger().config("Log level set to: " + this.getLogger().getLevel());
+        this.getLogger().log(Level.CONFIG, "Log level set to: {0}", this.getLogger().getLevel());
     }
 
 }

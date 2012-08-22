@@ -29,7 +29,7 @@ public final class Main extends CustomPlugin {
 
     @Override
     public void onLoad() {
-        this.putConfigMinimum("config.yml", "3.0.0b16");
+        this.putConfigMinimum("config.yml", "3.0.0b19");
     }
 
     @Override
