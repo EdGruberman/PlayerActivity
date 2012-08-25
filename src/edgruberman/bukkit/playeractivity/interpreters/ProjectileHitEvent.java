@@ -4,7 +4,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import edgruberman.bukkit.playeractivity.StatusTracker;
+
 public class ProjectileHitEvent extends Interpreter {
+
+    public ProjectileHitEvent(final StatusTracker tracker) {
+        super(tracker);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.entity.ProjectileHitEvent event) {

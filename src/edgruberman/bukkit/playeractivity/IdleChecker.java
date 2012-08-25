@@ -21,7 +21,7 @@ class IdleChecker implements Runnable {
         // Clean up the reference to this timer so a new one can be created if necessary
         this.publisher.timers.remove(this.player);
 
-        final Long last = this.publisher.tracker.getLastFor(this.player);
+        final Long last = this.publisher.activityPublisher.last.get(this.player);
         if (last == null) return; // Player has left server, stop this check
 
         if (last != this.lastActivity) {

@@ -12,7 +12,6 @@ import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 /** notify when a player goes idle */
@@ -31,16 +30,16 @@ public final class IdleNotify implements Observer {
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-        this.tracker = new StatusTracker(plugin);
+        this.tracker = new StatusTracker(plugin, this.idle);
         for (final String className : config.getStringList("activity"))
             try {
-                this.tracker.addInterpreter(Interpreter.create(className));
+                this.tracker.addInterpreter(className);
             } catch (final Exception e) {
+                e.printStackTrace();
                 plugin.getLogger().warning("Unable to create interpreter for IdleNotify activity: " + className + "; " + e);
             }
 
         this.tracker.register(this, PlayerActive.class);
-        this.tracker.setIdleThreshold(this.idle);
         this.tracker.register(this, PlayerIdle.class);
     }
 

@@ -11,12 +11,6 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 /** interprets the player involved in an event */
 public class Interpreter implements Listener {
 
-    // ---- Static Factory ----
-
-    public static Interpreter create(final String className) throws ClassCastException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        return Interpreter.find(className).newInstance();
-    }
-
     public static Class<? extends Interpreter> find(final String className) throws ClassNotFoundException, ClassCastException {
         // Look in local package
         try {
@@ -31,11 +25,11 @@ public class Interpreter implements Listener {
 
 
 
-    // ---- Instance ----
+    // ---- instance ----
 
     protected StatusTracker tracker;
 
-    public void register(final StatusTracker tracker) {
+    protected Interpreter(final StatusTracker tracker) {
         this.tracker = tracker;
         Bukkit.getPluginManager().registerEvents(this, this.tracker.getPlugin());
     }
@@ -51,18 +45,6 @@ public class Interpreter implements Listener {
 
     public void clear() {
         HandlerList.unregisterAll(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getClass().hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        return this.getClass() != obj.getClass();
     }
 
 

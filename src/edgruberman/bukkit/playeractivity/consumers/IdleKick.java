@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 /** kick players for being idle */
@@ -26,15 +25,14 @@ public final class IdleKick implements Observer {
         this.ignore = ignore;
         this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-        this.tracker = new StatusTracker(plugin);
+        this.tracker = new StatusTracker(plugin, this.idle);
         for (final String className : config.getStringList("activity"))
             try {
-                this.tracker.addInterpreter(Interpreter.create(className));
+                this.tracker.addInterpreter(className);
             } catch (final Exception e) {
                 plugin.getLogger().warning("Unable to create interpreter for IdleKick activity: " + className + "; " + e);
             }
 
-        this.tracker.setIdleThreshold(this.idle);
         this.tracker.register(this, PlayerIdle.class);
     }
 

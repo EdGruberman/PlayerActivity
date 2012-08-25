@@ -15,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public class AwayBack implements Observer, Listener {
@@ -37,7 +36,7 @@ public class AwayBack implements Observer, Listener {
         this.back = new StatusTracker(plugin);
         for (final String className : config.getStringList("activity"))
             try {
-                this.back.addInterpreter(Interpreter.create(className));
+                this.back.addInterpreter(className);
             } catch (final Exception e) {
                 plugin.getLogger().warning("Unable to create interpreter for AwayBack activity: " + className + "; " + e);
             }

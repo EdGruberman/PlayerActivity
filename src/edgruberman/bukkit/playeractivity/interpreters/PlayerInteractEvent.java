@@ -4,7 +4,13 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import edgruberman.bukkit.playeractivity.StatusTracker;
+
 public class PlayerInteractEvent extends Interpreter {
+
+    public PlayerInteractEvent(final StatusTracker tracker) {
+        super(tracker);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.player.PlayerInteractEvent event) {

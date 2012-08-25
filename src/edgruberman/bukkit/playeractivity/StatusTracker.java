@@ -1,12 +1,12 @@
 package edgruberman.bukkit.playeractivity;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,6 +14,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -22,17 +23,24 @@ import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 public final class StatusTracker implements Listener {
 
     final Plugin plugin;
-    final Set<Interpreter> interpreters = new HashSet<Interpreter>();
-    final ActivityPublisher activityPublisher = new ActivityPublisher();
-    final IdlePublisher idlePublisher = new IdlePublisher(this);
+    final List<Interpreter> interpreters = new ArrayList<Interpreter>();
+    final ActivityPublisher activityPublisher;
+    final IdlePublisher idlePublisher;
 
     public StatusTracker(final Plugin plugin) {
-        this(plugin, Collections.<Interpreter>emptyList());
+        this(plugin, -1);
     }
 
-    public StatusTracker(final Plugin plugin, final List<Interpreter> interpreters) {
+    public StatusTracker(final Plugin plugin, final long idle) {
         this.plugin = plugin;
-        for (final Interpreter interpreter : interpreters) this.addInterpreter(interpreter);
+
+        this.activityPublisher = new ActivityPublisher();
+        this.idlePublisher = new IdlePublisher(plugin, this.activityPublisher, idle);
+
+        // populate last activity and start idle timer in case no activity from player after initialization
+        for (final Player player : Bukkit.getServer().getOnlinePlayers())
+            this.activityPublisher.record(player, PlayerEvent.class);
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -40,26 +48,27 @@ public final class StatusTracker implements Listener {
         HandlerList.unregisterAll(this);
         for (final Interpreter interpreter : this.interpreters) interpreter.clear();
         this.interpreters.clear();
-        this.activityPublisher.clear();
         this.idlePublisher.clear();
+        this.activityPublisher.clear();
     }
 
     public Plugin getPlugin() {
         return this.plugin;
     }
 
-    public boolean addInterpreter(final Interpreter interpreter) {
-        if (!this.interpreters.add(interpreter)) {
-            this.plugin.getLogger().warning("Duplicate interpreter specified for: " + interpreter.getClass());
-            return false;
-        }
+    public Interpreter addInterpreter(final String className) throws ClassCastException, ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        final Class<? extends Interpreter> clazz = Interpreter.find(className);
+        for (final Interpreter interpreter : this.interpreters)
+            if (interpreter.getClass().equals(clazz))
+                throw new IllegalStateException("Duplicate Interpreter class assignment: " + interpreter.getClass());
 
-        interpreter.register(this);
-        return true;
+        final Interpreter interpreter = clazz.getConstructor(StatusTracker.class).newInstance(this);
+        this.interpreters.add(interpreter);
+        return interpreter;
     }
 
-    public Set<Interpreter> getInterpreters() {
-        return Collections.unmodifiableSet(this.interpreters);
+    public List<Interpreter> getInterpreters() {
+        return Collections.unmodifiableList(this.interpreters);
     }
 
     public Observable register(final Observer observer, final Class<? extends PlayerStatus> status) {
@@ -106,12 +115,6 @@ public final class StatusTracker implements Listener {
 
 
     // ---- Idle ----
-
-    /** @param threshold duration in milliseconds at which a player is considered idle if no activity */
-    public void setIdleThreshold(final long threshold) {
-        this.idlePublisher.threshold = (threshold <= 0 ? -1 : threshold);
-        // TODO update any existing timers with new threshold time (update for those exceeding, extend for those under)
-    }
 
     public long getIdleThreshold() {
         return this.idlePublisher.threshold;

@@ -11,55 +11,36 @@ import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
 
 /** monitors for PlayerActive from the ActivityPublisher and generates a PlayerIdle event when not active for a period */
 public final class IdlePublisher extends Observable implements Observer {
 
-    final StatusTracker tracker;
+    final Plugin plugin;
+    final long threshold;
+    final ActivityPublisher activityPublisher;
     final List<Player> idle = new ArrayList<Player>();
     final Map<Player, Timer> timers = new HashMap<Player, Timer>();
 
-    long threshold = 60000; // milliseconds
-
-    IdlePublisher(final StatusTracker tracker) {
-        this.tracker = tracker;
-    }
-
-    @Override
-    public void addObserver(final Observer o) {
-        super.addObserver(o);
-
-        // pull last known activity (or use now if none) to start idle timer in case no further activity from player
-        for (final Player player : Bukkit.getServer().getOnlinePlayers())
-            if (!this.timers.keySet().contains(player)) {
-                Long occurred = this.tracker.activityPublisher.last.get(player);
-                if (occurred == null) occurred = System.currentTimeMillis();
-                this.update(this, new PlayerActive(player, null, occurred, Event.class));
-            }
-
-
-        this.tracker.activityPublisher.addObserver(this);
-    }
-
-    @Override
-    public void deleteObserver(final Observer o) {
-        super.deleteObserver(o);
-        if (this.countObservers() != 0) return;
-
-        this.tracker.activityPublisher.deleteObserver(this);
+    IdlePublisher(final Plugin plugin, final ActivityPublisher activityPublisher, final long threshold) {
+        this.plugin = plugin;
+        this.threshold = threshold;
+        this.activityPublisher = activityPublisher;
+        this.activityPublisher.addObserver(this);
     }
 
     /** process PlayerActivity from ActivityPublisher */
     @Override
     public void update(final Observable o, final Object arg) {
+        if (this.threshold <= 0) return;
+
         final PlayerActive active = (PlayerActive) arg;
         this.idle.remove(active.player);
         this.scheduleIdleCheck(active.player, active.occurred);
     }
 
     void scheduleIdleCheck(final Player player, final long lastActivity) {
-        // Wait for a pending timer
+        // wait for a pending timer
         if (this.timers.containsKey(player)) return;
 
         final IdleChecker idleChecker = new IdleChecker(this, player, lastActivity);
@@ -85,7 +66,7 @@ public final class IdlePublisher extends Observable implements Observer {
     }
 
     void clear() {
-        this.tracker.activityPublisher.deleteObserver(this);
+        this.activityPublisher.deleteObserver(this);
         this.deleteObservers();
         for (final Timer timer : this.timers.values()) timer.cancel();
         this.timers.clear();
@@ -104,7 +85,7 @@ public final class IdlePublisher extends Observable implements Observer {
 
         @Override
         public void run() {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(IdlePublisher.this.tracker.getPlugin(), this.runnable);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(IdlePublisher.this.plugin, this.runnable);
         }
 
     }
