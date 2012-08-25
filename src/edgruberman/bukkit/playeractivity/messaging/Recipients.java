@@ -11,7 +11,7 @@ import org.bukkit.metadata.Metadatable;
  * collection of one or more message targets
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 2.0.0
+ * @version 2.0.1
  */
 public abstract class Recipients {
 
@@ -27,7 +27,7 @@ public abstract class Recipients {
         if (values.size() == 0)
             return Recipients.DEFAULT_TIME_ZONE;
 
-        return (TimeZone) values.get(0);
+        return (TimeZone) values.get(0).value();
     }
 
 
