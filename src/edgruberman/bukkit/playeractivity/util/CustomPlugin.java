@@ -74,6 +74,8 @@ public class CustomPlugin extends JavaPlugin {
         final File config = new File(this.getDataFolder(), resource);
         if (config.exists()) return;
 
+        config.getParentFile().mkdirs();
+
         final char[] cbuf = new char[1024]; int read;
         try {
             final Reader in = new BufferedReader(new InputStreamReader(this.getResource(resource), CustomPlugin.CONFIGURATION_SOURCE));
