@@ -12,7 +12,7 @@ public class ProjectileHitEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.entity.ProjectileHitEvent event) {
         if (!(event.getEntity().getShooter() instanceof Player)) return;
 

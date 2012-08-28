@@ -12,7 +12,7 @@ public class CraftItemEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.inventory.CraftItemEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
 

@@ -12,7 +12,7 @@ public class InventoryCloseEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.inventory.InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player)) return;
 

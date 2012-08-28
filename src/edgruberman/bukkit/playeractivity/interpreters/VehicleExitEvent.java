@@ -12,7 +12,7 @@ public class VehicleExitEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.vehicle.VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) return;
 

@@ -12,7 +12,7 @@ public class InventoryClickEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.inventory.InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
 

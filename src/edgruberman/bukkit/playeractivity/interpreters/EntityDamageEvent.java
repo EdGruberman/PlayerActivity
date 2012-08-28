@@ -12,7 +12,7 @@ public class EntityDamageEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.entity.EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
 

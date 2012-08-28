@@ -12,7 +12,7 @@ public class PaintingBreakByEntityEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.painting.PaintingBreakByEntityEvent event) {
         if (!(event.getRemover() instanceof Player)) return;
 

@@ -11,7 +11,7 @@ public class PlayerToggleSneakEvent extends Interpreter {
         super(tracker);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEvent(final org.bukkit.event.player.PlayerToggleSneakEvent event) {
         this.record(event.getPlayer(), event);
     }
