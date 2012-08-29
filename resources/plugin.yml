@@ -1,8 +1,8 @@
-name: @NAME@
-description: Track player based events
+name: PlayerActivity
 version: @VERSION@
-author: @AUTHOR@
-main: @MAIN@
+description: Track player based events
+author: EdGruberman (ed@rjump.com)
+main: edgruberman.bukkit.playeractivity.Main
 commands:
     'playeractivity:away':
         aliases: [away, afk]
