@@ -57,7 +57,7 @@ public final class IdleNotify implements Observer {
             if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
 
             final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
-            this.courier.broadcast("idleBackBroadcast", Main.readableDuration((activity.occurred - activity.last)), kickIdle, activity.player.getDisplayName());
+            this.courier.broadcast("active", Main.readableDuration((activity.occurred - activity.last)), kickIdle, activity.player.getDisplayName());
             return;
         }
 
@@ -67,7 +67,7 @@ public final class IdleNotify implements Observer {
 
         if (!this.isAwayOverriding(idle.player)) {
             final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
-            this.courier.broadcast("idleBroadcast", Main.readableDuration(idle.duration), kickIdle, idle.player.getDisplayName());
+            this.courier.broadcast("idle", Main.readableDuration(idle.duration), kickIdle, idle.player.getDisplayName());
         }
 
         final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);

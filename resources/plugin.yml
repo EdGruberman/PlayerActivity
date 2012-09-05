@@ -1,8 +1,8 @@
 name: PlayerActivity
 version: @VERSION@
-description: Track player based events
+description: Idle player management
 author: EdGruberman (ed@rjump.com)
-website: http://forums.bukkit.org/threads/64197
+website: http://dev.bukkit.org/server-mods/playeractivity/
 main: edgruberman.bukkit.playeractivity.Main
 commands:
     'playeractivity:away':

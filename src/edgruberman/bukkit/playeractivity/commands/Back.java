@@ -35,7 +35,7 @@ public final class Back implements CommandExecutor {
         }
 
         this.awayBack.setBack(player);
-        this.courier.broadcast("backBroadcast", player.getDisplayName(), state.reason, Main.readableDuration(System.currentTimeMillis() - state.since));
+        this.courier.broadcast("back", player.getDisplayName(), state.reason, Main.readableDuration(System.currentTimeMillis() - state.since));
         return true;
     }
 

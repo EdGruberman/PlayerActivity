@@ -42,7 +42,7 @@ public final class Away implements CommandExecutor {
         if (args.length >= 1) reason = Away.join(Arrays.asList(args), " ");
 
         this.awayBack.setAway(player, reason);
-        this.courier.broadcast("awayBroadcast", player.getDisplayName(), reason);
+        this.courier.broadcast("away", player.getDisplayName(), reason);
         return true;
     }
 
