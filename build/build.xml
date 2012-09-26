@@ -1,16 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project name="Bukkit Plugin" default="default">
-    <description>Bukkit Plugin Standard Build Management v3.0.0</description>
-
-    <target name="default" description="Increment build, export distributable, and install locally">
-        <antcall target="version-build" />
-        <antcall target="dist" />
-        <antcall target="install" />
-    </target>
+    <description>Bukkit Plugin Standard Build Management v4.0.0</description>
 
     <target name="debug">
         <echoproperties />
-        <antcall target="-version-previous" />
+        <antcall target="-validate" />
     </target>
 
 
@@ -37,30 +31,40 @@
 
     <!-- ======== Life Cycle Version Management ( alpha > beta > candidate > release ) ======== -->
 
-    <target name="version-build" description="#.#.#_+1  |  Increment build of current version (code committed within current life cycle definition)" depends="-version-previous">
+    <target name="default" description="#.#.#*+  |  Increment build of current version (code committed within current life cycle definition)">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
         <propertyfile file="${version.properties}">
             <entry key="build" operation="+" value="1" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-revision" description="#.#.+1a0  |  Increment next revision version and reset life cycle to alpha (bug fixes that do not change functionality)" depends="-version-previous">
+    <target name="revision" description="#.#.+a0  |  Increment revision version and reset life cycle to alpha (bug fixes that do not change functionality)">
+        <antcall target="-validate" />
         <propertyfile file="${version.properties}">
             <entry key="revision" operation="+" value="1" type="int" />
             <entry key="type" value="a" />
             <entry key="build" value="0" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-minor" description="#.+1.0a0  |  Increment next minor version and reset life cycle to alpha (new functionality added)" depends="-version-previous">
+    <target name="minor" description="#.+.0a0  |  Increment minor version and reset life cycle to alpha (new functionality added)">
+        <antcall target="-validate" />
         <propertyfile file="${version.properties}">
             <entry key="minor" operation="+" value="1" type="int" />
             <entry key="revision" value="0" type="int" />
             <entry key="type" value="a" />
             <entry key="build" value="0" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-major" description="+1.0.0a0  |  Increment next major version and reset life cycle to alpha (existing functionality changed/significant redesign)" depends="-version-previous">
+    <target name="major" description="+1.0.0a0  |  Increment major version and reset life cycle to alpha (existing functionality changed, significant redesign)">
+        <antcall target="-validate" />
         <propertyfile file="${version.properties}">
             <entry key="major" operation="+" value="1" type="int" />
             <entry key="minor" value="0" type="int" />
@@ -68,33 +72,60 @@
             <entry key="type" value="a" />
             <entry key="build" value="0" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-beta" description="#.#.#b0  |  Move life cycle to beta (public testing encouraged without any guarantee)" depends="-version-previous">
+    <target name="beta" description="#.#.#b0  |  Move life cycle to beta (public testing encouraged without any guarantee)">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
         <propertyfile file="${version.properties}">
             <entry key="type" value="b" />
             <entry key="build" value="0" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-candidate" description="#.#.#rc0  |  Move life cycle to release candidate (functionality no longer intended to change, production release imminent)" depends="-version-previous">
+    <target name="candidate" description="#.#.#rc0  |  Move life cycle to release candidate (functionality no longer intended to change, production release imminent)">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
         <propertyfile file="${version.properties}">
             <entry key="type" value="rc" />
             <entry key="build" value="0" type="int" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="version-release" description="#.#.#  |  Remove life cycle indicator for full production release" depends="-version-previous">
+    <target name="release" description="#.#.#  |  Remove life cycle indicator for full production release">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
         <propertyfile file="${version.properties}">
             <entry key="type" value="" />
             <entry key="build" value="" />
         </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
     </target>
 
-    <target name="-version-previous" description="Generate console output to show previous version">
+    <target name="-validate" description="Verify acceptable build path for versioning">
+        <local name="previous.major" />
+        <local name="previous.minor" />
+        <local name="previous.revision" />
+        <local name="previous.type" />
+        <local name="previous.build" />
         <property prefix="previous" file="${version.properties}" />
+        
+        <local name="previous" />
         <property name="previous" value="${previous.major}.${previous.minor}.${previous.revision}${previous.type}${previous.build}" />
-        <echo message="Previous version was ${previous}" />
+        <echo message="Previous version was ${previous}" level="warning" />
+        
+        <fail message="Previous build was already released; Build revision, minor, or major to increment version accordingly">
+            <condition>
+                <and>
+                    <istrue value="${require-prerelease}" />
+                    <equals arg1="${previous.type}" arg2="" />
+                </and>
+            </condition>
+        </fail>
     </target>
 
 
@@ -111,7 +142,7 @@
     <target name="-init" description="Initialize build environment" depends="-cleandist">
         <property prefix="version" file="${version.properties}" />
         <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}" />
-        <echo message="Initializing version ${version}" />
+        <echo message="Building version ${version}" level="warning" />
 
         <mkdir dir="${stage.dir}" />
         <mkdir dir="${dist.dir}" />
