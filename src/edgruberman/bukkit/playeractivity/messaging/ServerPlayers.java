@@ -5,10 +5,10 @@ import java.util.logging.Level;
 import org.bukkit.Server;
 
 /**
- * all players in server at message delivery time
+ * broadcast to all players in server
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 2.0.0
+ * @version 2.0.1
  */
 public class ServerPlayers extends PermissionSubscribers {
 

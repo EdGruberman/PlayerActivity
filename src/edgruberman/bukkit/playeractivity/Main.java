@@ -28,12 +28,12 @@ public final class Main extends CustomPlugin {
     private ConfigurationCourier courier;
 
     @Override
-    public void onLoad() { this.putConfigMinimum("config.yml", "3.0.0"); }
+    public void onLoad() { this.putConfigMinimum(CustomPlugin.CONFIGURATION_FILE, "3.0.0"); }
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.courier = ConfigurationCourier.Factory.create(this).setBase("messages").build();
+        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("messages.yml")).setColorCode("colorCode").build();
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 

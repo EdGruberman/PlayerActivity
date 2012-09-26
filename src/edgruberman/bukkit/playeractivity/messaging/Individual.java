@@ -6,16 +6,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * individual {@link org.bukkit.command.CommandSender CommandSender}
+ * single {@link org.bukkit.command.CommandSender CommandSender}
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 2.0.0
+ * @version 3.0.0
  */
-public class Sender extends Recipients {
+public class Individual extends Recipients {
 
     protected CommandSender target;
 
-    public Sender(final CommandSender target) {
+    public Individual(final CommandSender target) {
         this.target = target;
     }
 
@@ -23,7 +23,7 @@ public class Sender extends Recipients {
     public Confirmation deliver(final Message message) {
         final String formatted = message.format(this.target).toString();
         this.target.sendMessage(formatted);
-        return new Confirmation(this.level(), 1, "[SEND@{1}] {0}", message, Sender.this.target.getName());
+        return new Confirmation(this.level(), 1, "[SEND>{1}] {0}", message, Individual.this.target.getName());
     }
 
     /** console messages will be FINEST to allow for easier filtering of messages that will already appear in console */
