@@ -1,14 +1,13 @@
 package edgruberman.bukkit.playeractivity;
 
-import org.bukkit.entity.Player;
 
 class IdleChecker implements Runnable {
 
     private final IdlePublisher publisher;
-    private final Player player;
+    private final String player;
     private final long lastActivity;
 
-    IdleChecker(final IdlePublisher publisher, final Player player, final long lastActivity) {
+    IdleChecker(final IdlePublisher publisher, final String player, final long lastActivity) {
         this.publisher = publisher;
         this.player = player;
         this.lastActivity = lastActivity;

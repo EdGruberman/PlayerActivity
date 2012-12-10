@@ -10,7 +10,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /** monitors for PlayerActive from the ActivityPublisher and generates a PlayerIdle event when not active for a period */
@@ -19,8 +18,8 @@ public final class IdlePublisher extends Observable implements Observer {
     final Plugin plugin;
     final long threshold;
     final ActivityPublisher activityPublisher;
-    final List<Player> idle = new ArrayList<Player>();
-    final Map<Player, Timer> timers = new HashMap<Player, Timer>();
+    final List<String> idle = new ArrayList<String>();
+    final Map<String, Timer> timers = new HashMap<String, Timer>();
 
     IdlePublisher(final Plugin plugin, final ActivityPublisher activityPublisher, final long threshold) {
         this.plugin = plugin;
@@ -35,11 +34,11 @@ public final class IdlePublisher extends Observable implements Observer {
         if (this.threshold <= 0) return;
 
         final PlayerActive active = (PlayerActive) arg;
-        this.idle.remove(active.player);
-        this.scheduleIdleCheck(active.player, active.occurred);
+        this.idle.remove(active.player.getName());
+        this.scheduleIdleCheck(active.player.getName(), active.occurred);
     }
 
-    void scheduleIdleCheck(final Player player, final long lastActivity) {
+    void scheduleIdleCheck(final String player, final long lastActivity) {
         // wait for a pending timer
         if (this.timers.containsKey(player)) return;
 
@@ -57,12 +56,12 @@ public final class IdlePublisher extends Observable implements Observer {
         timer.schedule(new SynchronousTimerTask(idleChecker), delay);
     }
 
-    void publish(final Player player, final long last, final long occurred, final long duration) {
+    void publish(final String player, final long last, final long occurred, final long duration) {
         this.idle.add(player);
         if (this.countObservers() == 0) return;
 
         this.setChanged();
-        this.notifyObservers(new PlayerIdle(player, last, occurred, duration));
+        this.notifyObservers(new PlayerIdle(Bukkit.getPlayerExact(player), last, occurred, duration));
     }
 
     void clear() {

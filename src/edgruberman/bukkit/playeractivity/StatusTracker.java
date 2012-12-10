@@ -86,8 +86,8 @@ public final class StatusTracker implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.activityPublisher.last.remove(event.getPlayer());
-        this.idlePublisher.idle.remove(event.getPlayer());
+        this.activityPublisher.last.remove(event.getPlayer().getName());
+        this.idlePublisher.idle.remove(event.getPlayer().getName());
     }
 
 
@@ -104,12 +104,12 @@ public final class StatusTracker implements Listener {
         this.activityPublisher.record(player, event);
     }
 
-    public Map<Player, Long> getLastAll() {
+    public Map<String, Long> getLast() {
         return this.activityPublisher.last;
     }
 
     public Long getLastFor(final Player player) {
-        return this.activityPublisher.last.get(player);
+        return this.activityPublisher.last.get(player.getName());
     }
 
 
@@ -120,7 +120,7 @@ public final class StatusTracker implements Listener {
         return this.idlePublisher.threshold;
     }
 
-    public List<Player> getIdle() {
+    public List<String> getIdle() {
         return this.idlePublisher.idle;
     }
 

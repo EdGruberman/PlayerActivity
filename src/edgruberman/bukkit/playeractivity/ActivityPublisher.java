@@ -9,11 +9,11 @@ import org.bukkit.event.Event;
 
 public final class ActivityPublisher extends Observable {
 
-    final Map<Player, Long> last = new HashMap<Player, Long>();
+    final Map<String, Long> last = new HashMap<String, Long>();
 
     void record(final Player player, final Class<? extends Event> event) {
         final long occurred = System.currentTimeMillis();
-        final Long last = this.last.put(player, occurred);
+        final Long last = this.last.put(player.getName(), occurred);
         this.publish(player, event, occurred, last);
     }
 
