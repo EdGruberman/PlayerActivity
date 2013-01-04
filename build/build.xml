@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project name="Bukkit Plugin" default="default">
-    <description>Bukkit Plugin Standard Build Management v4.0.0</description>
+    <description>Bukkit Plugin Standard Build Management v4.0.1</description>
 
     <target name="debug">
         <echoproperties />
@@ -35,6 +35,36 @@
         <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
         <propertyfile file="${version.properties}">
             <entry key="build" operation="+" value="1" type="int" />
+        </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
+    </target>
+    
+    <target name="beta" description="#.#.#b0  |  Move life cycle to beta (public testing encouraged without any guarantee)">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
+        <propertyfile file="${version.properties}">
+            <entry key="type" value="b" />
+            <entry key="build" value="0" type="int" />
+        </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
+    </target>
+
+    <target name="candidate" description="#.#.#rc0  |  Move life cycle to release candidate (functionality no longer intended to change, production release imminent)">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
+        <propertyfile file="${version.properties}">
+            <entry key="type" value="rc" />
+            <entry key="build" value="0" type="int" />
+        </propertyfile>
+        <antcall target="dist" />
+        <antcall target="install" />
+    </target>
+
+    <target name="release" description="#.#.#  |  Remove life cycle indicator for full production release">
+        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
+        <propertyfile file="${version.properties}">
+            <entry key="type" value="" />
+            <entry key="build" value="" />
         </propertyfile>
         <antcall target="dist" />
         <antcall target="install" />
@@ -76,45 +106,8 @@
         <antcall target="install" />
     </target>
 
-    <target name="beta" description="#.#.#b0  |  Move life cycle to beta (public testing encouraged without any guarantee)">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="b" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
-    </target>
-
-    <target name="candidate" description="#.#.#rc0  |  Move life cycle to release candidate (functionality no longer intended to change, production release imminent)">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="rc" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
-    </target>
-
-    <target name="release" description="#.#.#  |  Remove life cycle indicator for full production release">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="" />
-            <entry key="build" value="" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
-    </target>
-
     <target name="-validate" description="Verify acceptable build path for versioning">
-        <local name="previous.major" />
-        <local name="previous.minor" />
-        <local name="previous.revision" />
-        <local name="previous.type" />
-        <local name="previous.build" />
         <property prefix="previous" file="${version.properties}" />
-        
-        <local name="previous" />
         <property name="previous" value="${previous.major}.${previous.minor}.${previous.revision}${previous.type}${previous.build}" />
         <echo message="Previous version was ${previous}" level="warning" />
         
