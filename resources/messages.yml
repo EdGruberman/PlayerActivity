@@ -5,32 +5,32 @@ idleNotify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
 +idleKickReason: 'Idle for {0}' # 0 = Kick Idle Duration
 away: '§8{0,time,HH:mm:ss} {1}§8 is §3away§8 for §7{2}' # 1 = Player Display Name, 2 = Away Reason
 back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
-backNotAway: '-> §7You are §enot currently away'
-awayAlready: '-> §7You have §ealready been away §f{1}§7 for §o{2}' # 1 = Duration, 2 = Reason
+backNotAway: '§f-> §7You are §enot currently away'
+awayAlready: '§f-> §7You have §ealready been away §f{1}§7 for §o{2} §8(§7Use §b/back§7 to return§8)' # 1 = Duration, 2 = Reason
 +awayDefaultReason: 'no reason'
-mentions: '-> §7{1}§7 has been §3away§7 {2} for: §o{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
+mentions: '§f-> §7{1}§7 has been §3away§7 {2} for: §o{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
 mentionsSummary:
-    format: '-> §7Your name was §dmentioned§7 by: {1}' # 1 = Players
+    format: '§f-> §7Your name was §dmentioned§7 by: {1}' # 1 = Players
     +player: '§7{0} §8({1} ago)' # 0 = Display Name, 1 = Duration Since Last Mention
     +delimiter: ', '
 who:
     list:
-        format: '-> §7Players: {2,choice,0#§8None|1#{1} §8({2})}' # 1 = Players, 2 = Count
+        format: '§f-> §7Players: {2,choice,0#§8None|1#{1} §8({2})}' # 1 = Players, 2 = Count
         +player: '§7{0}' # 0 = Name, 1 = Display Name, 2 = List Name, 3 = Name Equivalence (1:Name=Display,2:Name=List,4:Display=List)
         +delimiter: '§8, '
         +tagAway: '{0}§3#Away' # 0 = Formatted player
         +tagIdle: '{0}§3#Idle' # 0 = Formatted player
-    connected: '-> §7{1}§7 connected {2} ago' # 1 = Display Name, 2 = Last Connected Duration
-    connectedAway: '-> §7{1}§7 connected {2} ago and has been §3away§7 {3} for: §7{4}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Away Duration, 4 = Reason
-    connectedIdle: '-> §7{1}§7 connected {2} ago and has been §3idle§7 {3}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Idle Duration
-    disconnected: '-> §7{1}§7 §9disconnected§7 {2} ago' # 1 = Player Name, 2 = Last Disconnected Duration
+    connected: '§f-> §7{1}§7 connected {2} ago' # 1 = Display Name, 2 = Last Connected Duration
+    connectedAway: '§f-> §7{1}§7 connected {2} ago and has been §3away§7 {3} for: §7{4}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Away Duration, 4 = Reason
+    connectedIdle: '§f-> §7{1}§7 connected {2} ago and has been §3idle§7 {3}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Idle Duration
+    disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 1 = Player Name, 2 = Last Disconnected Duration
     +unknownConnected: '§osome time§7'
 listTag:
     +away: '§3#Away'
     +idle: '§3#Idle'
     +bed: '§5#Bed'
-requiresPlayer: '-> §cOnly in-game players§7 can use the {1} command' #1 = Command Label
-commandDisabled: '-> §7Command §cdisabled§7: §o{1}' # 1 = Command Label
-playerNotFound: '-> §7Player §enot found§7: §o{1}' # 1 = <Player>
-reload: '-> §7{1} plugin §2reloaded' # 1 = Plugin Name
+requires-player: '§f-> §cOnly in-game players§7 can use the §b/{1} §7command' # 1 = Command Label
+commandDisabled: '§f-> §7Command §cdisabled§7: §o{1}' # 1 = Command Label
+playerNotFound: '§f-> §7Player §enot found§7: §o{1}' # 1 = <Player>
+reload: '§f-> §2Reloaded §7{1} plugin' # 1 = Plugin Name
 version: @VERSION@
