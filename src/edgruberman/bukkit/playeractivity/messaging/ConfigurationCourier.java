@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
  * uses message patterns stored in a {@link org.bukkit.configuration.ConfigurationSection ConfigurationSection}
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 5.0.0
+ * @version 5.1.0
  */
 public class ConfigurationCourier extends Courier {
 
@@ -27,13 +27,21 @@ public class ConfigurationCourier extends Courier {
         return this.base;
     }
 
+    /** @return String supplied in base configuration at key path; null if not a String */
+    public String pattern(final String key) {
+        if (!this.base.isString(key)) return null;
+        return this.base.getString(key);
+    }
+
     /**
      * preliminary Message construction before formatting for target recipient (timestamp argument prepended if configured)
      *
      * @param key path to message text that can contain format elements in base configuration
      */
     public Message compose(final String key, final Object... arguments) {
-        return this.draft(this.base.getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return null;
+        return this.draft(pattern, arguments);
     }
 
     /**
@@ -43,23 +51,33 @@ public class ConfigurationCourier extends Courier {
      */
     @Override
     public String format(final String key, final Object... arguments) {
-        return super.format(this.getBase().getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return null;
+        return super.format(pattern, arguments);
     }
 
     public void send(final CommandSender target, final String key, final Object... arguments) {
-        this.sendMessage(target, this.base.getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return;
+        this.sendMessage(target, pattern, arguments);
     }
 
     public void broadcast(final String key, final Object... arguments) {
-        this.broadcastMessage(this.base.getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return;
+        this.broadcastMessage(pattern, arguments);
     }
 
     public void world(final World target, final String key, final Object... arguments) {
-        this.worldMessage(target, this.base.getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return;
+        this.worldMessage(target, pattern, arguments);
     }
 
     public void publish(final String permission, final String key, final Object... arguments) {
-        this.publishMessage(permission, this.base.getString(key), arguments);
+        final String pattern = this.pattern(key);
+        if (pattern == null) return;
+        this.publishMessage(permission, pattern, arguments);
     }
 
 
