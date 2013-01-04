@@ -6,14 +6,14 @@ import org.bukkit.event.EventPriority;
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
-public class PaintingPlaceEvent extends Interpreter {
+public class HangingPlaceEvent extends Interpreter {
 
-    public PaintingPlaceEvent(final StatusTracker tracker) {
+    public HangingPlaceEvent(final StatusTracker tracker) {
         super(tracker);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.painting.PaintingPlaceEvent event) {
+    public void onEvent(final org.bukkit.event.hanging.HangingPlaceEvent event) {
         this.record(event.getPlayer(), event);
     }
 

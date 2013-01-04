@@ -7,14 +7,14 @@ import org.bukkit.event.EventPriority;
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
-public class PaintingBreakByEntityEvent extends Interpreter {
+public class HangingBreakByEntityEvent extends Interpreter {
 
-    public PaintingBreakByEntityEvent(final StatusTracker tracker) {
+    public HangingBreakByEntityEvent(final StatusTracker tracker) {
         super(tracker);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.painting.PaintingBreakByEntityEvent event) {
+    public void onEvent(final org.bukkit.event.hanging.HangingBreakByEntityEvent event) {
         if (!(event.getRemover() instanceof Player)) return;
 
         this.record((Player) event.getRemover(), event);
