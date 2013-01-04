@@ -12,15 +12,11 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 public class Interpreter implements Listener {
 
     public static Class<? extends Interpreter> find(final String className) throws ClassNotFoundException, ClassCastException {
-        // Look in local package
         try {
             return Class.forName(Interpreter.class.getPackage().getName() + "." + className).asSubclass(Interpreter.class);
         } catch (final Exception e) {
-            // Ignore to try searching for custom class next
+            return Class.forName(className).asSubclass(Interpreter.class);
         }
-
-        // Look for a custom class
-        return Class.forName(className).asSubclass(Interpreter.class);
     }
 
 
