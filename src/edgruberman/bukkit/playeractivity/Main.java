@@ -29,8 +29,8 @@ public final class Main extends CustomPlugin {
 
     @Override
     public void onLoad() {
-        this.putConfigMinimum(CustomPlugin.CONFIGURATION_FILE, "3.1.0");
-        this.putConfigMinimum(CustomPlugin.CONFIGURATION_FILE, "3.1.0");
+        this.putConfigMinimum("3.1.0");
+        this.putConfigMinimum("messages.yml", "3.1.0");
     }
 
     @Override

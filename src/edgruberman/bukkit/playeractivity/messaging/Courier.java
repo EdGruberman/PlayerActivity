@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin;
  * handles message delivery and logging
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 4.0.0
+ * @version 5.0.1
  */
 public class Courier {
 
@@ -45,9 +45,12 @@ public class Courier {
         return MessageFormat.format(this.colorize(pattern), arguments);
     }
 
-    /** preliminary Message construction before formatting for target recipient (timestamp argument prepended if configured) */
+    /**
+     * preliminary Message construction before formatting for target recipient (timestamp argument prepended if configured)
+     * @param pattern message text that contains format elements
+     */
     public Message draft(final String pattern, final Object... arguments) {
-        final Message.Factory factory = Message.Factory.create(this.colorize(pattern), arguments);
+        final Message.Factory factory = Message.create(this.colorize(pattern), arguments);
         if (this.timestamp) factory.timestamp();
         return factory.build();
     }
@@ -64,34 +67,38 @@ public class Courier {
     }
 
     /** deliver message to individual player */
-    public void send(final CommandSender sender, final String pattern, final Object... arguments) {
+    public void sendMessage(final CommandSender sender, final String pattern, final Object... arguments) {
         final Recipients recipients = new Individual(sender);
         final Message message = this.draft(pattern, arguments);
         this.submit(recipients, message);
     }
 
     /** deliver message to all players on server */
-    public void broadcast(final String pattern, final Object... arguments) {
+    public void broadcastMessage(final String pattern, final Object... arguments) {
         final Recipients recipients = new ServerPlayers();
         final Message message = this.draft(pattern, arguments);
         this.submit(recipients, message);
     }
 
     /** deliver message to players in a world */
-    public void world(final World world, final String pattern, final Object... arguments) {
+    public void worldMessage(final World world, final String pattern, final Object... arguments) {
         final Recipients recipients = new WorldPlayers(world);
         final Message message = this.draft(pattern, arguments);
         this.submit(recipients, message);
     }
 
     /** deliver message to players with a permission */
-    public void publish(final String permission, final String pattern, final Object... arguments) {
+    public void publishMessage(final String permission, final String pattern, final Object... arguments) {
         final Recipients recipients = new PermissionSubscribers(permission);
         final Message message = this.draft(pattern, arguments);
         this.submit(recipients, message);
     }
 
 
+
+    public static Factory create(final Plugin plugin) {
+        return Factory.create(plugin);
+    }
 
     public static class Factory {
 
