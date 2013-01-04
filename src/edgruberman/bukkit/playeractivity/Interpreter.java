@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.interpreters;
+package edgruberman.bukkit.playeractivity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,14 +6,12 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-import edgruberman.bukkit.playeractivity.StatusTracker;
-
 /** interprets the player involved in an event */
 public class Interpreter implements Listener {
 
     public static Class<? extends Interpreter> find(final String className) throws ClassNotFoundException, ClassCastException {
         try {
-            return Class.forName(Interpreter.class.getPackage().getName() + "." + className).asSubclass(Interpreter.class);
+            return Class.forName(Interpreter.class.getPackage().getName() + ".interpreters." + className).asSubclass(Interpreter.class);
         } catch (final Exception e) {
             return Class.forName(className).asSubclass(Interpreter.class);
         }

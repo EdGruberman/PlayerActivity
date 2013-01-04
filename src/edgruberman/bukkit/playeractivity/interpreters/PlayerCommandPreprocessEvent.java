@@ -3,6 +3,7 @@ package edgruberman.bukkit.playeractivity.interpreters;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
 public class PlayerCommandPreprocessEvent extends Interpreter {

@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.interpreters.Interpreter;
 
 public final class StatusTracker implements Listener {
 
