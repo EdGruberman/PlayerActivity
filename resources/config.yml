@@ -11,6 +11,8 @@ idleNotify:
         - PlayerItemHeldEvent
         - PlayerJoinEvent
         - PlayerChangedWorldEvent
+        - CraftItemEvent
+        - PrepareItemCraftEvent
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
@@ -26,6 +28,8 @@ idleKick:
         - PlayerItemHeldEvent
         - PlayerJoinEvent
         - PlayerChangedWorldEvent
+        - CraftItemEvent
+        - PrepareItemCraftEvent
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
@@ -49,6 +53,8 @@ listTag:
         - PlayerItemHeldEvent
         - PlayerJoinEvent
         - PlayerChangedWorldEvent
+        - CraftItemEvent
+        - PrepareItemCraftEvent
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
