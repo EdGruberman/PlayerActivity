@@ -45,7 +45,7 @@ public final class IdleKick implements Observer {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (idle.player.hasPermission(this.ignore)) return;
 
-        final String reason = this.courier.format("+idleKickReason");
+        final String reason = this.courier.format("+idle-kick-reason");
         final String message = (reason != null ? String.format(reason, Main.readableDuration(this.idle)) : null);
         idle.player.kickPlayer(message);
     }

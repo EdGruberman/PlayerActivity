@@ -86,7 +86,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setAway(final Player player) {
-        this.setTag(player, this.courier.format("listTag.+away"));
+        this.setTag(player, this.courier.format("list-tag.+away"));
     }
 
     public void unsetAway(final Player player) {
@@ -104,7 +104,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setIdle(final Player player) {
-        this.setTag(player, this.courier.format("listTag.+idle"));
+        this.setTag(player, this.courier.format("list-tag.+idle"));
     }
 
     public void unsetIdle(final Player player) {
@@ -125,7 +125,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void setBed(final Player player) {
-        this.setTag(player, this.courier.format("listTag.+bed"));
+        this.setTag(player, this.courier.format("list-tag.+bed"));
     }
 
     public void unsetBed(final Player player) {

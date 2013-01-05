@@ -38,11 +38,11 @@ public class Mentions implements Listener {
         final long now = System.currentTimeMillis();
         String mentions = "";
         for (final Map.Entry<Player, Long> mention : this.mentions.get(player).entrySet()) {
-            if (mentions.length() != 0) mentions += this.courier.format("mentionsSummary.+delimiter");
-            mentions += this.courier.format("mentionsSummary.+player", mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
+            if (mentions.length() != 0) mentions += this.courier.format("mentions-summary.+delimiter");
+            mentions += this.courier.format("mentions-summary.+player", mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
         }
 
-        this.courier.send(player, "mentionsSummary.format", mentions);
+        this.courier.send(player, "mentions-summary.format", mentions);
     }
 
     @EventHandler

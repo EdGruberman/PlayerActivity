@@ -1,5 +1,5 @@
-logLevel: INFO
-idleNotify:
+log-level: INFO
+idle-notify:
     enabled: false
     idle: 600 # threshold when to notify (seconds)
     activity:
@@ -16,7 +16,7 @@ idleNotify:
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
-idleKick:
+idle-kick:
     enabled: false
     idle: 1200 # threshold when to kick (seconds)
     activity:
@@ -33,15 +33,15 @@ idleKick:
         - EnchantItemEvent
         - PrepareItemEnchantEvent
         - InventoryClickEvent
-awayBack:
+away-back:
     enabled: false
-    overrideIdle: true
+    override-idle: true
     mentions: true
     activity:
         - AsyncPlayerChatEvent
         - PlayerBedEnterEvent
         - PlayerBedLeaveEvent
-listTag:
+list-tag:
     enabled: false
     idle: 60 # threshold when to apply idle tag (seconds)
     activity:

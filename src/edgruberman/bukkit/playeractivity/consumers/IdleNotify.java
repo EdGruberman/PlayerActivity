@@ -71,7 +71,7 @@ public final class IdleNotify implements Observer {
         }
 
         final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.idle) : null);
-        this.courier.send(idle.player, "idleNotify", Main.readableDuration(idle.duration), kickIdle);
+        this.courier.send(idle.player, "idle-notify", Main.readableDuration(idle.duration), kickIdle);
 
         return;
     }

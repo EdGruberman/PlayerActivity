@@ -30,7 +30,7 @@ public final class Back implements CommandExecutor {
         final Player player = (Player) sender;
         final AwayState state = this.awayBack.getAwayState(player);
         if (state == null) {
-            this.courier.send(sender, "backNotAway");
+            this.courier.send(sender, "back-already");
             return true;
         }
 

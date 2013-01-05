@@ -68,7 +68,7 @@ public final class Who implements CommandExecutor, Listener {
 
         final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         if (target == null) {
-            this.courier.send(sender, "playerNotFound", args[0]);
+            this.courier.send(sender, "player-not-found", args[0]);
             return true;
         }
 
@@ -80,18 +80,18 @@ public final class Who implements CommandExecutor, Listener {
         }
 
         final long now = System.currentTimeMillis();
-        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.courier.format("who.+unknownConnected"));
+        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.courier.format("who.+unknown-connected"));
 
         // Away
         if (this.awayBack != null && this.awayBack.isAway(target.getPlayer())) {
             final AwayState state = this.awayBack.getAwayState(target.getPlayer());
-            this.courier.send(sender, "who.connectedAway", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
+            this.courier.send(sender, "who.connected-away", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
             return true;
         }
 
         // Idle
         if (this.idleNotify != null && this.listTag.tracker.getIdle().contains(target.getPlayer())) {
-            this.courier.send(sender, "who.connectedIdle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
+            this.courier.send(sender, "who.connected-idle", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - this.idleNotify.tracker.getLastFor(target.getPlayer())));
             return true;
         }
 
@@ -108,10 +108,10 @@ public final class Who implements CommandExecutor, Listener {
         final String name = this.courier.format("who.list.+player", player.getName(), player.getDisplayName(), player.getPlayerListName(), equivalence);
 
         if (this.awayBack != null && this.awayBack.isAway(player))
-            return this.courier.format("who.list.+tagAway", name);
+            return this.courier.format("who.list.+tag-away", name);
 
         if (this.listTag != null && this.listTag.tracker.getIdle().contains(player))
-            return this.courier.format("who.list.+tagIdle", name);
+            return this.courier.format("who.list.+tag-idle", name);
 
         return name;
     }

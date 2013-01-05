@@ -31,7 +31,7 @@ public class AwayBack implements Observer, Listener {
     public AwayBack(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier) {
         this.plugin = plugin;
         this.courier = courier;
-        this.overrideIdle = config.getBoolean("overrideIdle");
+        this.overrideIdle = config.getBoolean("override-idle");
 
         this.back = new StatusTracker(plugin);
         for (final String className : config.getStringList("activity"))

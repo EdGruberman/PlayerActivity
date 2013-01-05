@@ -30,29 +30,29 @@ public final class Main extends CustomPlugin {
     @Override
     public void onLoad() {
         this.putConfigMinimum("3.2.0");
-        this.putConfigMinimum("messages.yml", "3.2.0");
+        this.putConfigMinimum("messages.yml", "3.2.0a7");
     }
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("messages.yml")).setColorCode("colorCode").build();
+        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("messages.yml")).setColorCode("color-code").build();
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 
-        if (this.getConfig().getBoolean("idleNotify.enabled"))
-            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idleNotify"), this.courier, "playeractivity.idle.ignore.notify");
+        if (this.getConfig().getBoolean("idle-notify.enabled"))
+            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idle-notify"), this.courier, "playeractivity.idle.ignore.notify");
 
-        if (this.getConfig().getBoolean("idleKick.enabled")) {
-            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idleKick"), this.courier, "playeractivity.idle.ignore.kick");
+        if (this.getConfig().getBoolean("idle-kick.enabled")) {
+            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idle-kick"), this.courier, "playeractivity.idle.ignore.kick");
             if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
         }
 
-        if (this.getConfig().getBoolean("listTag.enabled"))
-            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("listTag"), this.courier, "playeractivity.idle.ignore.listtag");
+        if (this.getConfig().getBoolean("list-tag.enabled"))
+            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("list-tag"), this.courier, "playeractivity.idle.ignore.listtag");
 
-        if (this.getConfig().getBoolean("awayBack.enabled")) {
-            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("awayBack"), this.courier);
+        if (this.getConfig().getBoolean("away-back.enabled")) {
+            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("away-back"), this.courier);
             if (this.awayBack.overrideIdle) {
                 this.awayBack.idleNotify = this.idleNotify;
                 if (this.idleNotify != null) this.idleNotify.awayBack = this.awayBack;
@@ -81,7 +81,7 @@ public final class Main extends CustomPlugin {
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-        this.courier.send(sender, "commandDisabled", label);
+        this.courier.send(sender, "command-disabled", label);
         return true;
     }
 
