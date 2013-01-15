@@ -8,18 +8,18 @@ import org.bukkit.event.Listener;
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
-public class InventoryClickEvent extends Interpreter {
+public class EntityEvent extends Interpreter {
 
-    public InventoryClickEvent(final StatusTracker tracker) {
-        super(tracker, org.bukkit.event.inventory.InventoryClickEvent.class);
+    public EntityEvent(final StatusTracker tracker, final Class<? extends org.bukkit.event.entity.EntityEvent> event) {
+        super(tracker, event);
     }
 
     @Override
     public void execute(final Listener listener, final Event event) throws EventException {
-        final org.bukkit.event.inventory.InventoryClickEvent sub = (org.bukkit.event.inventory.InventoryClickEvent) event;
-        if (!(sub.getWhoClicked() instanceof Player)) return;
+        final org.bukkit.event.entity.EntityEvent sub = (org.bukkit.event.entity.EntityEvent) event;
+        if (!(sub.getEntity() instanceof Player)) return;
 
-        this.record((Player) sub.getWhoClicked(), event);
+        this.record((Player) sub.getEntity(), event);
     }
 
 }

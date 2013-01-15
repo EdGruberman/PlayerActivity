@@ -1,8 +1,9 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
@@ -10,14 +11,15 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 public class ProjectileHitEvent extends Interpreter {
 
     public ProjectileHitEvent(final StatusTracker tracker) {
-        super(tracker);
+        super(tracker, org.bukkit.event.entity.ProjectileHitEvent.class);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.entity.ProjectileHitEvent event) {
-        if (!(event.getEntity().getShooter() instanceof Player)) return;
+    @Override
+    public void execute(final Listener listener, final Event event) throws EventException {
+        final org.bukkit.event.entity.ProjectileHitEvent sub = (org.bukkit.event.entity.ProjectileHitEvent) event;
+        if (!(sub.getEntity().getShooter() instanceof Player)) return;
 
-        this.record((Player) event.getEntity().getShooter(), event);
+        this.record((Player) sub.getEntity().getShooter(), event);
     }
 
 }

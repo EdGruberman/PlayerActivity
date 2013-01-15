@@ -1,8 +1,9 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
@@ -10,14 +11,15 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 public class EntityDamageByEntityEvent extends Interpreter {
 
     public EntityDamageByEntityEvent(final StatusTracker tracker) {
-        super(tracker);
+        super(tracker, org.bukkit.event.entity.EntityDamageByEntityEvent.class);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.entity.EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
+    @Override
+    public void execute(final Listener listener, final Event event) throws EventException {
+        final org.bukkit.event.entity.EntityDamageByEntityEvent sub = (org.bukkit.event.entity.EntityDamageByEntityEvent) event;
+        if (!(sub.getDamager() instanceof Player)) return;
 
-        this.record((Player) event.getDamager(), event);
+        this.record((Player) sub.getDamager(), event);
     }
 
 }

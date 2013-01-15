@@ -1,4 +1,4 @@
-color-code: '§'
+format-code: '§'
 idle: '§8{0,time,HH:mm:ss} {3}§8 has been §3idle§8 for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
 active: '§8{0,time,HH:mm:ss} {3}§8 is §6back§8 after being idle for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
 idle-notify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration

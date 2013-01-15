@@ -1,13 +1,26 @@
 package edgruberman.bukkit.playeractivity;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.EventExecutor;
 
 /** interprets the player involved in an event */
-public class Interpreter implements Listener {
+public abstract class Interpreter implements Listener, EventExecutor {
+
+    public static Interpreter create(final String className, final StatusTracker tracker)
+            throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException
+                , InvocationTargetException, NoSuchMethodException, ClassCastException, ClassNotFoundException {
+        return Interpreter
+                .find(className)
+                .getConstructor(StatusTracker.class)
+                .newInstance(tracker);
+    }
 
     public static Class<? extends Interpreter> find(final String className) throws ClassNotFoundException, ClassCastException {
         try {
@@ -21,11 +34,11 @@ public class Interpreter implements Listener {
 
     // ---- instance ----
 
-    protected StatusTracker tracker;
+    protected final StatusTracker tracker;
 
-    protected Interpreter(final StatusTracker tracker) {
+    protected Interpreter(final StatusTracker tracker, final Class<? extends Event> event) {
         this.tracker = tracker;
-        Bukkit.getPluginManager().registerEvents(this, this.tracker.getPlugin());
+        Bukkit.getPluginManager().registerEvent(event, this, this.getEventPriority(), this, this.tracker.getPlugin(), this.getIgnoreCancelled());
     }
 
     protected void record(final Player player, final Event event) {
@@ -41,9 +54,17 @@ public class Interpreter implements Listener {
         HandlerList.unregisterAll(this);
     }
 
+    public EventPriority getEventPriority() {
+        return EventPriority.LOW;
+    }
+
+    public boolean getIgnoreCancelled() {
+        return true;
+    }
 
 
-    // ---- Utility Class ----
+
+    // ---- synchronized recording of asynchronous events ----
 
     public class SynchronizedEventRecorder implements Runnable {
 

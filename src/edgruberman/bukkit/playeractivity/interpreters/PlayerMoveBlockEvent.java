@@ -1,20 +1,11 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-
-import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
-public class PlayerMoveBlockEvent extends Interpreter {
+public class PlayerMoveBlockEvent extends PlayerEvent {
 
     public PlayerMoveBlockEvent(final StatusTracker tracker) {
-        super(tracker);
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final edgruberman.bukkit.playeractivity.PlayerMoveBlockEvent event) {
-        this.record(event.getPlayer(), event);
+        super(tracker, edgruberman.bukkit.playeractivity.PlayerMoveBlockEvent.class);
     }
 
 }

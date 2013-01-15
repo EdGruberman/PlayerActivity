@@ -1,24 +1,25 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
 
-import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 
-public class PlayerInteractEvent extends Interpreter {
+public class PlayerInteractEvent extends PlayerEvent {
 
     public PlayerInteractEvent(final StatusTracker tracker) {
-        super(tracker);
+        super(tracker, org.bukkit.event.player.PlayerInteractEvent.class);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.player.PlayerInteractEvent event) {
+    @Override
+    public void execute(final Listener listener, final Event event) throws EventException {
         // TODO - use event.isCancelled() when bug is fixed that doesn't check right clicking on air with item returning true
-        if (event.useInteractedBlock() == Result.DENY && event.useItemInHand() == Result.DENY) return;
+        final org.bukkit.event.player.PlayerInteractEvent playerEvent = (org.bukkit.event.player.PlayerInteractEvent) event;
+        if (playerEvent.useInteractedBlock() == Result.DENY && playerEvent.useItemInHand() == Result.DENY) return;
 
-        this.record(event.getPlayer(), event);
+        super.execute(listener, event);
     }
 
 }

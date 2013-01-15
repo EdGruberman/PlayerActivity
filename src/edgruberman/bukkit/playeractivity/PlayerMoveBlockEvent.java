@@ -12,6 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
@@ -91,7 +92,7 @@ public class PlayerMoveBlockEvent extends PlayerEvent {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEvent(final org.bukkit.event.player.PlayerMoveEvent event) {
+        public void onEvent(final PlayerMoveEvent event) {
             final Location last = this.last.get(event.getPlayer());
             final Location to = event.getTo();
             if (Math.abs(last.getX() - to.getX()) < 1 && Math.abs(last.getZ() - to.getZ()) < 1 && Math.abs(last.getY() - to.getY()) < 1) return;

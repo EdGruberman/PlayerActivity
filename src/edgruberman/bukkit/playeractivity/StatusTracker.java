@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-
 public final class StatusTracker implements Listener {
 
     final Plugin plugin;
@@ -55,15 +54,19 @@ public final class StatusTracker implements Listener {
         return this.plugin;
     }
 
-    public Interpreter addInterpreter(final String className) throws ClassCastException, ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        final Class<? extends Interpreter> clazz = Interpreter.find(className);
-        for (final Interpreter interpreter : this.interpreters)
-            if (interpreter.getClass().equals(clazz))
-                throw new IllegalStateException("Duplicate Interpreter class assignment: " + interpreter.getClass());
+    /** @throws IllegalStateException when existing Interpreter class already was added */
+    public void addInterpreter(final Interpreter i) throws IllegalStateException {
+        for (final Interpreter existing : this.interpreters)
+            if (existing.getClass().equals(i.getClass()))
+                throw new IllegalStateException("Duplicate Interpreter class assignment: " + existing.getClass());
 
-        final Interpreter interpreter = clazz.getConstructor(StatusTracker.class).newInstance(this);
-        this.interpreters.add(interpreter);
-        return interpreter;
+        this.interpreters.add(i);
+    }
+
+    public Interpreter addInterpreter(final String className) throws IllegalArgumentException, SecurityException, ClassCastException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+        final Interpreter i = Interpreter.create(className, this);
+        this.addInterpreter(i);
+        return i;
     }
 
     public List<Interpreter> getInterpreters() {

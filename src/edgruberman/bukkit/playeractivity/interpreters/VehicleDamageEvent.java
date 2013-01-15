@@ -1,8 +1,9 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.Listener;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
@@ -10,14 +11,15 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 public class VehicleDamageEvent extends Interpreter {
 
     public VehicleDamageEvent(final StatusTracker tracker) {
-        super(tracker);
+        super(tracker, org.bukkit.event.vehicle.VehicleDamageEvent.class);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onEvent(final org.bukkit.event.vehicle.VehicleDamageEvent event) {
-        if (!(event.getAttacker() instanceof Player)) return;
+    @Override
+    public void execute(final Listener listener, final Event event) throws EventException {
+        final org.bukkit.event.vehicle.VehicleDamageEvent sub = (org.bukkit.event.vehicle.VehicleDamageEvent) event;
+        if (!(sub.getAttacker() instanceof Player)) return;
 
-        this.record((Player) event.getAttacker(), event);
+        this.record((Player) sub.getAttacker(), event);
     }
 
 }
