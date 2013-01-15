@@ -67,7 +67,7 @@ public final class Who implements CommandExecutor, Listener {
         // ---- usage: /who <Player>
 
         final OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-        if (target == null) {
+        if (!target.isOnline() && target.getLastPlayed() == 0) {
             this.courier.send(sender, "player-not-found", args[0]);
             return true;
         }
@@ -143,7 +143,7 @@ public final class Who implements CommandExecutor, Listener {
         return sb.toString();
     }
 
-    private final class ColorStrippedDisplayNameComparator implements Comparator<Player> {
+    private static final class ColorStrippedDisplayNameComparator implements Comparator<Player> {
 
         @Override
         public int compare(final Player p1, final Player p2) {
