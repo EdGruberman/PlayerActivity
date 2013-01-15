@@ -107,7 +107,7 @@ public final class StatusTracker implements Listener {
 
 
 
-    // ---- Active ----
+    // ---- activity ----
 
     /**
      * record activity for player
@@ -129,7 +129,7 @@ public final class StatusTracker implements Listener {
 
 
 
-    // ---- Idle ----
+    // ---- idle ----
 
     public long getIdleThreshold() {
         return this.idlePublisher.threshold;

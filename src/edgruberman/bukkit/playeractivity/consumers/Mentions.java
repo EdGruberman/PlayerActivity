@@ -19,7 +19,8 @@ public class Mentions implements Listener {
 
     private final ConfigurationCourier courier;
     private final AwayBack awayBack;
-    private final Map<Player, Map<Player, Long>> mentions = new HashMap<Player, Map<Player, Long>>();
+    /** Player Name, Player Display Name, Time */
+    private final Map<String, Map<String, Long>> mentions = new HashMap<String, Map<String, Long>>();
 
     public Mentions(final Plugin plugin, final ConfigurationCourier courier, final AwayBack awayBack) {
         this.courier = courier;
@@ -33,13 +34,13 @@ public class Mentions implements Listener {
     }
 
     public void tellMentions(final Player player) {
-        if (!this.mentions.containsKey(player)) return;
+        if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
         String mentions = "";
-        for (final Map.Entry<Player, Long> mention : this.mentions.get(player).entrySet()) {
+        for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet()) {
             if (mentions.length() != 0) mentions += this.courier.format("mentions-summary.+delimiter");
-            mentions += this.courier.format("mentions-summary.+player", mention.getKey().getDisplayName(), Main.readableDuration(now - mention.getValue()));
+            mentions += this.courier.format("mentions-summary.+player", mention.getKey(), Main.readableDuration(now - mention.getValue()));
         }
 
         this.courier.send(player, "mentions-summary.format", mentions);
@@ -48,13 +49,13 @@ public class Mentions implements Listener {
     @EventHandler
     public void onPlayerChat(final AsyncPlayerChatEvent chat) {
         final long now = System.currentTimeMillis();
-        for (final Player away : this.awayBack.getAway()) {
-            if (chat.getMessage().contains(away.getName())) {
-                if (!this.mentions.containsKey(away)) this.mentions.put(away, new HashMap<Player, Long>());
-                this.mentions.get(away).put(chat.getPlayer(), now);
-
-                final AwayState state = this.awayBack.getAwayState(away);
-                this.courier.send(chat.getPlayer(), "mentions", state.player.getDisplayName(), Main.readableDuration(now - state.since), state.reason);
+        for (final String name : this.awayBack.getAway()) {
+            final AwayState state = this.awayBack.getAwayState(name);
+            final Player away = state.player();
+            if (chat.getMessage().contains(away.getName()) || chat.getMessage().contains(away.getDisplayName())) {
+                if (!this.mentions.containsKey(away.getName())) this.mentions.put(away.getName(), new HashMap<String, Long>());
+                this.mentions.get(away.getName()).put(chat.getPlayer().getDisplayName(), now);
+                this.courier.send(chat.getPlayer(), "mentions", away.getDisplayName(), Main.readableDuration(now - state.since), state.reason);
             }
         }
     }
@@ -62,12 +63,12 @@ public class Mentions implements Listener {
     @EventHandler
     public void onPlayerBack(final PlayerBack back) {
         this.tellMentions(back.getPlayer());
-        this.mentions.remove(back.getPlayer());
+        this.mentions.remove(back.getPlayer().getName());
     }
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent quit) {
-        this.mentions.remove(quit.getPlayer());
+        this.mentions.remove(quit.getPlayer().getName());
     }
 
 }

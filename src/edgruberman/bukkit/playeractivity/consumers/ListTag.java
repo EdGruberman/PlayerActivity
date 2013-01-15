@@ -27,7 +27,7 @@ public class ListTag implements Observer, Listener {
     public AwayBack awayBack = null;
 
     private final ConfigurationCourier courier;
-    private final List<Player> playersInBed = new ArrayList<Player>();
+    private final List<String> playersInBed = new ArrayList<String>();
     private final String ignore;
 
     public ListTag(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String ignore) {
@@ -92,7 +92,7 @@ public class ListTag implements Observer, Listener {
             return;
         }
 
-        if (this.playersInBed.contains(player)) {
+        if (this.playersInBed.contains(player.getName())) {
             this.setBed(player);
             return;
         }
@@ -105,7 +105,7 @@ public class ListTag implements Observer, Listener {
     }
 
     public void unsetIdle(final Player player) {
-        if (this.playersInBed.contains(player)) {
+        if (this.playersInBed.contains(player.getName())) {
             this.setBed(player);
             return;
         }

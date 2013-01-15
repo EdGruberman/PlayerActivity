@@ -26,7 +26,7 @@ public class AwayBack implements Observer, Listener {
     public IdleNotify idleNotify = null;
 
     private final ConfigurationCourier courier;
-    private final Map<Player, AwayState> away = new HashMap<Player, AwayState>();
+    private final Map<String, AwayState> away = new HashMap<String, AwayState>();
 
     public AwayBack(final Plugin plugin, final List<String> activity, final boolean overrideIdle, final boolean mentions, final ConfigurationCourier courier) {
         this.plugin = plugin;
@@ -59,42 +59,46 @@ public class AwayBack implements Observer, Listener {
     }
 
     public boolean setAway(final Player player, final String reason) {
-        final AwayState state = new AwayState(player, System.currentTimeMillis(), reason);
+        final AwayState state = new AwayState(player.getName(), System.currentTimeMillis(), reason);
 
         player.setMetadata("away", new FixedMetadataValue(this.plugin, true));
 
-        final PlayerAway custom = new PlayerAway(state.player, state.since, state.reason);
+        final PlayerAway custom = new PlayerAway(state.player(), state.since, state.reason);
         Bukkit.getServer().getPluginManager().callEvent(custom);
 
-        return this.away.put(player, state) == null;
+        return this.away.put(player.getName(), state) == null;
     }
 
     public boolean setBack(final Player player) {
-        final AwayState state = this.away.get(player);
+        final AwayState state = this.away.get(player.getName());
         if (state == null) return false;
 
         // Force IdleNotify to process activity before away status is removed
         if (this.overrideIdle && this.idleNotify != null) this.idleNotify.tracker.record(player, PlayerBack.class);
 
-        this.away.remove(player);
+        this.away.remove(player.getName());
 
         player.setMetadata("away", new FixedMetadataValue(this.plugin, false));
 
-        final PlayerBack custom = new PlayerBack(state.player, state.since, state.reason);
+        final PlayerBack custom = new PlayerBack(state.player(), state.since, state.reason);
         Bukkit.getServer().getPluginManager().callEvent(custom);
 
         return true;
     }
 
     public boolean isAway(final Player player) {
-        return this.away.containsKey(player);
+        return this.isAway(player.getName());
     }
 
-    public AwayState getAwayState(final Player player) {
-        return this.away.get(player);
+    public boolean isAway(final String name) {
+        return this.away.containsKey(name);
     }
 
-    public Set<Player> getAway() {
+    public AwayState getAwayState(final String name) {
+        return this.away.get(name);
+    }
+
+    public Set<String> getAway() {
         return this.away.keySet();
     }
 
@@ -111,14 +115,18 @@ public class AwayBack implements Observer, Listener {
     /** current status of an away player */
     public class AwayState {
 
-        public final Player player;
+        public final String name;
         public final long since;
         public final String reason;
 
-        AwayState(final Player player, final long since, final String reason) {
-            this.player = player;
+        AwayState(final String name, final long since, final String reason) {
+            this.name = name;
             this.since = since;
             this.reason = reason;
+        }
+
+        public Player player() {
+            return Bukkit.getPlayerExact(this.name);
         }
 
     }

@@ -67,13 +67,13 @@ public class PlayerMoveBlockEvent extends PlayerEvent {
                 ((MovementTracker) PlayerMoveBlockEvent.handlers).start();
         }
 
-        private final Map<Player, Location> last = new HashMap<Player, Location>();
+        private final Map<String, Location> last = new HashMap<String, Location>();
 
         @Override
         protected void start() {
             if (MovementTracker.plugin == null) return;
 
-            for (final Player player : Bukkit.getOnlinePlayers()) this.last.put(player, player.getLocation());
+            for (final Player player : Bukkit.getOnlinePlayers()) this.last.put(player.getName(), player.getLocation());
             Bukkit.getPluginManager().registerEvents(this, MovementTracker.plugin);
         }
 
@@ -93,22 +93,22 @@ public class PlayerMoveBlockEvent extends PlayerEvent {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEvent(final PlayerMoveEvent event) {
-            final Location last = this.last.get(event.getPlayer());
+            final Location last = this.last.get(event.getPlayer().getName());
             final Location to = event.getTo();
             if (Math.abs(last.getX() - to.getX()) < 1 && Math.abs(last.getZ() - to.getZ()) < 1 && Math.abs(last.getY() - to.getY()) < 1) return;
 
-            this.last.put(event.getPlayer(), to);
+            this.last.put(event.getPlayer().getName(), to);
             Bukkit.getServer().getPluginManager().callEvent(new PlayerMoveBlockEvent(event.getPlayer(), last, to));
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerJoin(final PlayerJoinEvent event) {
-            this.last.put(event.getPlayer(), event.getPlayer().getLocation());
+            this.last.put(event.getPlayer().getName(), event.getPlayer().getLocation());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerQuit(final PlayerQuitEvent event) {
-            this.last.remove(event.getPlayer());
+            this.last.remove(event.getPlayer().getName());
         }
 
     }

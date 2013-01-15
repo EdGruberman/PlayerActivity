@@ -36,7 +36,7 @@ public final class Who implements CommandExecutor, Listener {
     private final AwayBack awayBack;
     private final IdleNotify idleNotify;
     private final ListTag listTag;
-    private final Map<Player, Long> joined = new HashMap<Player, Long>();
+    private final Map<String, Long> joined = new HashMap<String, Long>();
 
     public Who(final Plugin plugin, final ConfigurationCourier courier, final AwayBack awayBack, final IdleNotify idleNotify, final ListTag listTag) {
         this.courier = courier;
@@ -80,11 +80,11 @@ public final class Who implements CommandExecutor, Listener {
         }
 
         final long now = System.currentTimeMillis();
-        final String connected =  (this.joined.containsKey(target.getPlayer()) ? Main.readableDuration(now - this.joined.get(target.getPlayer())) : this.courier.format("who.+unknown-connected"));
+        final String connected =  (this.joined.containsKey(target.getPlayer().getName()) ? Main.readableDuration(now - this.joined.get(target.getPlayer().getName())) : this.courier.format("who.+unknown-connected"));
 
         // Away
         if (this.awayBack != null && this.awayBack.isAway(target.getPlayer())) {
-            final AwayState state = this.awayBack.getAwayState(target.getPlayer());
+            final AwayState state = this.awayBack.getAwayState(target.getPlayer().getName());
             this.courier.send(sender, "who.connected-away", target.getPlayer().getDisplayName(), connected, Main.readableDuration(now - state.since), state.reason);
             return true;
         }
@@ -110,7 +110,7 @@ public final class Who implements CommandExecutor, Listener {
         if (this.awayBack != null && this.awayBack.isAway(player))
             return this.courier.format("who.list.+tag-away", name);
 
-        if (this.listTag != null && this.listTag.tracker.getIdle().contains(player))
+        if (this.listTag != null && this.listTag.tracker.getIdle().contains(player.getName()))
             return this.courier.format("who.list.+tag-idle", name);
 
         return name;
@@ -118,12 +118,12 @@ public final class Who implements CommandExecutor, Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        this.joined.put(event.getPlayer(), System.currentTimeMillis());
+        this.joined.put(event.getPlayer().getName(), System.currentTimeMillis());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.joined.remove(event.getPlayer());
+        this.joined.remove(event.getPlayer().getName());
     }
 
     /**
