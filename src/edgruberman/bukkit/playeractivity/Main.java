@@ -1,10 +1,12 @@
 package edgruberman.bukkit.playeractivity;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
 
 import edgruberman.bukkit.playeractivity.commands.Away;
@@ -29,30 +31,35 @@ public final class Main extends CustomPlugin {
 
     @Override
     public void onLoad() {
-        this.putConfigMinimum("3.2.0");
-        this.putConfigMinimum("messages.yml", "3.2.0a7");
+        this.putConfigMinimum("3.3.0a0");
+        this.putConfigMinimum("language.yml", "3.3.0a0");
     }
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("messages.yml")).setColorCode("color-code").build();
+        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("language.yml")).setFormatCode("format-code").build();
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 
-        if (this.getConfig().getBoolean("idle-notify.enabled"))
-            this.idleNotify = new IdleNotify(this, this.getConfig().getConfigurationSection("idle-notify"), this.courier, "playeractivity.idle.ignore.notify");
+        ConfigurationSection section = this.getConfig().getConfigurationSection("idle-notify");
+        if (section != null && section.getBoolean("enabled"))
+            this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.notify");
 
-        if (this.getConfig().getBoolean("idle-kick.enabled")) {
-            this.idleKick = new IdleKick(this, this.getConfig().getConfigurationSection("idle-kick"), this.courier, "playeractivity.idle.ignore.kick");
+        section = this.getConfig().getConfigurationSection("idle-kick");
+        if (section != null && section.getBoolean("enabled")) {
+            this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.kick");
             if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
         }
 
-        if (this.getConfig().getBoolean("list-tag.enabled"))
-            this.listTag = new ListTag(this, this.getConfig().getConfigurationSection("list-tag"), this.courier, "playeractivity.idle.ignore.listtag");
+        section = this.getConfig().getConfigurationSection("list-tag");
+        if (section != null && section.getBoolean("enabled")) {
+            this.listTag = new ListTag(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.listtag");
+        }
 
-        if (this.getConfig().getBoolean("away-back.enabled")) {
-            this.awayBack = new AwayBack(this, this.getConfig().getConfigurationSection("away-back"), this.courier);
+        section = this.getConfig().getConfigurationSection("away-back");
+        if (section != null && section.getBoolean("enabled")) {
+            this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("override-idle"), section.getBoolean("mentions"), this.courier);
             if (this.awayBack.overrideIdle) {
                 this.awayBack.idleNotify = this.idleNotify;
                 if (this.idleNotify != null) this.idleNotify.awayBack = this.awayBack;
@@ -84,6 +91,17 @@ public final class Main extends CustomPlugin {
         this.courier.send(sender, "command-disabled", label);
         return true;
     }
+
+    private List<String> getActivity(final ConfigurationSection section) {
+        if (section.isList("activity")) return section.getStringList("activity");
+        return this.getConfig().getStringList("activity");
+    }
+
+    private long getIdle(final ConfigurationSection section) {
+        return TimeUnit.MILLISECONDS.convert(section.getInt("idle"), TimeUnit.SECONDS);
+    }
+
+
 
     public static String readableDuration(final long ms) {
         long total = TimeUnit.MILLISECONDS.toSeconds(ms);

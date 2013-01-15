@@ -16,14 +16,16 @@ import org.bukkit.plugin.Plugin;
  */
 public class Courier {
 
+    protected static final char DEFAULT_FORMAT_CODE = ChatColor.COLOR_CHAR;
+
     protected final Plugin plugin;
     protected final boolean timestamp;
-    protected final char colorCode;
+    protected final char formatCode;
 
     protected Courier(final Courier.Factory parameters) {
         this.plugin = parameters.plugin;
         this.timestamp = parameters.timestamp;
-        this.colorCode = parameters.colorCode;
+        this.formatCode = parameters.formatCode;
     }
 
     public Plugin getPlugin() {
@@ -35,14 +37,17 @@ public class Courier {
         return this.timestamp;
     }
 
-    /** @return translated pattern if alternate color code configured, otherwise pattern */
-    public String colorize(final String pattern) {
-        return ( this.colorCode == ChatColor.COLOR_CHAR ? pattern : ChatColor.translateAlternateColorCodes(this.colorCode, pattern) );
+    /**
+     * @return pattern translated into Minecraft formatting codes
+     * @see {@link org.bukkit.ChatColor#translateAlternateColorCodes(char, String)}
+     */
+    public String translate(final String pattern) {
+        return ( this.formatCode == ChatColor.COLOR_CHAR ? pattern : ChatColor.translateAlternateColorCodes(this.formatCode, pattern) );
     }
 
     /** format a pattern with supplied arguments */
     public String format(final String pattern, final Object... arguments) {
-        return MessageFormat.format(this.colorize(pattern), arguments);
+        return MessageFormat.format(this.translate(pattern), arguments);
     }
 
     /**
@@ -50,7 +55,7 @@ public class Courier {
      * @param pattern message text that contains format elements
      */
     public Message draft(final String pattern, final Object... arguments) {
-        final Message.Factory factory = Message.create(this.colorize(pattern), arguments);
+        final Message.Factory factory = Message.create(this.translate(pattern), arguments);
         if (this.timestamp) factory.timestamp();
         return factory.build();
     }
@@ -109,12 +114,12 @@ public class Courier {
 
         public Plugin plugin;
         public boolean timestamp;
-        public char colorCode;
+        public char formatCode;
 
         protected Factory(final Plugin plugin) {
             this.plugin = plugin;
             this.setTimestamp(true);
-            this.colorCode = ChatColor.COLOR_CHAR;
+            this.formatCode = Courier.DEFAULT_FORMAT_CODE;
         }
 
         /** @param timestamp true to prepend timestamp to arguments of all messages */
@@ -123,9 +128,9 @@ public class Courier {
             return this;
         }
 
-        /** @param colorCode prefix that designates a color code in message patterns (default is {@value org.bukkit.ChatColor#COLOR_CHAR}, common alternate is &) */
-        public Factory setColorCode(final char colorCode) {
-            this.colorCode = colorCode;
+        /** @param formatCode prefix that designates a color code in message patterns (default is {@value org.bukkit.ChatColor#COLOR_CHAR}, common alternate is &) */
+        public Factory setFormatCode(final char formatCode) {
+            this.formatCode = formatCode;
             return this;
         }
 

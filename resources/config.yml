@@ -1,61 +1,33 @@
 log-level: INFO
+activity:
+  - PlayerMoveBlockEvent
+  - AsyncPlayerChatEvent
+  - PlayerInteractEvent
+  - PlayerDropItemEvent
+  - PlayerToggleSneakEvent
+  - PlayerItemHeldEvent
+  - PlayerJoinEvent
+  - PlayerChangedWorldEvent
+  - CraftItemEvent
+  - PrepareItemCraftEvent
+  - EnchantItemEvent
+  - PrepareItemEnchantEvent
+  - InventoryClickEvent
 idle-notify:
-    enabled: false
-    idle: 600 # threshold when to notify (seconds)
-    activity:
-        - PlayerMoveBlockEvent
-        - AsyncPlayerChatEvent
-        - PlayerInteractEvent
-        - PlayerDropItemEvent
-        - PlayerToggleSneakEvent
-        - PlayerItemHeldEvent
-        - PlayerJoinEvent
-        - PlayerChangedWorldEvent
-        - CraftItemEvent
-        - PrepareItemCraftEvent
-        - EnchantItemEvent
-        - PrepareItemEnchantEvent
-        - InventoryClickEvent
+  enabled: false
+  idle: 600 # threshold when to notify (seconds)
 idle-kick:
-    enabled: false
-    idle: 1200 # threshold when to kick (seconds)
-    activity:
-        - PlayerMoveBlockEvent
-        - AsyncPlayerChatEvent
-        - PlayerInteractEvent
-        - PlayerDropItemEvent
-        - PlayerToggleSneakEvent
-        - PlayerItemHeldEvent
-        - PlayerJoinEvent
-        - PlayerChangedWorldEvent
-        - CraftItemEvent
-        - PrepareItemCraftEvent
-        - EnchantItemEvent
-        - PrepareItemEnchantEvent
-        - InventoryClickEvent
-away-back:
-    enabled: false
-    override-idle: true
-    mentions: true
-    activity:
-        - AsyncPlayerChatEvent
-        - PlayerBedEnterEvent
-        - PlayerBedLeaveEvent
+  enabled: false
+  idle: 1200 # threshold when to kick (seconds)
 list-tag:
-    enabled: false
-    idle: 60 # threshold when to apply idle tag (seconds)
-    activity:
-        - PlayerMoveBlockEvent
-        - AsyncPlayerChatEvent
-        - PlayerInteractEvent
-        - PlayerDropItemEvent
-        - PlayerToggleSneakEvent
-        - PlayerItemHeldEvent
-        - PlayerJoinEvent
-        - PlayerChangedWorldEvent
-        - CraftItemEvent
-        - PrepareItemCraftEvent
-        - EnchantItemEvent
-        - PrepareItemEnchantEvent
-        - InventoryClickEvent
+  enabled: false
+  idle: 60 # threshold when to apply idle tag (seconds)
+away-back:
+  enabled: false
+  override-idle: true
+  mentions: true
+  activity:
+    - AsyncPlayerChatEvent
+    - PlayerBedEnterEvent
+    - PlayerBedLeaveEvent
 version: @VERSION@

@@ -1,20 +1,20 @@
 package edgruberman.bukkit.playeractivity.messaging;
 
+import java.util.logging.Level;
+
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 /**
- * handles message delivery and logging;
- * uses message patterns stored in a {@link org.bukkit.configuration.ConfigurationSection ConfigurationSection}
- *
+ * handles message delivery and logging; uses keys to reference message patterns stored in a {@link org.bukkit.configuration.ConfigurationSection ConfigurationSection}
  * @author EdGruberman (ed@rjump.com)
- * @version 5.1.0
+ * @version 5.1.2
  */
 public class ConfigurationCourier extends Courier {
 
-    /** section containing message patterns */
+    /** message pattern container */
     protected final ConfigurationSection base;
 
     protected ConfigurationCourier(final ConfigurationCourier.Factory parameters) {
@@ -22,21 +22,26 @@ public class ConfigurationCourier extends Courier {
         this.base = parameters.base;
     }
 
-    /** @return section all message pattern paths are referenced from */
+    /** @return section all message pattern key paths are relative to */
     public ConfigurationSection getBase() {
         return this.base;
     }
 
-    /** @return String supplied in base configuration at key path; null if not a String */
+    /**
+     * @param key path relative to {@link #getBase base} that contains message pattern
+     * @return String value in configuration; null if not a String
+     */
     public String pattern(final String key) {
-        if (!this.base.isString(key)) return null;
+        if (!this.base.isString(key)) {
+            this.plugin.getLogger().log(Level.FINEST, "String value not found for {0} in {1}", new Object[] { key, ( this.base.getCurrentPath().equals("") ? "(root)" : this.base.getCurrentPath() ) });
+            return null;
+        }
         return this.base.getString(key);
     }
 
     /**
      * preliminary Message construction before formatting for target recipient (timestamp argument prepended if configured)
-     *
-     * @param key path to message text that can contain format elements in base configuration
+     * @param key path relative to {@link #getBase base} that contains message pattern
      */
     public Message compose(final String key, final Object... arguments) {
         final String pattern = this.pattern(key);
@@ -46,8 +51,7 @@ public class ConfigurationCourier extends Courier {
 
     /**
      * retrieve a message pattern from the configuration and format with supplied arguments
-     *
-     * @param key relative path from base to pattern
+     * @param key path relative to {@link #getBase base} that contains message pattern
      */
     @Override
     public String format(final String key, final Object... arguments) {
@@ -56,24 +60,40 @@ public class ConfigurationCourier extends Courier {
         return super.format(pattern, arguments);
     }
 
+    /**
+     * deliver message to individual player
+     * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
+     */
     public void send(final CommandSender target, final String key, final Object... arguments) {
         final String pattern = this.pattern(key);
         if (pattern == null) return;
         this.sendMessage(target, pattern, arguments);
     }
 
+    /**
+     * deliver message to all players on server
+     * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
+     */
     public void broadcast(final String key, final Object... arguments) {
         final String pattern = this.pattern(key);
         if (pattern == null) return;
         this.broadcastMessage(pattern, arguments);
     }
 
+    /**
+     * deliver message to players in a world
+     * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
+     */
     public void world(final World target, final String key, final Object... arguments) {
         final String pattern = this.pattern(key);
         if (pattern == null) return;
         this.worldMessage(target, pattern, arguments);
     }
 
+    /**
+     * deliver message to players with a permission
+     * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
+     */
     public void publish(final String permission, final String key, final Object... arguments) {
         final String pattern = this.pattern(key);
         if (pattern == null) return;
@@ -116,10 +136,10 @@ public class ConfigurationCourier extends Courier {
         }
 
         /** @param key path to color code prefix character in base configuration */
-        public Factory setColorCode(final String key) {
+        public Factory setFormatCode(final String key) {
             final String value = this.base.getString(key);
             if (value == null) throw new IllegalArgumentException("Color code not found: " + this.base.getCurrentPath() + this.base.getRoot().options().pathSeparator() + key);
-            this.setColorCode(value.charAt(0));
+            this.setFormatCode(value.charAt(0));
             return this;
         }
 
@@ -130,8 +150,8 @@ public class ConfigurationCourier extends Courier {
         }
 
         @Override
-        public Factory setColorCode(final char colorCode) {
-            super.setColorCode(colorCode);
+        public Factory setFormatCode(final char colorCode) {
+            super.setFormatCode(colorCode);
             return this;
         }
 

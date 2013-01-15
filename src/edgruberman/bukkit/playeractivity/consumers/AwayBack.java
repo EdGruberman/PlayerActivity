@@ -1,13 +1,13 @@
 package edgruberman.bukkit.playeractivity.consumers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -28,13 +28,13 @@ public class AwayBack implements Observer, Listener {
     private final ConfigurationCourier courier;
     private final Map<Player, AwayState> away = new HashMap<Player, AwayState>();
 
-    public AwayBack(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier) {
+    public AwayBack(final Plugin plugin, final List<String> activity, final boolean overrideIdle, final boolean mentions, final ConfigurationCourier courier) {
         this.plugin = plugin;
         this.courier = courier;
-        this.overrideIdle = config.getBoolean("override-idle");
+        this.overrideIdle = overrideIdle;
 
         this.back = new StatusTracker(plugin);
-        for (final String className : config.getStringList("activity"))
+        for (final String className : activity)
             try {
                 this.back.addInterpreter(className);
             } catch (final Exception e) {
@@ -43,7 +43,7 @@ public class AwayBack implements Observer, Listener {
 
         this.back.register(this, PlayerActive.class);
 
-        this.mentions = (config.getBoolean("mentions") ? new Mentions(plugin, this.courier, this) : null);
+        this.mentions = (mentions ? new Mentions(plugin, this.courier, this) : null);
 
         for (final Player player : Bukkit.getOnlinePlayers())
             player.setMetadata("away", new FixedMetadataValue(this.plugin, false));

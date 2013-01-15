@@ -86,6 +86,19 @@ public final class StatusTracker implements Listener {
         throw new IllegalArgumentException("Unsupported PlayerStatus class: " + status.getName());
     }
 
+    public void deregister(final Observer observer, final Class<? extends PlayerStatus> status) {
+        if (status.equals(PlayerActive.class)) {
+            this.activityPublisher.deleteObserver(observer);
+            return;
+
+        } else if (status.equals(PlayerIdle.class)) {
+            this.idlePublisher.deleteObserver(observer);
+            return;
+        }
+
+        throw new IllegalArgumentException("Unsupported PlayerStatus class: " + status.getName());
+    }
+
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
         this.activityPublisher.last.remove(event.getPlayer().getName());

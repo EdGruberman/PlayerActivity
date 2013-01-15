@@ -7,7 +7,6 @@ import java.util.Observer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -24,7 +23,6 @@ import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 
 public class ListTag implements Observer, Listener {
 
-    public final long idle;
     public final StatusTracker tracker;
     public AwayBack awayBack = null;
 
@@ -32,13 +30,12 @@ public class ListTag implements Observer, Listener {
     private final List<Player> playersInBed = new ArrayList<Player>();
     private final String ignore;
 
-    public ListTag(final Plugin plugin, final ConfigurationSection config, final ConfigurationCourier courier, final String ignore) {
+    public ListTag(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String ignore) {
         this.courier = courier;
         this.ignore = ignore;
-        this.idle = (long) config.getInt("idle", (int) this.idle / 1000) * 1000;
 
-        this.tracker = new StatusTracker(plugin, this.idle);
-        for (final String className : config.getStringList("activity"))
+        this.tracker = new StatusTracker(plugin, idle);
+        for (final String className : activity)
             try {
                 this.tracker.addInterpreter(className);
             } catch (final Exception e) {
@@ -63,7 +60,7 @@ public class ListTag implements Observer, Listener {
         // Back from idle
         if (o instanceof ActivityPublisher) {
             final PlayerActive activity = (PlayerActive) arg;
-            if (activity.last == null || (activity.occurred - activity.last) < this.idle || activity.player.hasPermission(this.ignore))
+            if (activity.last == null || (activity.occurred - activity.last) < this.tracker.getIdleThreshold() || activity.player.hasPermission(this.ignore))
                 return;
 
             if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
