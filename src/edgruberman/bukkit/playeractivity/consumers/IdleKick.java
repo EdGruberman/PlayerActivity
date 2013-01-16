@@ -17,11 +17,11 @@ public final class IdleKick implements Observer {
     public final StatusTracker tracker;
 
     private final ConfigurationCourier courier;
-    private final String ignore;
+    private final String track;
 
-    public IdleKick(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String ignore) {
+    public IdleKick(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String track) {
         this.courier = courier;
-        this.ignore = ignore;
+        this.track = track;
 
         this.tracker = new StatusTracker(plugin, idle);
         for (final String className : activity)
@@ -41,7 +41,7 @@ public final class IdleKick implements Observer {
     @Override
     public void update(final Observable o, final Object arg) {
         final PlayerIdle idle = (PlayerIdle) arg;
-        if (idle.player.hasPermission(this.ignore)) return;
+        if (!idle.player.hasPermission(this.track)) return;
 
         final String reason = this.courier.format("+idle-kick-reason");
         final String message = (reason != null ? String.format(reason, Main.readableDuration(this.tracker.getIdleThreshold())) : null);

@@ -1,6 +1,7 @@
 package edgruberman.bukkit.playeractivity.consumers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.util.FormattedArrayList;
 
 public class Mentions implements Listener {
 
@@ -37,11 +39,9 @@ public class Mentions implements Listener {
         if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
-        String mentions = "";
-        for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet()) {
-            if (mentions.length() != 0) mentions += this.courier.format("mentions-summary.+delimiter");
-            mentions += this.courier.format("mentions-summary.+player", mention.getKey(), Main.readableDuration(now - mention.getValue()));
-        }
+        final List<Object[]> mentions = new FormattedArrayList<Object[]>(this.courier.getBase().getConfigurationSection("mentions-summary"));
+        for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet())
+            mentions.add(new Object[] { mention.getKey(), Main.readableDuration(now - mention.getValue()) });
 
         this.courier.send(player, "mentions-summary.format", mentions);
     }

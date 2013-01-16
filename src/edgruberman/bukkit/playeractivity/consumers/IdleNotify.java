@@ -22,11 +22,11 @@ public final class IdleNotify implements Observer {
     public IdleKick idleKick = null;
 
     private final ConfigurationCourier courier;
-    private final String ignore;
+    private final String track;
 
-    public IdleNotify(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String ignore) {
+    public IdleNotify(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String track) {
         this.courier = courier;
-        this.ignore = ignore;
+        this.track = track;
 
         this.tracker = new StatusTracker(plugin, idle);
         for (final String className : activity)
@@ -46,21 +46,21 @@ public final class IdleNotify implements Observer {
 
     @Override
     public void update(final Observable o, final Object arg) {
-        // Back
+        // active
         if (o instanceof ActivityPublisher) {
             final PlayerActive activity = (PlayerActive) arg;
             if (activity.last == null || (activity.occurred - activity.last) < this.tracker.getIdleThreshold()) return;
 
-            if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
+            if (this.isAwayOverriding(activity.player) || !activity.player.hasPermission(this.track)) return;
 
             final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.tracker.getIdleThreshold()) : null);
             this.courier.broadcast("active", Main.readableDuration((activity.occurred - activity.last)), kickIdle, activity.player.getDisplayName());
             return;
         }
 
-        // Idle
+        // idle
         final PlayerIdle idle = (PlayerIdle) arg;
-        if (idle.player.hasPermission(this.ignore)) return;
+        if (!idle.player.hasPermission(this.track)) return;
 
         if (!this.isAwayOverriding(idle.player)) {
             final String kickIdle = (this.idleKick != null ? Main.readableDuration(this.idleKick.tracker.getIdleThreshold()) : null);

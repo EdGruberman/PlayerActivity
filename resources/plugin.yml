@@ -5,66 +5,79 @@ author: EdGruberman (ed@rjump.com)
 website: http://dev.bukkit.org/server-mods/playeractivity/
 main: edgruberman.bukkit.playeractivity.Main
 commands:
-    'playeractivity:away':
-        aliases: [away, afk]
-        description: Configure your status as not active
-        permission: playeractivity.away
-        usage: /<command>[ <Reason>]
-    'playeractivity:back':
-        aliases: back
-        description: Configure your status as no longer away
-        permission: playeractivity.back
-        usage: /<command>
-    'playeractivity:who':
-        aliases: [who, players, whois]
-        description: View status of players
-        permission: playeractivity.who
-        usage: /<command>[ <Player>]
-    'playeractivity:reload':
-        description: Reload PlayerActivity plugin
-        permission: playeractivity.reload
+  'playeractivity:away':
+    aliases: [away, afk]
+    description: Configure your status as not active
+    permission: playeractivity.away
+    usage: '§f-> §7Usage: §b/<command>§3[ §o<Reason>§3]'
+  'playeractivity:back':
+    aliases: [back]
+    description: Configure your status as active
+    permission: playeractivity.back
+    usage: '§f-> §7Usage: §b/<command>'
+  'playeractivity:who':
+    aliases: [who, whois]
+    description: View detailed status of player
+    permission: playeractivity.who
+    usage: '§f-> §7Usage: §b/<command> §o<Player>'
+  'playeractivity:players':
+    aliases: [players]
+    description: View list of connected players
+    permission: playeractivity.players
+    usage: '§f-> §7Usage: §b/<command>'
+  'playeractivity:reload':
+    description: Reload PlayerActivity plugin
+    permission: playeractivity.reload
+    usage: '§f-> §7Usage: §b/<command>'
 permissions:
-    playeractivity.hide:
-        description: Player will be hidden from all automatic status/notifications
-        default: false
-        children:
-            playeractivity.who.hide: true
-            playeractivity.idle.ignore: true
-    playeractivity.who.hide:
-        description: Player will be hidden from who command
-        default: false
-    playeractivity.idle.ignore:
-        description: Player will not be notified or kicked if they go idle
-        default: false
-        children:
-            playeractivity.idle.ignore.notify: true
-            playeractivity.idle.ignore.kick: true
-            playeractivity.idle.ignore.listtag: true
-    playeractivity.idle.ignore.notify:
-        description: IdleNotify will not notify if player goes idle
-        default: false
-    playeractivity.idle.ignore.kick:
-        description: IdleKick will not kick player if player goes idle
-        default: false
-    playeractivity.idle.ignore.listtag:
-        description: ListTag will not tag player if player goes idle
-        default: false
-    playeractivity.away:
-        description: Can use away command
-        default: false
-    playeractivity.back:
-        description: Can use back command
-        default: false
-    playeractivity.who:
-        description: Can use who command
-        default: false
-    playeractivity.awayback:
-        description: Can use away, back, and who commands
-        default: true
-        children:
-            playeractivity.away: true
-            playeractivity.back: true
-            playeractivity.who: true
-    playeractivity.reload:
-        description: Can use reload command
-        default: op
+  playeractivity.admin:
+    description: Can use all features
+    default: op
+    children:
+      playeractivity.user: true
+      playeractivity.reload: true
+  playeractivity.user:
+    description: Can use basic features
+    default: true
+    children:
+      playeractivity.track: true
+      playeractivity.away: true
+      playeractivity.back: true
+      playeractivity.who: true
+      playeractivity.players: true
+  playeractivity.track:
+    description: Activity is tracked
+    default: false
+    children:
+      playeractivity.track.who: true
+      playeractivity.track.players: true
+      playeractivity.track.idlenotify: true
+      playeractivity.track.idlekick: true
+      playeractivity.track.listtag: true
+  playeractivity.track.players:
+    description: Listed in players command results
+    default: false
+  playeractivity.track.who:
+    description: Details provided in who command results
+    default: false
+  playeractivity.track.idlenotify:
+    description: Notify if player goes idle
+    default: false
+  playeractivity.track.idlekick:
+    description: Kick if player goes idle
+    default: false
+  playeractivity.track.listtag:
+    description: Tag name in player list
+    default: false
+  playeractivity.away:
+    description: Can use away command
+    default: false
+  playeractivity.back:
+    description: Can use back command
+    default: false
+  playeractivity.who:
+    description: Can use who command
+    default: false
+  playeractivity.reload:
+    description: Can use reload command
+    default: false

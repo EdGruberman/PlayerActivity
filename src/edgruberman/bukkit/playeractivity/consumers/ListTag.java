@@ -28,11 +28,11 @@ public class ListTag implements Observer, Listener {
 
     private final ConfigurationCourier courier;
     private final List<String> playersInBed = new ArrayList<String>();
-    private final String ignore;
+    private final String track;
 
-    public ListTag(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String ignore) {
+    public ListTag(final Plugin plugin, final long idle, final List<String> activity, final ConfigurationCourier courier, final String track) {
         this.courier = courier;
-        this.ignore = ignore;
+        this.track = track;
 
         this.tracker = new StatusTracker(plugin, idle);
         for (final String className : activity)
@@ -57,21 +57,21 @@ public class ListTag implements Observer, Listener {
 
     @Override
     public void update(final Observable o, final Object arg) {
-        // Back from idle
+        // active
         if (o instanceof ActivityPublisher) {
             final PlayerActive activity = (PlayerActive) arg;
-            if (activity.last == null || (activity.occurred - activity.last) < this.tracker.getIdleThreshold() || activity.player.hasPermission(this.ignore))
+            if (activity.last == null || (activity.occurred - activity.last) < this.tracker.getIdleThreshold() || !activity.player.hasPermission(this.track))
                 return;
 
-            if (this.isAwayOverriding(activity.player) || activity.player.hasPermission(this.ignore)) return;
+            if (this.isAwayOverriding(activity.player) || !activity.player.hasPermission(this.track)) return;
 
             this.unsetIdle(activity.player);
             return;
         }
 
-        // Idle
+        // idle
         final PlayerIdle idle = (PlayerIdle) arg;
-        if (this.isAwayOverriding(idle.player) || idle.player.hasPermission(this.ignore)) return;
+        if (this.isAwayOverriding(idle.player) || idle.player.hasPermission(this.track)) return;
 
         this.setIdle(idle.player);
         return;
@@ -146,6 +146,16 @@ public class ListTag implements Observer, Listener {
 
     public void resetListName(final Player player) {
         player.setPlayerListName(player.getName());
+    }
+
+    public String tag(final Player player) {
+        if (this.awayBack != null && this.awayBack.isAway(player))
+            return this.courier.format("who.list.+tag-away", player.getDisplayName());
+
+        if (this.tracker.getIdle().contains(player.getName()))
+            return this.courier.format("who.list.+tag-idle", player.getDisplayName());
+
+        return player.getDisplayName();
     }
 
     @EventHandler

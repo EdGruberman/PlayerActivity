@@ -44,17 +44,17 @@ public final class Main extends CustomPlugin {
 
         ConfigurationSection section = this.getConfig().getConfigurationSection("idle-notify");
         if (section != null && section.getBoolean("enabled"))
-            this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.notify");
+            this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlenotify");
 
         section = this.getConfig().getConfigurationSection("idle-kick");
         if (section != null && section.getBoolean("enabled")) {
-            this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.kick");
+            this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlekick");
             if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
         }
 
         section = this.getConfig().getConfigurationSection("list-tag");
         if (section != null && section.getBoolean("enabled")) {
-            this.listTag = new ListTag(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.idle.ignore.listtag");
+            this.listTag = new ListTag(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.listtag");
         }
 
         section = this.getConfig().getConfigurationSection("away-back");
