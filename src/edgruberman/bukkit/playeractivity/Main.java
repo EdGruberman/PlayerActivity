@@ -42,28 +42,23 @@ public final class Main extends CustomPlugin {
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 
-        ConfigurationSection section = this.getConfig().getConfigurationSection("idle-notify");
+        ConfigurationSection section = this.getConfig().getConfigurationSection("idle-kick");
         if (section != null && section.getBoolean("enabled"))
-            this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlenotify");
-
-        section = this.getConfig().getConfigurationSection("idle-kick");
-        if (section != null && section.getBoolean("enabled")) {
             this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlekick");
-            if (this.idleNotify != null) this.idleNotify.idleKick = this.idleKick;
-        }
+
+        section = this.getConfig().getConfigurationSection("idle-notify");
+        if (section != null && section.getBoolean("enabled"))
+            this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section)
+                    , ( this.idleKick != null ? this.idleKick.tracker.getIdleThreshold() : -1 ), section.getBoolean("cancel-when-away")
+                    , this.courier, "playeractivity.track.idlenotify");
 
         section = this.getConfig().getConfigurationSection("list-tag");
-        if (section != null && section.getBoolean("enabled")) {
+        if (section != null && section.getBoolean("enabled"))
             this.listTag = new ListTag(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.listtag");
-        }
 
         section = this.getConfig().getConfigurationSection("away-back");
         if (section != null && section.getBoolean("enabled")) {
-            this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("override-idle"), section.getBoolean("mentions"), this.courier);
-            if (this.awayBack.overrideIdle) {
-                this.awayBack.idleNotify = this.idleNotify;
-                if (this.idleNotify != null) this.idleNotify.awayBack = this.awayBack;
-            }
+            this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("mentions"), this.courier);
             if (this.listTag != null) this.listTag.awayBack = this.awayBack;
             this.getCommand("playeractivity:away").setExecutor(new Away(this.courier, this.awayBack));
             this.getCommand("playeractivity:back").setExecutor(new Back(this.courier, this.awayBack));

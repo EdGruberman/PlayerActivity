@@ -20,18 +20,15 @@ import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 public class AwayBack implements Observer, Listener {
 
     public final Plugin plugin;
-    public final boolean overrideIdle;
     public final StatusTracker back;
     public final Mentions mentions;
-    public IdleNotify idleNotify = null;
 
     private final ConfigurationCourier courier;
     private final Map<String, AwayState> away = new HashMap<String, AwayState>();
 
-    public AwayBack(final Plugin plugin, final List<String> activity, final boolean overrideIdle, final boolean mentions, final ConfigurationCourier courier) {
+    public AwayBack(final Plugin plugin, final List<String> activity, final boolean mentions, final ConfigurationCourier courier) {
         this.plugin = plugin;
         this.courier = courier;
-        this.overrideIdle = overrideIdle;
 
         this.back = new StatusTracker(plugin);
         for (final String className : activity)
@@ -59,30 +56,26 @@ public class AwayBack implements Observer, Listener {
     }
 
     public boolean setAway(final Player player, final String reason) {
-        final AwayState state = new AwayState(player.getName(), System.currentTimeMillis(), reason);
+        if (this.away.containsKey(player.getName())) return false;
 
+        final AwayState state = new AwayState(player.getName(), System.currentTimeMillis(), reason);
+        this.away.put(player.getName(), state);
         player.setMetadata("away", new FixedMetadataValue(this.plugin, true));
 
         final PlayerAway custom = new PlayerAway(state.player(), state.since, state.reason);
         Bukkit.getServer().getPluginManager().callEvent(custom);
-
-        return this.away.put(player.getName(), state) == null;
+        return true;
     }
 
     public boolean setBack(final Player player) {
         final AwayState state = this.away.get(player.getName());
         if (state == null) return false;
 
-        // Force IdleNotify to process activity before away status is removed
-        if (this.overrideIdle && this.idleNotify != null) this.idleNotify.tracker.record(player, PlayerBack.class);
-
         this.away.remove(player.getName());
-
         player.setMetadata("away", new FixedMetadataValue(this.plugin, false));
 
         final PlayerBack custom = new PlayerBack(state.player(), state.since, state.reason);
         Bukkit.getServer().getPluginManager().callEvent(custom);
-
         return true;
     }
 
