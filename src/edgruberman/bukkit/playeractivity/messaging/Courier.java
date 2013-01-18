@@ -3,7 +3,6 @@ package edgruberman.bukkit.playeractivity.messaging;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -12,20 +11,16 @@ import org.bukkit.plugin.Plugin;
  * handles message delivery and logging
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 5.0.1
+ * @version 6.0.0
  */
 public class Courier {
 
-    protected static final char DEFAULT_FORMAT_CODE = ChatColor.COLOR_CHAR;
-
     protected final Plugin plugin;
     protected final boolean timestamp;
-    protected final char formatCode;
 
     protected Courier(final Courier.Factory parameters) {
         this.plugin = parameters.plugin;
         this.timestamp = parameters.timestamp;
-        this.formatCode = parameters.formatCode;
     }
 
     public Plugin getPlugin() {
@@ -37,17 +32,9 @@ public class Courier {
         return this.timestamp;
     }
 
-    /**
-     * @return pattern translated into Minecraft formatting codes
-     * @see {@link org.bukkit.ChatColor#translateAlternateColorCodes(char, String)}
-     */
-    public String translate(final String pattern) {
-        return ( this.formatCode == ChatColor.COLOR_CHAR ? pattern : ChatColor.translateAlternateColorCodes(this.formatCode, pattern) );
-    }
-
     /** format a pattern with supplied arguments */
-    public String format(final String pattern, final Object... arguments) {
-        return MessageFormat.format(this.translate(pattern), arguments);
+    public String formatMessage(final String pattern, final Object... arguments) {
+        return MessageFormat.format(pattern, arguments);
     }
 
     /**
@@ -55,7 +42,7 @@ public class Courier {
      * @param pattern message text that contains format elements
      */
     public Message draft(final String pattern, final Object... arguments) {
-        final Message.Factory factory = Message.create(this.translate(pattern), arguments);
+        final Message.Factory factory = Message.create(pattern, arguments);
         if (this.timestamp) factory.timestamp();
         return factory.build();
     }
@@ -112,25 +99,17 @@ public class Courier {
             return new Factory(plugin);
         }
 
-        public Plugin plugin;
-        public boolean timestamp;
-        public char formatCode;
+        protected final Plugin plugin;
+        protected boolean timestamp;
 
         protected Factory(final Plugin plugin) {
             this.plugin = plugin;
             this.setTimestamp(true);
-            this.formatCode = Courier.DEFAULT_FORMAT_CODE;
         }
 
         /** @param timestamp true to prepend timestamp to arguments of all messages */
         public Factory setTimestamp(final boolean timestamp) {
             this.timestamp = true;
-            return this;
-        }
-
-        /** @param formatCode prefix that designates a color code in message patterns (default is {@value org.bukkit.ChatColor#COLOR_CHAR}, common alternate is &) */
-        public Factory setFormatCode(final char formatCode) {
-            this.formatCode = formatCode;
             return this;
         }
 

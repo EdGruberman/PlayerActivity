@@ -2,6 +2,7 @@ package edgruberman.bukkit.playeractivity.messaging;
 
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,16 +11,20 @@ import org.bukkit.plugin.Plugin;
 /**
  * handles message delivery and logging; uses keys to reference message patterns stored in a {@link org.bukkit.configuration.ConfigurationSection ConfigurationSection}
  * @author EdGruberman (ed@rjump.com)
- * @version 5.2.1
+ * @version 6.0.0
  */
 public class ConfigurationCourier extends Courier {
 
+    protected static final char DEFAULT_FORMAT_CODE = ChatColor.COLOR_CHAR;
+
     /** message pattern container */
     protected final ConfigurationSection base;
+    protected final char formatCode;
 
     protected ConfigurationCourier(final ConfigurationCourier.Factory parameters) {
         super(parameters);
         this.base = parameters.base;
+        this.formatCode = parameters.formatCode;
     }
 
     /** @return section all message pattern key paths are relative to */
@@ -32,16 +37,22 @@ public class ConfigurationCourier extends Courier {
         return this.base.getConfigurationSection(path);
     }
 
+    /** @return prefix that designates a format code in message patterns */
+    public char getFormatCode() {
+        return this.formatCode;
+    }
+
     /**
      * @param key path relative to {@link #getBase base} that contains message pattern
-     * @return String value in configuration; null if not a String
+     * @return pattern at key translated into Minecraft formatting codes; null if key does not contain a String in base
      */
-    public String pattern(final String key) {
+    public String translate(final String key) {
         if (!this.base.isString(key)) {
             this.plugin.getLogger().log(Level.FINEST, "String value not found for {0} in {1}", new Object[] { key, ( this.base.getCurrentPath().equals("") ? "(root)" : this.base.getCurrentPath() ) });
             return null;
         }
-        return this.base.getString(key);
+        final String pattern = this.base.getString(key);
+        return ( this.formatCode == ChatColor.COLOR_CHAR ? pattern : ChatColor.translateAlternateColorCodes(this.formatCode, pattern) );
     }
 
     /**
@@ -49,7 +60,7 @@ public class ConfigurationCourier extends Courier {
      * @param key path relative to {@link #getBase base} that contains message pattern
      */
     public Message compose(final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return null;
         return this.draft(pattern, arguments);
     }
@@ -58,11 +69,10 @@ public class ConfigurationCourier extends Courier {
      * retrieve a message pattern from the configuration and format with supplied arguments
      * @param key path relative to {@link #getBase base} that contains message pattern
      */
-    @Override
     public String format(final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return null;
-        return super.format(pattern, arguments);
+        return this.formatMessage(pattern, arguments);
     }
 
     /**
@@ -70,7 +80,7 @@ public class ConfigurationCourier extends Courier {
      * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
      */
     public void send(final CommandSender sender, final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return;
         this.sendMessage(sender, pattern, arguments);
     }
@@ -80,7 +90,7 @@ public class ConfigurationCourier extends Courier {
      * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
      */
     public void broadcast(final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return;
         this.broadcastMessage(pattern, arguments);
     }
@@ -90,7 +100,7 @@ public class ConfigurationCourier extends Courier {
      * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
      */
     public void world(final World world, final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return;
         this.worldMessage(world, pattern, arguments);
     }
@@ -100,7 +110,7 @@ public class ConfigurationCourier extends Courier {
      * @param key path relative to {@link #getBase base} that contains message pattern (null and missing patterns are silently ignored and not sent)
      */
     public void publish(final String permission, final String key, final Object... arguments) {
-        final String pattern = this.pattern(key);
+        final String pattern = this.translate(key);
         if (pattern == null) return;
         this.publishMessage(permission, pattern, arguments);
     }
@@ -118,7 +128,8 @@ public class ConfigurationCourier extends Courier {
             return new Factory(plugin);
         }
 
-        public ConfigurationSection base;
+        protected ConfigurationSection base;
+        protected char formatCode;
 
         protected Factory(final Plugin plugin) {
             super(plugin);
@@ -140,7 +151,7 @@ public class ConfigurationCourier extends Courier {
             return this;
         }
 
-        /** @param key path to color code prefix character in base configuration */
+        /** @param key path to format code prefix character in base configuration */
         public Factory setFormatCode(final String key) {
             final String value = this.base.getString(key);
             if (value == null) throw new IllegalArgumentException("Color code not found: " + this.base.getCurrentPath() + this.base.getRoot().options().pathSeparator() + key);
@@ -148,15 +159,15 @@ public class ConfigurationCourier extends Courier {
             return this;
         }
 
-        @Override
-        public Factory setTimestamp(final boolean timestamp) {
-            super.setTimestamp(timestamp);
+        /** @param formatCode prefix that designates a format code in message patterns (default is {@value org.bukkit.ChatColor#COLOR_CHAR}, common alternate is &) */
+        public Factory setFormatCode(final char formatCode) {
+            this.formatCode = formatCode;
             return this;
         }
 
         @Override
-        public Factory setFormatCode(final char colorCode) {
-            super.setFormatCode(colorCode);
+        public Factory setTimestamp(final boolean timestamp) {
+            super.setTimestamp(timestamp);
             return this;
         }
 
