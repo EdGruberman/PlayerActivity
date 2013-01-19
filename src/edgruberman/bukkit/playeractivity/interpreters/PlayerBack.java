@@ -5,7 +5,7 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 public class PlayerBack extends PlayerEvent {
 
     public PlayerBack(final StatusTracker tracker) {
-        super(tracker, edgruberman.bukkit.playeractivity.consumers.PlayerBack.class);
+        super(tracker, edgruberman.bukkit.playeractivity.consumers.away.PlayerBack.class);
     }
 
 }

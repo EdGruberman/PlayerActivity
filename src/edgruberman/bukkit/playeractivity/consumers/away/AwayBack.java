@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.consumers;
+package edgruberman.bukkit.playeractivity.consumers.away;
 
 import java.util.HashMap;
 import java.util.List;

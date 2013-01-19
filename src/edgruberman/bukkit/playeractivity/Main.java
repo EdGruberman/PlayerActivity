@@ -14,9 +14,9 @@ import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Players;
 import edgruberman.bukkit.playeractivity.commands.Reload;
 import edgruberman.bukkit.playeractivity.commands.Who;
-import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
+import edgruberman.bukkit.playeractivity.consumers.away.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.CustomPlugin;
@@ -32,8 +32,8 @@ public final class Main extends CustomPlugin {
 
     @Override
     public void onLoad() {
-        this.putConfigMinimum("4.0.0a13");
-        this.putConfigMinimum("language.yml", "4.0.0a12");
+        this.putConfigMinimum("4.0.0a19");
+        this.putConfigMinimum("language.yml", "4.0.0a19");
     }
 
     @Override

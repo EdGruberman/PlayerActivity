@@ -1,4 +1,4 @@
-package edgruberman.bukkit.playeractivity.consumers;
+package edgruberman.bukkit.playeractivity.consumers.away;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.Main;
-import edgruberman.bukkit.playeractivity.consumers.AwayBack.AwayState;
+import edgruberman.bukkit.playeractivity.consumers.away.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.FormattedArrayList;
 

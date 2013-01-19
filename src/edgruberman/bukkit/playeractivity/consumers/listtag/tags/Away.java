@@ -13,8 +13,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.consumers.PlayerAway;
-import edgruberman.bukkit.playeractivity.consumers.PlayerBack;
+import edgruberman.bukkit.playeractivity.consumers.away.PlayerAway;
+import edgruberman.bukkit.playeractivity.consumers.away.PlayerBack;
 import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
 import edgruberman.bukkit.playeractivity.consumers.listtag.Tag;
 
