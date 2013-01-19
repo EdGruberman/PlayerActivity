@@ -9,7 +9,10 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
@@ -44,6 +47,11 @@ public class AwayBack implements Observer, Listener {
 
         for (final Player player : Bukkit.getOnlinePlayers())
             player.setMetadata("away", new FixedMetadataValue(this.plugin, false));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(final PlayerQuitEvent quit) {
+        this.away.remove(quit.getPlayer().getName());
     }
 
     public void unload() {
