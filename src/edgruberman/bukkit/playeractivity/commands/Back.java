@@ -23,7 +23,7 @@ public final class Back implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            this.courier.send(sender, "requiresPlayer", label);
+            this.courier.send(sender, "requires-player", label);
             return true;
         }
 

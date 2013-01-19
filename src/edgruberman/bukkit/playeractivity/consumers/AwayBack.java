@@ -56,8 +56,6 @@ public class AwayBack implements Observer, Listener {
     }
 
     public boolean setAway(final Player player, final String reason) {
-        if (this.away.containsKey(player.getName())) return false;
-
         final AwayState state = new AwayState(player.getName(), System.currentTimeMillis(), reason);
         this.away.put(player.getName(), state);
         player.setMetadata("away", new FixedMetadataValue(this.plugin, true));

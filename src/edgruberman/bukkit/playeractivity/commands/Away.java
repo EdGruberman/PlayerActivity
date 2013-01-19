@@ -26,20 +26,18 @@ public final class Away implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            this.courier.send(sender, "requiresPlayer", label);
+            this.courier.send(sender, "requires-player", label);
             return true;
         }
 
+        final String reason = ( args.length >= 1 ? Away.join(Arrays.asList(args), " ") : this.courier.format("+away-default-reason") );
         final Player player = (Player) sender;
         final AwayState state = this.awayBack.getAwayState(player.getName());
-        if (state != null) {
+        if (state != null && (state.reason.equals(reason) || args.length == 0)) { // already away with same reason or no new reason
             this.courier.send(sender, "away-already", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.courier.format("+away-default-reason") : state.reason));
             if (this.awayBack.mentions != null) this.awayBack.mentions.tellMentions(player);
             return true;
         }
-
-        String reason = this.courier.format("+away-default-reason");
-        if (args.length >= 1) reason = Away.join(Arrays.asList(args), " ");
 
         this.awayBack.setAway(player, reason);
         this.courier.broadcast("away", player.getDisplayName(), reason);

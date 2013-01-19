@@ -5,10 +5,10 @@ idle-notify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
 +idle-kick-reason: 'Idle for {0}' # 0 = Kick Idle Duration
 away: '§8{0,time,HH:mm:ss} {1}§8 is §9away§8 for §7{2}' # 1 = Player Display Name, 2 = Away Reason
 back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
-back-already: '§f-> §7You are §enot currently away'
-away-already: '§f-> §7You have §ealready been away §f{1}§7 for §o{2} §8(§7Use §b/back§7 to return§8)' # 1 = Duration, 2 = Reason
+back-already: '§f-> §7You are §enot away'
+away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return: §b/back§8)' # 1 = Duration, 2 = Reason
 +away-default-reason: 'no reason'
-mentions: '§f-> §7{1}§7 has been §3away§7 {2} for: §o{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
+mentions: '§f-> §7{1}§7 has been §3away§7 {2} for §o{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
 mentions-summary:
   format: '§f-> §7Your name was §dmentioned§7 by: {1}' # 1 = Players
   +item: '§7{0} §8({1} ago)' # 0 = Display Name, 1 = Duration Since Last Mention
@@ -23,7 +23,7 @@ who:
   +unknown-connected: '§osome time§7'
 tag-Away:
   +pattern: '{0}§9#Away' # 0 = Player Name
-  +description: '§9Away§7 {0} for: §f{3}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name, 3 = Reason
+  +description: '§9Away§7 {0} for §o{3}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name, 3 = Reason
 tag-Idle:
   +pattern: '{0}§3#Idle' # 0 = Player Name
   +description: '§3Idle§7 {0}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name
