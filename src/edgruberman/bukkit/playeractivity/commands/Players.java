@@ -30,7 +30,7 @@ public final class Players implements CommandExecutor {
         final List<Player> sorted = Arrays.asList(sender.getServer().getOnlinePlayers());
         Collections.sort(sorted, new ColorStrippedDisplayNameComparator());
 
-        final List<String> list = new FormattedArrayList<String>(this.courier.getSection("players"));
+        final FormattedArrayList list = new FormattedArrayList(this.courier.getSection("players"));
         for (final Player player : sorted)
             if (player.hasPermission("playeractivity.track.players"))
                 list.add(this.listTag.getTagDisplayName(player));

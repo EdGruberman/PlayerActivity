@@ -1,7 +1,6 @@
 package edgruberman.bukkit.playeractivity.consumers.away;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -39,11 +38,12 @@ public class Mentions implements Listener {
         if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
-        final List<Object[]> mentions = new FormattedArrayList<Object[]>(this.courier.getBase().getConfigurationSection("mentions-summary"));
+        final FormattedArrayList mentions = new FormattedArrayList(this.courier.getBase().getConfigurationSection("mentions-summary"));
         for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet())
-            mentions.add(new Object[] { mention.getKey(), Main.readableDuration(now - mention.getValue()) });
+            mentions.add(mention.getKey(), Main.readableDuration(now - mention.getValue()));
 
-        this.courier.send(player, "mentions-summary.format", mentions);
+System.out.println(mentions.toString());
+        this.courier.send(player, "mentions-summary.format", mentions.toString());
     }
 
     @EventHandler
