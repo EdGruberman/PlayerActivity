@@ -18,15 +18,18 @@ players:
   +item: '§7{0}' # 0 = Tagged Display Name
   +delimiter: '§8, '
 who:
-  connected: '§f-> §7{1}§7 connected {2} ago' # 1 = Display Name, 2 = Last Connected Duration
-  connected-away: '§f-> §7{1}§7 connected {2} ago and has been §3away§7 {3} for: §7{4}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Away Duration, 4 = Reason
-  connected-idle: '§f-> §7{1}§7 connected {2} ago and has been §3idle§7 {3}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Idle Duration
+  connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Tag Description, 4 = hasTag(0|1)
   disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 1 = Player Name, 2 = Last Disconnected Duration
   +unknown-connected: '§osome time§7'
-list-tag:
-  +away: '§9#Away'
-  +idle: '§3#Idle'
-  +bed: '§5#Bed'
+tag-Away:
+  +pattern: '{0}§9#Away' # 0 = Player Name
+  +description: '§9Away§7 {0} for: §f{3}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name, 3 = Reason
+tag-Idle:
+  +pattern: '{0}§3#Idle' # 0 = Player Name
+  +description: '§3Idle§7 {0}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name
+tag-Bed:
+  +pattern: '{0}§5#Bed' # 0 = Player Name
+  +description: 'In bed {0}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name
 requires-player: '§f-> §cOnly in-game players§7 can use the §b/{1} §7command' # 1 = Command Label
 command-disabled: '§f-> §7Command §cdisabled§7: §o{1}' # 1 = Command Label
 player-not-found: '§f-> §7Player §enot found§7: §o{1}' # 1 = <Player>

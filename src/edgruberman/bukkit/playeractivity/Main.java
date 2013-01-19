@@ -11,12 +11,13 @@ import org.bukkit.event.HandlerList;
 
 import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
+import edgruberman.bukkit.playeractivity.commands.Players;
 import edgruberman.bukkit.playeractivity.commands.Reload;
 import edgruberman.bukkit.playeractivity.commands.Who;
 import edgruberman.bukkit.playeractivity.consumers.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
-import edgruberman.bukkit.playeractivity.consumers.ListTag;
+import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.CustomPlugin;
 
@@ -31,8 +32,8 @@ public final class Main extends CustomPlugin {
 
     @Override
     public void onLoad() {
-        this.putConfigMinimum("3.3.0a0");
-        this.putConfigMinimum("language.yml", "3.3.0a0");
+        this.putConfigMinimum("4.0.0a13");
+        this.putConfigMinimum("language.yml", "4.0.0a12");
     }
 
     @Override
@@ -42,29 +43,38 @@ public final class Main extends CustomPlugin {
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 
-        ConfigurationSection section = this.getConfig().getConfigurationSection("idle-kick");
-        if (section != null && section.getBoolean("enabled"))
-            this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlekick");
-
-        section = this.getConfig().getConfigurationSection("idle-notify");
+        ConfigurationSection section = this.getConfig().getConfigurationSection("idle-notify");
         if (section != null && section.getBoolean("enabled"))
             this.idleNotify = new IdleNotify(this, this.getIdle(section), this.getActivity(section)
                     , ( this.idleKick != null ? this.idleKick.tracker.getIdleThreshold() : -1 ), section.getBoolean("cancel-when-away")
                     , this.courier, "playeractivity.track.idlenotify");
 
-        section = this.getConfig().getConfigurationSection("list-tag");
+        section = this.getConfig().getConfigurationSection("idle-kick");
         if (section != null && section.getBoolean("enabled"))
-            this.listTag = new ListTag(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.listtag");
+            this.idleKick = new IdleKick(this, this.getIdle(section), this.getActivity(section), this.courier, "playeractivity.track.idlekick");
+
+        section = this.getConfig().getConfigurationSection("list-tag");
+        if (section != null && section.getBoolean("enabled")) {
+            // load language specific tag properties
+            final ConfigurationSection tags = section.getConfigurationSection("tags");
+            for (final String name : tags.getKeys(false)) {
+                if (!tags.isConfigurationSection(name)) continue;
+                final ConfigurationSection tag = tags.getConfigurationSection(name);
+                tag.set("pattern", this.courier.translate("tag-" + name + ".+pattern"));
+                tag.set("description", this.courier.translate("tag-" + name + ".+description"));
+            }
+            this.listTag = new ListTag(this, tags, "playeractivity.track.listtag");
+        }
 
         section = this.getConfig().getConfigurationSection("away-back");
         if (section != null && section.getBoolean("enabled")) {
             this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("mentions"), this.courier);
-            if (this.listTag != null) this.listTag.awayBack = this.awayBack;
             this.getCommand("playeractivity:away").setExecutor(new Away(this.courier, this.awayBack));
             this.getCommand("playeractivity:back").setExecutor(new Back(this.courier, this.awayBack));
         }
 
-        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.courier, this.awayBack, this.idleNotify, this.listTag));
+        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.courier, this.listTag));
+        this.getCommand("playeractivity:players").setExecutor(new Players(this.courier, this.listTag));
         this.getCommand("playeractivity:reload").setExecutor(new Reload(this, this.courier));
     }
 

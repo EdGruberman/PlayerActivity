@@ -4,7 +4,7 @@ import edgruberman.bukkit.playeractivity.StatusTracker;
 
 public class PlayerBack extends PlayerEvent {
 
-    protected PlayerBack(final StatusTracker tracker) {
+    public PlayerBack(final StatusTracker tracker) {
         super(tracker, edgruberman.bukkit.playeractivity.consumers.PlayerBack.class);
     }
 

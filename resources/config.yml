@@ -24,28 +24,15 @@ idle-kick:
 list-tag:
   enabled: true
   tags:
-    away:
-      enabled: true
-      class: Away
-      list: '{0}§9#Away'
-      describe: 'Away for {0}' # 0 = Duration
-      priority: 3
-    idle:
-      enabled: true
-      class: Idle
-      list: '{0}§3#Idle'
-      describe: 'Idle for {0}' # 0 = Duration
+    Away:
+      priority: 1
+    Idle:
       priority: 2
       idle: 60 # threshold when to apply idle tag (seconds)
-    bed:
-      enabled: true
-      class: Bed
-      list: '{0}§5#Bed'
-      describe: 'In bed for {0}' # 0 = Duration
-      priority: 1
+    Bed:
+      priority: 3
 away-back:
   enabled: true
-  override-idle: true
   mentions: true
   activity:
     - AsyncPlayerChatEvent

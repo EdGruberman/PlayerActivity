@@ -67,7 +67,7 @@ permissions:
     description: Kick if player goes idle
     default: false
   playeractivity.track.listtag:
-    description: Tag name in player list
+    description: Apply tags to name in player list
     default: false
   playeractivity.away:
     description: Can use away command

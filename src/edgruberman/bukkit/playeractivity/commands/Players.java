@@ -11,7 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.playeractivity.consumers.ListTag;
+import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.FormattedArrayList;
 
@@ -33,7 +33,7 @@ public final class Players implements CommandExecutor {
         final List<String> list = new FormattedArrayList<String>(this.courier.getSection("players"));
         for (final Player player : sorted)
             if (player.hasPermission("playeractivity.track.players"))
-                list.add(this.listTag.tag(player));
+                list.add(this.listTag.getTagDisplayName(player));
 
         this.courier.send(sender, "players.format", list, list.size());
         return true;
