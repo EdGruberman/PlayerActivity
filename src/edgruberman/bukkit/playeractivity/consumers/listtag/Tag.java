@@ -71,7 +71,6 @@ public abstract class Tag implements Comparable<Tag> {
     }
 
     public final void unload() {
-        // TODO CME?
         this.onUnload();
         this.attached.clear();
     }
