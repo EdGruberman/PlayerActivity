@@ -3,6 +3,7 @@ package edgruberman.bukkit.playeractivity.messaging;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -11,7 +12,7 @@ import org.bukkit.plugin.Plugin;
  * handles message delivery and logging
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 6.0.0
+ * @version 6.0.1
  */
 public class Courier {
 
@@ -54,7 +55,7 @@ public class Courier {
             this.plugin.getLogger().log(confirmation.toLogRecord());
 
         } catch (final RuntimeException e) {
-            this.plugin.getLogger().log(Level.WARNING, "Error submitting message for delivery; pattern: \"{0}\"; {1}", new Object[] { message.original, e });
+            this.plugin.getLogger().log(Level.WARNING, "Error submitting message for delivery; pattern: \"{0}\"{1}; {2}", new Object[] { message.original, ChatColor.RESET, e });
         }
     }
 

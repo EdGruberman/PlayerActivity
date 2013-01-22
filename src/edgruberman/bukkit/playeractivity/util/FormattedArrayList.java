@@ -50,7 +50,7 @@ public class FormattedArrayList extends ArrayList<Object> {
                 continue;
             }
             final MessageFormat message = new MessageFormat(this.item);
-            items.append(message.format((o instanceof Collection ? ((Collection<?>) o).toArray() : o), new StringBuffer(), new FieldPosition(0)));
+            items.append(message.format((o instanceof Collection ? ((Collection<?>) o).toArray() : new Object[] { o }), new StringBuffer(), new FieldPosition(0)));
             if (i.hasNext()) items.append(this.delimiter);
         }
         return MessageFormat.format(this.format, items);
