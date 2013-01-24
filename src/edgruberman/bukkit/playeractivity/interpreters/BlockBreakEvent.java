@@ -1,8 +1,6 @@
 package edgruberman.bukkit.playeractivity.interpreters;
 
 import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
-import org.bukkit.event.Listener;
 
 import edgruberman.bukkit.playeractivity.Interpreter;
 import edgruberman.bukkit.playeractivity.StatusTracker;
@@ -14,7 +12,7 @@ public class BlockBreakEvent extends Interpreter {
     }
 
     @Override
-    public void execute(final Listener listener, final Event event) throws EventException {
+    public void onExecute(final Event event) {
         if (!(event instanceof org.bukkit.event.block.BlockBreakEvent)) return; // registers BlockExpEvent
 
         final org.bukkit.event.block.BlockBreakEvent sub = (org.bukkit.event.block.BlockBreakEvent) event;

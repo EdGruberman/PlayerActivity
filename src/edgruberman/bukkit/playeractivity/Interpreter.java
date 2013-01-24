@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -35,11 +36,20 @@ public abstract class Interpreter implements Listener, EventExecutor {
     // ---- instance ----
 
     protected final StatusTracker tracker;
+    protected final Class<? extends Event> type;
 
-    protected Interpreter(final StatusTracker tracker, final Class<? extends Event> event) {
+    protected Interpreter(final StatusTracker tracker, final Class<? extends Event> type) {
         this.tracker = tracker;
-        Bukkit.getPluginManager().registerEvent(event, this, this.getEventPriority(), this, this.tracker.getPlugin(), this.getIgnoreCancelled());
+        this.type = type;
+        Bukkit.getPluginManager().registerEvent(this.type, this, this.getEventPriority(), this, this.tracker.getPlugin(), this.getIgnoreCancelled());
     }
+
+    @Override
+    public void execute(final Listener listener, final Event event) throws EventException {
+        if (this.type.isAssignableFrom(event.getClass())) this.onExecute(event);
+    }
+
+    protected abstract void onExecute(Event event);
 
     protected void record(final Player player, final Event event) {
         if (event.isAsynchronous()) {
