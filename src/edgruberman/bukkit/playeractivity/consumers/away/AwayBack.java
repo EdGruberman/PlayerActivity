@@ -47,6 +47,8 @@ public class AwayBack implements Observer, Listener {
 
         for (final Player player : Bukkit.getOnlinePlayers())
             player.setMetadata("away", new FixedMetadataValue(this.plugin, false));
+
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
