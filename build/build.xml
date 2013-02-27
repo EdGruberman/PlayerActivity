@@ -1,153 +1,190 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<project name="Bukkit Plugin" default="default">
-    <description>Bukkit Plugin Standard Build Management v4.0.1</description>
-
-    <target name="debug">
-        <echoproperties />
-        <antcall target="-validate" />
-    </target>
-
-
-    <!-- ======== Configuration ======== -->
-
+<project name="Bukkit plugin" default="default">
+    <description>Bukkit plugin standard build management v5.0.0</description>
     <tstamp><format property="build.start" pattern="yyyy-MM-dd HH:mm:ss z" timezone="UTC" /></tstamp>
 
-    <property name="src.dir" location="../src" />
-    <property name="resources.dir" location="../resources" />
-    <property name="build.dir" location="../build" />
-    <property name="stage.dir" location="${build.dir}/stage" />
-    <property name="dist.dir" location="../dist" />
-    <property name="install.dir" location="${bukkit.test}" />
 
-    <property name="version.properties" location="${build.dir}/version.properties" />
-    <property prefix="plugin" file="${build.dir}/plugin.properties" />
-    <property name="plugin.jar" location="${dist.dir}/${plugin.name}.jar" />
+    <!-- ======== build configuration ======== -->
 
-    <path id="classpath">
-        <fileset dir="." includes="lib/**" />
-        <fileset dir="${bukkit.shared}" includes="**" />
-    </path>
-
-
-    <!-- ======== Life Cycle Version Management ( alpha > beta > candidate > release ) ======== -->
-
-    <target name="default" description="#.#.#*+  |  Increment build of current version (code committed within current life cycle definition)">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="build" operation="+" value="1" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
-    </target>
+    <target name="-config" unless="src.dir" description="configure build environment">
+        <property name="src.dir" location="../src" />
+        <property name="resources.dir" location="../resources" />
+        <property name="dist.dir" location="../dist" />
     
-    <target name="beta" description="#.#.#b0  |  Move life cycle to beta (public testing encouraged without any guarantee)">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="b" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+        <property name="build.dir" location="." />
+        <property name="stage.dir" location="${build.dir}/stage" />
+        <property name="version.properties" location="${build.dir}/version.properties" />
+        <property prefix="plugin" file="${build.dir}/plugin.properties" />
+    
+        <property name="plugins.dir" location="${bukkit.test}" />
+        <property name="update.dir" location="${plugins.dir}/update" />
+    
+        <path id="classpath">
+            <fileset dir="." includes="lib/**" />
+            <fileset dir="${bukkit.shared}" includes="**" />
+        </path>
     </target>
 
-    <target name="candidate" description="#.#.#rc0  |  Move life cycle to release candidate (functionality no longer intended to change, production release imminent)">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="rc" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+
+    <!-- ======== version life cycle management ( alpha > beta > candidate > release ) ======== -->
+
+    <target name="default" description="increment build version and install" depends="current,install" />
+
+    <target name="current" description="#.#.#*+  |  increment build of current version (code committed within current life cycle definition)" depends="-previous">
+        <property name="requested.major.add" value="0" />
+        <property name="requested.minor.add" value="0" />
+        <property name="requested.revision.add" value="0" />
+        <property name="requested.build.add" value="1" />
     </target>
 
-    <target name="release" description="#.#.#  |  Remove life cycle indicator for full production release">
-        <antcall target="-validate"><param name="require-prerelease" value="true"/></antcall>
-        <propertyfile file="${version.properties}">
-            <entry key="type" value="" />
-            <entry key="build" value="" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+    <target name="beta" description="#.#.#b0  |  move life cycle to beta (public testing encouraged without any guarantee)" depends="-previous">
+        <property name="requested.major.add" value="0" />
+        <property name="requested.minor.add" value="0" />
+        <property name="requested.revision.add" value="0" />
+        <property name="requested.type" value="b" />
+        <property name="requested.build" value="0" />
+        <property name="requested.build.add" value="0" />
     </target>
 
-    <target name="revision" description="#.#.+a0  |  Increment revision version and reset life cycle to alpha (bug fixes that do not change functionality)">
-        <antcall target="-validate" />
-        <propertyfile file="${version.properties}">
-            <entry key="revision" operation="+" value="1" type="int" />
-            <entry key="type" value="a" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+    <target name="candidate" description="#.#.#rc0  |  move life cycle to release candidate (functionality no longer intended to change, production release imminent)">
+        <property name="requested.major.add" value="0" />
+        <property name="requested.minor.add" value="0" />
+        <property name="requested.revision.add" value="0" />
+        <property name="requested.type" value="rc" />
+        <property name="requested.build" value="0" />
+        <property name="requested.build.add" value="0" />
     </target>
 
-    <target name="minor" description="#.+.0a0  |  Increment minor version and reset life cycle to alpha (new functionality added)">
-        <antcall target="-validate" />
-        <propertyfile file="${version.properties}">
-            <entry key="minor" operation="+" value="1" type="int" />
-            <entry key="revision" value="0" type="int" />
-            <entry key="type" value="a" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+    <target name="release" description="#.#.#  |  remove life cycle indicator for full production release">
+        <property name="requested.release" value="true" />
     </target>
 
-    <target name="major" description="+1.0.0a0  |  Increment major version and reset life cycle to alpha (existing functionality changed, significant redesign)">
-        <antcall target="-validate" />
-        <propertyfile file="${version.properties}">
-            <entry key="major" operation="+" value="1" type="int" />
-            <entry key="minor" value="0" type="int" />
-            <entry key="revision" value="0" type="int" />
-            <entry key="type" value="a" />
-            <entry key="build" value="0" type="int" />
-        </propertyfile>
-        <antcall target="dist" />
-        <antcall target="install" />
+    <target name="revision" description="#.#.+a0  |  increment revision version and reset life cycle to alpha (bug fixes that do not change functionality)">
+        <property name="requested.major.add" value="0" />
+        <property name="requested.minor.add" value="0" />
+        <property name="requested.revision.add" value="1" />
+        <property name="requested.type" value="a" />
+        <property name="requested.build" value="0" />
+        <property name="requested.build.add" value="0" />
     </target>
 
-    <target name="-validate" description="Verify acceptable build path for versioning">
+    <target name="minor" description="#.+.0a0  |  increment minor version and reset life cycle to alpha (new functionality added)">
+        <property name="requested.major.add" value="0" />
+        <property name="requested.minor.add" value="1" />
+        <property name="requested.revision.add" value="0" />
+        <property name="requested.type" value="a" />
+        <property name="requested.build" value="0" />
+        <property name="requested.build.add" value="0" />
+    </target>
+
+    <target name="major" description="+.0.0a0  |  increment major version and reset life cycle to alpha (existing functionality changed, significant redesign)">
+        <property name="requested.major.add" value="1" />
+        <property name="requested.minor.add" value="0" />
+        <property name="requested.revision.add" value="0" />
+        <property name="requested.type" value="a" />
+        <property name="requested.build" value="0" />
+        <property name="requested.build.add" value="0" />
+    </target>
+
+    <target name="-previous" unless="previous" description="capture and display previous version" depends="-config">
         <property prefix="previous" file="${version.properties}" />
         <property name="previous" value="${previous.major}.${previous.minor}.${previous.revision}${previous.type}${previous.build}" />
-        <echo message="Previous version was ${previous}" level="warning" />
-        
-        <fail message="Previous build was already released; Build revision, minor, or major to increment version accordingly">
+        <echo message="previous version was ${previous}" level="warning" />
+    </target>
+
+    <target name="-validate-version" description="validate version life cycle progression" depends="-previous">
+        <property prefix="requested" file="${version.properties}" />
+        <property name="requested" value="${requested.major}.${requested.minor}.${requested.revision}${requested.type}${requested.build}" />
+        <fail message="previous build was already released; build revision, minor, or major to increment version accordingly">
             <condition>
                 <and>
-                    <istrue value="${require-prerelease}" />
                     <equals arg1="${previous.type}" arg2="" />
+                    <or>
+                        <equals arg1="${requested.build.add}" arg2="1" />
+                        <equals arg1="${requested.type}" arg2="b" />
+                        <equals arg1="${requested.type}" arg2="rc" />
+                        <istrue value="${requested.release}" />
+                    </or>
                 </and>
             </condition>
         </fail>
     </target>
 
 
-    <!-- ======== Common Targets ======== -->
+    <!-- ======== common targets ======== -->
     
-    <target name="-clean" description="Remove temporary build output">
-        <delete dir="${stage.dir}" />
+    <target name="-validate-sources">
+        <!-- validate source is acceptable to distribute -->
+        <fileset id="invalid.sources.stdout" dir="${src.dir}">
+            <contains text="System.out.print" />
+        </fileset>
+        <condition property="invalid.sources">
+            <resourcecount when="greater" count="0" refid="invalid.sources.stdout" />
+        </condition>
+
+        <pathconvert property="invalid.sources.stdout.joined" refid="invalid.sources.stdout" pathsep="${line.separator}    " />
+        <property name="message.sources" value="invalid sources containing 'System.out.print' in:${line.separator}    ${invalid.sources.stdout.joined}" />
+
+        <fail message="${message.sources}${line.separator}release requires valid sources">
+            <condition>
+                <and>
+                    <or>
+                        <istrue value="${requested.release}" />
+                        <equals arg1="${requested.type}" arg2="" />
+                    </or>
+                    <istrue value="${invalid.sources}" />
+                </and>
+            </condition>
+        </fail>
     </target>
 
-    <target name="-cleandist" description="Remove all previous generated output" depends="-clean">
+    <target name="-validate-message" if="invalid.sources">
+        <echo message="${invalid.message}" level="error" />
+    </target>
+
+    <target name="-validate" description="validate project is ready to be built" depends="-validate-version,-validate-sources,-validate-message" />
+
+    <target name="-clean" description="remove any previously generated output" depends="-config">
+        <delete dir="${stage.dir}" />
         <delete dir="${dist.dir}" />
     </target>
 
-    <target name="-init" description="Initialize build environment" depends="-cleandist">
+    <target name="-init" description="initialize build environment" depends="-config,-validate,-init-requested,-init-release,-clean">
         <property prefix="version" file="${version.properties}" />
         <property name="version" value="${version.major}.${version.minor}.${version.revision}${version.type}${version.build}" />
-        <echo message="Building version ${version}" level="warning" />
-
-        <mkdir dir="${stage.dir}" />
-        <mkdir dir="${dist.dir}" />
+        <echo message="building version ${version}" level="warning" />
     </target>
 
-    <target name="dist" description="Produce Bukkit plugin JAR distributable" depends="-init">
+    <target name="-init-requested" if="requested.build.add" description="update version properties file with requested version">
+        <propertyfile file="${version.properties}">
+            <entry key="major" value="${requested.major}" type="int" />
+            <entry key="major" operation="+" value="${requested.major.add}" type="int" />
+            <entry key="minor" value="${requested.minor}" type="int" />
+            <entry key="minor" operation="+" value="${requested.minor.add}" type="int" />
+            <entry key="revision" value="${requested.revision}" type="int" />
+            <entry key="revision" operation="+" value="${requested.revision.add}" type="int" />
+            <entry key="type" value="${requested.type}" />
+            <entry key="build" value="${requested.build}" type="int" />
+            <entry key="build" operation="+" value="${requested.build.add}" type="int" />
+        </propertyfile>
+    </target>
+
+    <target name="-init-release" if="requested.release" description="update version properties file with release version">
+        <propertyfile file="${version.properties}">
+            <entry key="type" value="" />
+            <entry key="build" value="" />
+        </propertyfile>
+    </target>
+
+    <target name="dist" description="create distributable Bukkit plugin JAR" depends="-init">
+        <mkdir dir="${stage.dir}" />
+
+        <!-- compile source -->
         <javac srcdir="${src.dir}" destdir="${stage.dir}" encoding="utf-8" debug="true" includeantruntime="false">
             <classpath refid="classpath" />
         </javac>
 
-
-        <!-- Stage Resources -->
+        <!-- generate versioned YAML resources -->
         <copy todir="${stage.dir}" preservelastmodified="true" verbose="true">
             <fileset dir="${resources.dir}" includes="**/*.yml" />
             <filterset>
@@ -155,12 +192,10 @@
             </filterset>
         </copy>
 
-        <copy todir="${stage.dir}" preservelastmodified="true" verbose="true">
+        <!-- package JAR -->
+        <mkdir dir="${dist.dir}" />
+        <jar basedir="${stage.dir}/" jarfile="${dist.dir}/${plugin.name}.jar">
             <fileset dir="${resources.dir}" excludes="**/*.yml" />
-        </copy>
-
-
-        <jar basedir="${stage.dir}/" jarfile="${plugin.jar}">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
                 <attribute name="Built-Date" value="${build.start}" />
@@ -174,12 +209,27 @@
                 <attribute name="Class-Path" value="${plugin.class-path}" />
             </manifest>
         </jar>
-        
-        <antcall target="-clean" />
+        <delete dir="${stage.dir}" />
     </target>
 
-    <target name="install" description="Copy built Bukkit plugin JAR to local test server">
-        <copy file="${plugin.jar}" todir="${install.dir}" verbose="true" />
+    <target name="install" description="copy Bukkit plugin JAR to local test server" depends="dist">
+        <!-- copy to update directory if already in plugins directory -->
+        <copy todir="${update.dir}" verbose="true">
+            <fileset file="${dist.dir}/${plugin.name}.jar">
+                <present present="both" targetdir="${plugins.dir}" />
+            </fileset>
+        </copy>
+
+        <!-- copy to plugins directory if not already -->
+        <copy todir="${plugins.dir}" verbose="true">
+            <fileset file="${dist.dir}/${plugin.name}.jar">
+                <present present="srconly" targetdir="${plugins.dir}" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-debug" depends="-validate">
+        <echoproperties />
     </target>
 
 </project>
