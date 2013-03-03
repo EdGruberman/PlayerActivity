@@ -15,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack.AwayState;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
-import edgruberman.bukkit.playeractivity.util.FormattedArrayList;
+import edgruberman.bukkit.playeractivity.util.JoinList;
 
 public class Mentions implements Listener {
 
@@ -41,7 +41,7 @@ public class Mentions implements Listener {
         if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
-        final FormattedArrayList mentions = new FormattedArrayList(this.courier.getBase().getConfigurationSection("mentions-summary"));
+        final JoinList mentions = new JoinList(this.courier.getBase().getConfigurationSection("mentions-summary"));
         for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet())
             mentions.add(mention.getKey(), Main.readableDuration(now - mention.getValue()));
 

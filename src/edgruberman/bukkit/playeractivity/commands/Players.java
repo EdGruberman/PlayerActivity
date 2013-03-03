@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
 import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
-import edgruberman.bukkit.playeractivity.util.FormattedArrayList;
+import edgruberman.bukkit.playeractivity.util.JoinList;
 
 public final class Players implements CommandExecutor {
 
@@ -30,7 +30,7 @@ public final class Players implements CommandExecutor {
         final List<Player> sorted = Arrays.asList(sender.getServer().getOnlinePlayers());
         Collections.sort(sorted, new ColorStrippedDisplayNameComparator());
 
-        final FormattedArrayList list = new FormattedArrayList(this.courier.getSection("players"));
+        final JoinList list = new JoinList(this.courier.getSection("players"));
         for (final Player player : sorted)
             if (player.hasPermission("playeractivity.track.players"))
                 list.add(this.listTag.getTagDisplayName(player));
