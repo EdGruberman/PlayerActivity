@@ -2,7 +2,6 @@ package edgruberman.bukkit.playeractivity;
 
 import java.util.TimerTask;
 
-
 class IdleChecker implements Runnable {
 
     private final IdlePublisher publisher;
@@ -19,20 +18,20 @@ class IdleChecker implements Runnable {
     public void run() {
         final long occurred = System.currentTimeMillis();
 
-        // Clean up the reference to this timer so a new one can be created if necessary
+        // clean up the reference to this timer so a new one can be created if necessary
         final TimerTask task = this.publisher.tasks.remove(this.player);
         if (task != null) task.cancel();
 
         final Long last = this.publisher.activityPublisher.last.get(this.player);
-        if (last == null) return; // Player has left server, stop this check
+        if (last == null) return; // player has left server, stop this check
 
         if (last != this.lastActivity) {
-            // Player has recorded newer activity, reschedule a new check
+            // player has recorded newer activity, reschedule a new check
             this.publisher.scheduleIdleCheck(this.player, last);
             return;
         }
 
-        // Player has no new recorded activity, consider the player idle
+        // player has no new recorded activity, consider the player idle
         this.publisher.publish(this.player, this.lastActivity, occurred, occurred - this.lastActivity);
     }
 
