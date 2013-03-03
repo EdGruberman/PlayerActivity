@@ -15,11 +15,14 @@ import org.bukkit.plugin.Plugin;
 /** monitors for PlayerActive from the ActivityPublisher and generates a PlayerIdle event when not active for a period */
 public final class IdlePublisher extends Observable implements Observer {
 
+    // shared Timer is sufficient as processing an IdleChecker depends on main thread access
+    final Timer timer = new Timer();
+
     final Plugin plugin;
     final long threshold;
     final ActivityPublisher activityPublisher;
     final List<String> idle = new ArrayList<String>();
-    final Map<String, Timer> timers = new HashMap<String, Timer>();
+    final Map<String, TimerTask> tasks = new HashMap<String, TimerTask>();
 
     IdlePublisher(final Plugin plugin, final ActivityPublisher activityPublisher, final long threshold) {
         this.plugin = plugin;
@@ -40,7 +43,7 @@ public final class IdlePublisher extends Observable implements Observer {
 
     void scheduleIdleCheck(final String player, final long lastActivity) {
         // wait for a pending timer
-        if (this.timers.containsKey(player)) return;
+        if (this.tasks.containsKey(player)) return;
 
         final IdleChecker idleChecker = new IdleChecker(this, player, lastActivity);
 
@@ -51,9 +54,9 @@ public final class IdlePublisher extends Observable implements Observer {
         }
 
         // use an external Timer to help adhere to threshold and minimize effects of tick lag
-        final Timer timer = new Timer();
-        this.timers.put(player, timer);
-        timer.schedule(new SynchronousTimerTask(idleChecker), delay);
+        final TimerTask task = new SynchronousTimerTask(idleChecker);
+        this.tasks.put(player, task);
+        this.timer.schedule(task, delay);
     }
 
     void publish(final String player, final long last, final long occurred, final long duration) {
@@ -67,8 +70,8 @@ public final class IdlePublisher extends Observable implements Observer {
     void clear() {
         this.activityPublisher.deleteObserver(this);
         this.deleteObservers();
-        for (final Timer timer : this.timers.values()) timer.cancel();
-        this.timers.clear();
+        this.tasks.clear();
+        this.timer.cancel();
     }
 
 

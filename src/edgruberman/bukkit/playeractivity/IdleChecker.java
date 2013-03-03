@@ -1,5 +1,7 @@
 package edgruberman.bukkit.playeractivity;
 
+import java.util.TimerTask;
+
 
 class IdleChecker implements Runnable {
 
@@ -18,7 +20,8 @@ class IdleChecker implements Runnable {
         final long occurred = System.currentTimeMillis();
 
         // Clean up the reference to this timer so a new one can be created if necessary
-        this.publisher.timers.remove(this.player);
+        final TimerTask task = this.publisher.tasks.remove(this.player);
+        if (task != null) task.cancel();
 
         final Long last = this.publisher.activityPublisher.last.get(this.player);
         if (last == null) return; // Player has left server, stop this check
