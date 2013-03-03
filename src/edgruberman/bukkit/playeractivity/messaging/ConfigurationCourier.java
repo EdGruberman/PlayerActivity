@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 /**
  * handles message delivery and logging; uses keys to reference message patterns stored in a {@link org.bukkit.configuration.ConfigurationSection ConfigurationSection}
  * @author EdGruberman (ed@rjump.com)
- * @version 6.0.0
+ * @version 6.1.1
  */
 public class ConfigurationCourier extends Courier {
 
@@ -44,14 +44,14 @@ public class ConfigurationCourier extends Courier {
 
     /**
      * @param key path relative to {@link #getBase base} that contains message pattern
-     * @return pattern at key translated into Minecraft formatting codes; null if key does not contain a String in base
+     * @return pattern at key translated into Minecraft formatting codes; null if key contains an empty String in base
      */
     public String translate(final String key) {
-        if (!this.base.isString(key)) {
+        final String pattern = this.base.getString(key);
+        if (pattern == null || pattern.equals("")) {
             this.plugin.getLogger().log(Level.FINEST, "String value not found for {0} in {1}", new Object[] { key, ( this.base.getCurrentPath().equals("") ? "(root)" : this.base.getCurrentPath() ) });
             return null;
         }
-        final String pattern = this.base.getString(key);
         return ( this.formatCode == ChatColor.COLOR_CHAR ? pattern : ChatColor.translateAlternateColorCodes(this.formatCode, pattern) );
     }
 
