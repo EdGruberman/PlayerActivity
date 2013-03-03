@@ -79,6 +79,7 @@ public class Mentions implements Listener {
         @Override
         public void run() {
             for (final String name : Mentions.this.awayBack.getAway()) {
+                if (this.chatter.getName().equals(name)) continue; // ignore players mentioning their own name while they are away
                 final AwayState state = Mentions.this.awayBack.getAwayState(name);
                 final Player away = state.player();
                 if (this.message.contains(away.getName()) || this.message.contains(away.getDisplayName())) {
