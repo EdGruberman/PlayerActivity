@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project name="Bukkit plugin" default="default">
-    <description>Bukkit plugin standard build management v5.0.0</description>
+    <description>Bukkit plugin standard build management v5.0.1</description>
     <tstamp><format property="build.start" pattern="yyyy-MM-dd HH:mm:ss z" timezone="UTC" /></tstamp>
 
 
@@ -89,7 +89,7 @@
     <target name="-previous" unless="previous" description="capture and display previous version" depends="-config">
         <property prefix="previous" file="${version.properties}" />
         <property name="previous" value="${previous.major}.${previous.minor}.${previous.revision}${previous.type}${previous.build}" />
-        <echo message="previous version was ${previous}" level="warning" />
+        <echo message="previous version was ${previous}" level="info" />
     </target>
 
     <target name="-validate-version" description="validate version life cycle progression" depends="-previous">
