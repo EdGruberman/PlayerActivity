@@ -65,7 +65,7 @@ public abstract class Interpreter implements Listener, EventExecutor {
     }
 
     public EventPriority getEventPriority() {
-        return EventPriority.LOW;
+        return EventPriority.LOW; // update activity status before dependent events need to know when player was last active
     }
 
     public boolean getIgnoreCancelled() {
