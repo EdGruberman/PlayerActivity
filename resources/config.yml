@@ -37,6 +37,6 @@ away-back:
   activity:
     - AsyncPlayerChatEvent
     - PlayerBedEnterEvent
-    - PlayerBedLeaveEvent
+    - PlayerManualBedLeaveEvent
     - PlayerBack
 version: @VERSION@
