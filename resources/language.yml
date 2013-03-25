@@ -3,6 +3,7 @@ idle: '§8{0,time,HH:mm:ss} {3}§8 has been §3idle§8 for {1}' # 1 = Current Id
 active: '§8{0,time,HH:mm:ss} {3}§8 is §6back§8 after being idle for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
 idle-notify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
 +idle-kick-reason: 'Idle for {0}' # 0 = Kick Idle Duration
+idle-kick-leave: '§8{0,time,HH:mm:ss} §7{1} was §ckicked for being idle§7 more than {3}' # 1 = Player Display Name, 2 = Reason, 3 = Kick Idle Threshold, 4 = Default Kick Message
 away: '§8{0,time,HH:mm:ss} {1}§8 is §9away§8 for §7{2}' # 1 = Player Display Name, 2 = Away Reason
 back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
 back-already: '§f-> §7You are §enot away'
