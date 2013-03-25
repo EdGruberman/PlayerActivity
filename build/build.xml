@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project name="Bukkit plugin" default="default">
-    <description>Bukkit plugin standard build management v5.0.1</description>
+    <description>Bukkit plugin standard build management v5.0.3</description>
     <tstamp><format property="build.start" pattern="yyyy-MM-dd HH:mm:ss z" timezone="UTC" /></tstamp>
 
 
@@ -71,6 +71,7 @@
     <target name="minor" description="#.+.0a0  |  increment minor version and reset life cycle to alpha (new functionality added)">
         <property name="requested.major.add" value="0" />
         <property name="requested.minor.add" value="1" />
+        <property name="requested.revision" value="0" />
         <property name="requested.revision.add" value="0" />
         <property name="requested.type" value="a" />
         <property name="requested.build" value="0" />
@@ -79,7 +80,9 @@
 
     <target name="major" description="+.0.0a0  |  increment major version and reset life cycle to alpha (existing functionality changed, significant redesign)">
         <property name="requested.major.add" value="1" />
+        <property name="requested.minor" value="0" />
         <property name="requested.minor.add" value="0" />
+        <property name="requested.revision" value="0" />
         <property name="requested.revision.add" value="0" />
         <property name="requested.type" value="a" />
         <property name="requested.build" value="0" />
@@ -139,7 +142,7 @@
     </target>
 
     <target name="-validate-message" if="invalid.sources">
-        <echo message="${invalid.message}" level="error" />
+        <echo message="${message.sources}" level="error" />
     </target>
 
     <target name="-validate" description="validate project is ready to be built" depends="-validate-version,-validate-sources,-validate-message" />
