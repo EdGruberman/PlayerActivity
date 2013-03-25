@@ -15,6 +15,11 @@ commands:
     description: Configure your status as active
     permission: playeractivity.back
     usage: '§f-> §7Usage: §b/<command>'
+  'playeractivity:toggle':
+    aliases: [toggle]
+    description: Configure your status as active
+    permission: playeractivity.back
+    usage: '§f-> §7Usage: §b/<command>'
   'playeractivity:who':
     aliases: [who, whois]
     description: View detailed status of player

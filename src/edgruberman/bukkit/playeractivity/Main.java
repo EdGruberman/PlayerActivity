@@ -13,6 +13,7 @@ import edgruberman.bukkit.playeractivity.commands.Away;
 import edgruberman.bukkit.playeractivity.commands.Back;
 import edgruberman.bukkit.playeractivity.commands.Players;
 import edgruberman.bukkit.playeractivity.commands.Reload;
+import edgruberman.bukkit.playeractivity.commands.Toggle;
 import edgruberman.bukkit.playeractivity.commands.Who;
 import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
@@ -69,8 +70,11 @@ public final class Main extends CustomPlugin {
         section = this.getConfig().getConfigurationSection("away-back");
         if (section != null && section.getBoolean("enabled")) {
             this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("mentions"), this.courier);
-            this.getCommand("playeractivity:away").setExecutor(new Away(this.courier, this.awayBack));
-            this.getCommand("playeractivity:back").setExecutor(new Back(this.courier, this.awayBack));
+            final Away away = new Away(this.courier, this.awayBack);
+            final Back back = new Back(this.courier, this.awayBack);
+            this.getCommand("playeractivity:away").setExecutor(away);
+            this.getCommand("playeractivity:back").setExecutor(back);
+            this.getCommand("playeractivity:toggle").setExecutor(new Toggle(this.courier, this.awayBack, away, back));
         }
 
         this.getCommand("playeractivity:who").setExecutor(new Who(this, this.courier, this.listTag));
