@@ -8,8 +8,10 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /** monitors for PlayerActive from the ActivityPublisher and generates a PlayerIdle event when not active for a period */
@@ -59,12 +61,24 @@ public final class IdlePublisher extends Observable implements Observer {
         this.timer.schedule(task, delay);
     }
 
-    void publish(final String player, final long last, final long occurred, final long duration) {
-        this.idle.add(player);
+    void publish(final String name, final long last, final long occurred, final long duration) {
+        this.idle.add(name);
         if (this.countObservers() == 0) return;
 
         this.setChanged();
-        this.notifyObservers(new PlayerIdle(Bukkit.getPlayerExact(player), last, occurred, duration));
+        final Player player = Bukkit.getPlayerExact(name);
+
+        if (player == null) {
+            this.plugin.getLogger().log(Level.WARNING, "Idle status requested to be published for player no longer present: " + name);
+            return;
+        }
+
+        if (player.getWorld() == null) {
+            this.plugin.getLogger().log(Level.WARNING, "Idle status requested to be published for player not in any world: " + name);
+            return;
+        }
+
+        this.notifyObservers(new PlayerIdle(player, last, occurred, duration));
     }
 
     void clear() {
