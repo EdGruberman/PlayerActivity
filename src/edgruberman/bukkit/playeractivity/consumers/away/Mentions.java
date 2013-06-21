@@ -41,11 +41,11 @@ public class Mentions implements Listener {
         if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
-        final JoinList<String> mentions = new JoinList<String>(this.courier.getBase().getConfigurationSection("mentions-summary"));
+        final JoinList<Object> mentions = new JoinList<Object>(this.courier.getBase().getConfigurationSection("mentions-summary"));
         for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet())
             mentions.add(mention.getKey(), Main.readableDuration(now - mention.getValue()));
 
-        this.courier.send(player, "mentions-summary.format", mentions.toString());
+        this.courier.send(player, "mentions-summary.message", mentions.toString());
     }
 
     @EventHandler

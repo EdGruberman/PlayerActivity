@@ -35,7 +35,7 @@ public final class Players implements CommandExecutor {
             if (player.hasPermission("playeractivity.track.players"))
                 list.add(this.listTag.getTagDisplayName(player));
 
-        this.courier.send(sender, "players.format", list, list.size());
+        this.courier.send(sender, "players.message", list, list.size());
         return true;
     }
 

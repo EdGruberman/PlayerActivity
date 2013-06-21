@@ -7,15 +7,15 @@ idle-kick-leave: '§8{0,time,HH:mm:ss} §7{1} was §ckicked for being idle§7 mo
 away: '§8{0,time,HH:mm:ss} {1}§8 is §9away§8 for §7{2}' # 0 = generated, 1 = player display name, 2 = away reason
 back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 0 = generated, 1 = player display name, 2 = away reaso, 3 = away duration
 back-already: '§f-> §7You are §enot away' # 0 = generated
-away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return: §b/back§8)' # 0 = generated, 1 = duration, 2 = reason
+away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return§8: §7 §b/back§8)' # 0 = generated, 1 = duration, 2 = reason
 away-default-reason: 'no reason'
 mentions: '§f-> §7{1}§7 has been §9away§7 {2} for §o{3}' # 0 = generated, 1 = player display name, 2 = away duration, 3 = reason
 mentions-summary:
-  format: '§f-> §7Your name was §dmentioned§7 by: {1}' # 0 = generated, 1 = players
+  message: '§f-> §7Your name was §dmentioned§7 by§8: §7 {1}' # 0 = generated, 1 = players
   item: '§7{0} §8({1} ago)' # 0 = display name, 1 = duration since last mention
   delimiter: ', '
 players:
-  format: '§f-> §7Players: {2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
+  message: '§f-> §7Players§8: §7{2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
   item: '§7{0}' # 0 = tagged display name
   delimiter: '§8, '
 who:
@@ -31,8 +31,8 @@ tag-Idle:
 tag-Bed:
   pattern: '{0}§5#Bed' # 0 = player name
   description: 'In bed {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
-command-disabled: '§f-> §7Command §cdisabled§7: §o{1}' # 0 = generated, 1 = command label
-player-not-found: '§f-> §7Player §enot found§7: §o{1}' # 0 = generated, 1 = player
+command-disabled: '§f-> §7Command §cdisabled§8: §7 §o{1}' # 0 = generated, 1 = command label
+player-not-found: '§f-> §7Player §enot found§8: §7 §o{1}' # 0 = generated, 1 = player
 reload: '§f-> §2Reloaded §7{1} plugin' # 0 = generated, 1 = plugin name
 requires-player: '§f-> §cOnly in-game players§7 can use the §b/{1} §7command' # 0 = generated, 1 = command label
 version: @VERSION@
