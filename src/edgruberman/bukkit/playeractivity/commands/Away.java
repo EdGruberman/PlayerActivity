@@ -31,12 +31,12 @@ public final class Away implements CommandExecutor {
             return true;
         }
 
-        final List<String> defaultReason = this.courier.format("+away-default-reason");
+        final List<String> defaultReason = this.courier.format("away-default-reason");
         final String reason = ( args.length >= 1 ? Away.join(Arrays.asList(args), " ") : ( defaultReason.size() >= 1 ? defaultReason.get(0) : null ) );
         final Player player = (Player) sender;
         final AwayState state = this.awayBack.getAwayState(player.getName());
         if (state != null && (state.reason.equals(reason) || args.length == 0)) { // already away with same reason or no new reason
-            this.courier.send(sender, "away-already", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.courier.format("+away-default-reason") : state.reason));
+            this.courier.send(sender, "away-already", Main.readableDuration(System.currentTimeMillis() - state.since), (state.reason == null ? this.courier.format("away-default-reason") : state.reason));
             if (this.awayBack.mentions != null) this.awayBack.mentions.tellMentions(player);
             return true;
         }

@@ -41,7 +41,7 @@ public class Mentions implements Listener {
         if (!this.mentions.containsKey(player.getName())) return;
 
         final long now = System.currentTimeMillis();
-        final JoinList mentions = new JoinList(this.courier.getBase().getConfigurationSection("mentions-summary"));
+        final JoinList<String> mentions = new JoinList<String>(this.courier.getBase().getConfigurationSection("mentions-summary"));
         for (final Map.Entry<String, Long> mention : this.mentions.get(player.getName()).entrySet())
             mentions.add(mention.getKey(), Main.readableDuration(now - mention.getValue()));
 

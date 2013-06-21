@@ -1,38 +1,38 @@
 format-code: '§'
-idle: '§8{0,time,HH:mm:ss} {3}§8 has been §3idle§8 for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
-active: '§8{0,time,HH:mm:ss} {3}§8 is §6back§8 after being idle for {1}' # 1 = Current Idle Duration, 2 = Kick Idle Duration, 3 = Player Display Name
-idle-notify: null # 1 = Current Idle Duration, 2 = Kick Idle Duration
-+idle-kick-reason: 'Idle for {0}' # 0 = Kick Idle Duration
-idle-kick-leave: '§8{0,time,HH:mm:ss} §7{1} was §ckicked for being idle§7 more than {3}' # 1 = Player Display Name, 2 = Reason, 3 = Kick Idle Threshold, 4 = Default Kick Message
-away: '§8{0,time,HH:mm:ss} {1}§8 is §9away§8 for §7{2}' # 1 = Player Display Name, 2 = Away Reason
-back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 1 = Player Display Name, 2 = Away Reason, 3 = Away Duration
-back-already: '§f-> §7You are §enot away'
-away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return: §b/back§8)' # 1 = Duration, 2 = Reason
-+away-default-reason: 'no reason'
-mentions: '§f-> §7{1}§7 has been §9away§7 {2} for §o{3}' # 1 = Player Display Name, 2 = Away Duration, 3 = Reason
+idle: '§8{0,time,HH:mm:ss} {3}§8 has been §3idle§8 for {1}' # 0 = generated, 1 = current idle duration, 2 = kick idle duration, 3 = player display name
+active: '§8{0,time,HH:mm:ss} {3}§8 is §6back§8 after being idle for {1}' # 0 = generated, 1 = current idle duration, 2 = kick idle duration, 3 = player display name
+idle-notify: null # 0 = generated, 1 = current idle duration, 2 = kick idle duration
+idle-kick-reason: 'Idle for {0}' # 0 = kick idle duration
+idle-kick-leave: '§8{0,time,HH:mm:ss} §7{1} was §ckicked for being idle§7 more than {3}' # 0 = generated, 1 = player display name, 2 = reason, 3 = kick idle threshold, 4 = default kick message
+away: '§8{0,time,HH:mm:ss} {1}§8 is §9away§8 for §7{2}' # 0 = generated, 1 = player display name, 2 = away reason
+back: '§8{0,time,HH:mm:ss} {1}§8 is §6back§8 after §7{2}§8 for §7{3}' # 0 = generated, 1 = player display name, 2 = away reaso, 3 = away duration
+back-already: '§f-> §7You are §enot away' # 0 = generated
+away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return: §b/back§8)' # 0 = generated, 1 = duration, 2 = reason
+away-default-reason: 'no reason'
+mentions: '§f-> §7{1}§7 has been §9away§7 {2} for §o{3}' # 0 = generated, 1 = player display name, 2 = away duration, 3 = reason
 mentions-summary:
-  format: '§f-> §7Your name was §dmentioned§7 by: {1}' # 1 = Players
-  +item: '§7{0} §8({1} ago)' # 0 = Display Name, 1 = Duration Since Last Mention
-  +delimiter: ', '
+  format: '§f-> §7Your name was §dmentioned§7 by: {1}' # 0 = generated, 1 = players
+  item: '§7{0} §8({1} ago)' # 0 = display name, 1 = duration since last mention
+  delimiter: ', '
 players:
-  format: '§f-> §7Players: {2,choice,0#§8None|1#{1} §8({2})}' # 1 = Players, 2 = Count
-  +item: '§7{0}' # 0 = Tagged Display Name
-  +delimiter: '§8, '
+  format: '§f-> §7Players: {2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
+  item: '§7{0}' # 0 = tagged display name
+  delimiter: '§8, '
 who:
-  connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 1 = Display Name, 2 = Last Connected Duration, 3 = Tag Description, 4 = hasTag(0|1)
-  disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 1 = Player Name, 2 = Last Disconnected Duration
-  +unknown-connected: '§osome time§7'
+  connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 0 = generated, 1 = display name, 2 = last connected duration, 3 = tag description, 4 = hasTag(0|1)
+  disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 0 = generated, 1 = player name, 2 = last disconnected duration
+  unknown-connected: '§osome time§7'
 tag-Away:
-  +pattern: '{0}§9#Away' # 0 = Player Name
-  +description: '§9Away§7 {0} for §o{3}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name, 3 = Reason
+  pattern: '{0}§9#Away' # 0 = player name
+  description: '§9Away§7 {0} for §o{3}' # 0 = duration, 1 = hasTag(0|1), 2 = list name, 3 = reason
 tag-Idle:
-  +pattern: '{0}§3#Idle' # 0 = Player Name
-  +description: '§3Idle§7 {0}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name
+  pattern: '{0}§3#Idle' # 0 = player name
+  description: '§3Idle§7 {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
 tag-Bed:
-  +pattern: '{0}§5#Bed' # 0 = Player Name
-  +description: 'In bed {0}' # 0 = Duration, 1 = hasTag(0|1), 2 = List Name
-requires-player: '§f-> §cOnly in-game players§7 can use the §b/{1} §7command' # 1 = Command Label
-command-disabled: '§f-> §7Command §cdisabled§7: §o{1}' # 1 = Command Label
-player-not-found: '§f-> §7Player §enot found§7: §o{1}' # 1 = <Player>
-reload: '§f-> §2Reloaded §7{1} plugin' # 1 = Plugin Name
+  pattern: '{0}§5#Bed' # 0 = player name
+  description: 'In bed {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
+command-disabled: '§f-> §7Command §cdisabled§7: §o{1}' # 0 = generated, 1 = command label
+player-not-found: '§f-> §7Player §enot found§7: §o{1}' # 0 = generated, 1 = player
+reload: '§f-> §2Reloaded §7{1} plugin' # 0 = generated, 1 = plugin name
+requires-player: '§f-> §cOnly in-game players§7 can use the §b/{1} §7command' # 0 = generated, 1 = command label
 version: @VERSION@

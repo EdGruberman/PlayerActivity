@@ -54,7 +54,7 @@ public final class Who implements CommandExecutor, Listener {
 
         // connected
         final long now = System.currentTimeMillis();
-        final List<String> unknown = this.courier.format("who.+unknown-connected");
+        final List<String> unknown = this.courier.format("who.unknown-connected");
         final String connected = ( this.joined.containsKey(target.getPlayer().getName())
                 ? Main.readableDuration(now - this.joined.get(target.getPlayer().getName()))
                 : ( unknown.size() >= 1 ? unknown.get(0) : null ) );

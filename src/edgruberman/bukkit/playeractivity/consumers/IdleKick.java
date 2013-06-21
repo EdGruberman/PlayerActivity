@@ -57,7 +57,7 @@ public final class IdleKick implements Observer, Listener {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (!idle.player.hasPermission(this.track)) return;
         this.kicked = idle.player.getName();
-        final List<String> message = this.courier.format("+idle-kick-reason", Main.readableDuration(this.tracker.getIdleThreshold()));
+        final List<String> message = this.courier.format("idle-kick-reason", Main.readableDuration(this.tracker.getIdleThreshold()));
         idle.player.kickPlayer(( message.size() >= 1 ? message.get(0) : null ));
     }
 
