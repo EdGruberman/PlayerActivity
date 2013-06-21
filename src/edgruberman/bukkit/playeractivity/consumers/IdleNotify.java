@@ -13,7 +13,7 @@ import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
 import edgruberman.bukkit.playeractivity.consumers.away.PlayerBack;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 
 /** notify when a player goes idle */
 public final class IdleNotify implements Observer {

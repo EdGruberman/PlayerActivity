@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 
 public final class Reload implements CommandExecutor {
 

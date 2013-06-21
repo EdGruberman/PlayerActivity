@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.PlayerActive;
 import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 
 public class AwayBack implements Observer, Listener {
 

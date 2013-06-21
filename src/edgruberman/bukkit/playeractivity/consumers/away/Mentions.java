@@ -14,7 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack.AwayState;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.JoinList;
 
 public class Mentions implements Listener {

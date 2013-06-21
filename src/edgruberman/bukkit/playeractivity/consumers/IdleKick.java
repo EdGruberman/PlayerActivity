@@ -16,7 +16,7 @@ import org.bukkit.plugin.Plugin;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.PlayerIdle;
 import edgruberman.bukkit.playeractivity.StatusTracker;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 
 /** kick players for being idle */
 public final class IdleKick implements Observer, Listener {
@@ -57,7 +57,8 @@ public final class IdleKick implements Observer, Listener {
         final PlayerIdle idle = (PlayerIdle) arg;
         if (!idle.player.hasPermission(this.track)) return;
         this.kicked = idle.player.getName();
-        idle.player.kickPlayer(this.courier.format("+idle-kick-reason", Main.readableDuration(this.tracker.getIdleThreshold())));
+        final List<String> message = this.courier.format("+idle-kick-reason", Main.readableDuration(this.tracker.getIdleThreshold()));
+        idle.player.kickPlayer(( message.size() >= 1 ? message.get(0) : null ));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

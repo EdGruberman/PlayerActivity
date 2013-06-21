@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import edgruberman.bukkit.playeractivity.Main;
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack.AwayState;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 
 public final class Back implements CommandExecutor {
 

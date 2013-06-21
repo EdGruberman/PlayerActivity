@@ -19,7 +19,7 @@ import edgruberman.bukkit.playeractivity.consumers.IdleKick;
 import edgruberman.bukkit.playeractivity.consumers.IdleNotify;
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack;
 import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.CustomPlugin;
 
 public final class Main extends CustomPlugin {
@@ -40,7 +40,7 @@ public final class Main extends CustomPlugin {
     @Override
     public void onEnable() {
         this.reloadConfig();
-        this.courier = ConfigurationCourier.Factory.create(this).setBase(this.loadConfig("language.yml")).setFormatCode("format-code").build();
+        this.courier = ConfigurationCourier.create(this).setBase(this.loadConfig("language.yml")).setFormatCode("format-code").build();
 
         PlayerMoveBlockEvent.MovementTracker.initialize(this);
 

@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.playeractivity.consumers.listtag.ListTag;
-import edgruberman.bukkit.playeractivity.messaging.ConfigurationCourier;
+import edgruberman.bukkit.playeractivity.messaging.Courier.ConfigurationCourier;
 import edgruberman.bukkit.playeractivity.util.JoinList;
 
 public final class Players implements CommandExecutor {

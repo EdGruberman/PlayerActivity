@@ -1,34 +1,38 @@
 package edgruberman.bukkit.playeractivity.messaging;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.bukkit.command.CommandSender;
+
 /**
  * summary of {@link Message} delivery
- *
  * @author EdGruberman (ed@rjump.com)
- * @version 2.0.0
+ * @version 3.0.0
  */
-public class Confirmation extends Message {
+public class Confirmation {
 
-    private static final long serialVersionUID = 1L;
+    protected final String pattern;
+
+    protected final Object[] arguments;
 
     /** visibility of log entry */
     protected final Level level;
 
     /** count of recipients message was delivered to */
-    protected final int received;
+    protected final List<CommandSender> received;
 
     /**
-     * create a delivery summary
-     *
      * @param level visibility of log entry
      * @param received count of recipients message was delivered to
      * @param pattern {@link java.text.MessageFormat MessageFormat} pattern
      * @param arguments pattern arguments
      */
-    public Confirmation(final Level level, final int received, final String pattern, final Object... arguments) {
-        super(pattern, arguments);
+    public Confirmation(final Level level, final List<CommandSender> received, final String pattern, final Object... arguments) {
+        this.pattern = pattern;
+        this.arguments = arguments;
         this.level = level;
         this.received = received;
     }
@@ -39,13 +43,13 @@ public class Confirmation extends Message {
     }
 
     /** count of recipients message was delivered to */
-    public int getReceived() {
-        return this.received;
+    public List<CommandSender> getReceived() {
+        return Collections.unmodifiableList(this.received);
     }
 
     /** lazy log record */
     public LogRecord toLogRecord() {
-        final LogRecord record = new LogRecord(this.level, this.original);
+        final LogRecord record = new LogRecord(this.level, this.pattern);
         record.setParameters(this.arguments);
         return record;
     }
