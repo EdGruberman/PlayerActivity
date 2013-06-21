@@ -9,7 +9,7 @@ commands:
     aliases: [away, afk]
     description: Configure your status as not active
     permission: playeractivity.away
-    usage: '§f-> §7Usage: §b/<command>§3[ §o<Reason>§3]'
+    usage: '§f-> §7Usage: §b/<command> §3[§oreason§3]'
   'playeractivity:back':
     aliases: [back]
     description: Configure your status as active
@@ -19,12 +19,12 @@ commands:
     aliases: [toggle]
     description: Toggle your away status
     permission: playeractivity.toggle
-    usage: '§f-> §7Usage: §b/<command>§3[ §o<Reason>§3]'
+    usage: '§f-> §7Usage: §b/<command> §3[§oreason§3]'
   'playeractivity:who':
     aliases: [who, whois]
     description: View detailed status of player
     permission: playeractivity.who
-    usage: '§f-> §7Usage: §b/<command> §o<Player>'
+    usage: '§f-> §7Usage: §b/<command> §3§oplayer'
   'playeractivity:players':
     aliases: [players]
     description: View list of connected players
@@ -36,13 +36,13 @@ commands:
     usage: '§f-> §7Usage: §b/<command>'
 permissions:
   playeractivity.admin:
-    description: Can use all features
+    description: Can use all features of PlayerActivity plugin
     default: op
     children:
       playeractivity.user: true
       playeractivity.reload: true
   playeractivity.user:
-    description: Can use basic features
+    description: Can use basic features of PlayerActivity plugin
     default: true
     children:
       playeractivity.track: true
