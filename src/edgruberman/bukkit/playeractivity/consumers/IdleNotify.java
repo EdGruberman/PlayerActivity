@@ -74,7 +74,7 @@ public final class IdleNotify implements Observer {
     }
 
     private boolean isAway(final Player player) {
-        return ( player.hasMetadata("away") ? player.getMetadata("away").get(0).asBoolean() : false);
+        return ( player.hasMetadata("away") ? player.getMetadata("away").get(0).asBoolean() : false );
     }
 
 }
