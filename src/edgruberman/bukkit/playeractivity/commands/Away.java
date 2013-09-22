@@ -2,7 +2,6 @@ package edgruberman.bukkit.playeractivity.commands;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,8 +30,8 @@ public final class Away implements CommandExecutor {
             return true;
         }
 
-        final List<String> defaultReason = this.courier.format("away-default-reason");
-        final String reason = ( args.length >= 1 ? Away.join(Arrays.asList(args), " ") : ( defaultReason.size() >= 1 ? defaultReason.get(0) : null ) );
+        final String defaultReason = this.courier.format("away-default-reason");
+        final String reason = ( args.length >= 1 ? Away.join(Arrays.asList(args), " ") : defaultReason );
         final Player player = (Player) sender;
         final AwayState state = this.awayBack.getAwayState(player.getName());
         if (state != null && (state.reason.equals(reason) || args.length == 0)) { // already away with same reason or no new reason

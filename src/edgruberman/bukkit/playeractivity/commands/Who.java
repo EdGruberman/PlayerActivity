@@ -1,7 +1,6 @@
 package edgruberman.bukkit.playeractivity.commands;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -54,10 +53,10 @@ public final class Who implements CommandExecutor, Listener {
 
         // connected
         final long now = System.currentTimeMillis();
-        final List<String> unknown = this.courier.format("who.unknown-connected");
+        final String unknown = this.courier.format("who.unknown-connected");
         final String connected = ( this.joined.containsKey(target.getPlayer().getName())
                 ? Main.readableDuration(now - this.joined.get(target.getPlayer().getName()))
-                : ( unknown.size() >= 1 ? unknown.get(0) : null ) );
+                : unknown );
         this.courier.send(sender, "who.connected", target.getPlayer().getDisplayName(), connected
                 , ( this.listTag != null ? this.listTag.getTagDescription(target.getPlayer()) : null )
                 , ( this.listTag != null && this.listTag.getAttached(target.getPlayer()).size() > 0 ? 1 : 0 ));
