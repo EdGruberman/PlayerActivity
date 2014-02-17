@@ -3,6 +3,7 @@ package edgruberman.bukkit.playeractivity.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.playeractivity.consumers.away.AwayBack;
@@ -12,10 +13,10 @@ public final class Toggle implements CommandExecutor {
 
     private final ConfigurationCourier courier;
     private final AwayBack awayBack;
-    private final Away away;
-    private final Back back;
+    private final PluginCommand away;
+    private final PluginCommand back;
 
-    public Toggle(final ConfigurationCourier courier, final AwayBack awayBack, final Away away, final Back back) {
+    public Toggle(final ConfigurationCourier courier, final AwayBack awayBack, final PluginCommand away, final PluginCommand back) {
         this.courier = courier;
         this.awayBack = awayBack;
         this.away = away;
@@ -30,9 +31,9 @@ public final class Toggle implements CommandExecutor {
         }
 
         if (this.awayBack.isAway(sender.getName())) {
-            this.back.onCommand(sender, command, label, args);
+            this.back.execute(sender, label, args);
         } else {
-            this.away.onCommand(sender, command, label, args);
+            this.away.execute(sender, label, args);
         }
 
         return true;

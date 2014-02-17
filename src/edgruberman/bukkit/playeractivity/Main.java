@@ -70,11 +70,9 @@ public final class Main extends CustomPlugin {
         section = this.getConfig().getConfigurationSection("away-back");
         if (section != null && section.getBoolean("enabled")) {
             this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("mentions"), this.courier);
-            final Away away = new Away(this.courier, this.awayBack);
-            final Back back = new Back(this.courier, this.awayBack);
-            this.getCommand("away").setExecutor(away);
-            this.getCommand("back").setExecutor(back);
-            this.getCommand("toggle").setExecutor(new Toggle(this.courier, this.awayBack, away, back));
+            this.getCommand("away").setExecutor(new Away(this.courier, this.awayBack));
+            this.getCommand("back").setExecutor(new Back(this.courier, this.awayBack));
+            this.getCommand("toggle").setExecutor(new Toggle(this.courier, this.awayBack, this.getCommand("away"), this.getCommand("back")));
         }
 
         this.getCommand("who").setExecutor(new Who(this, this.courier, this.listTag, this.getCommand("players")));
