@@ -3,109 +3,203 @@ package edgruberman.bukkit.playeractivity.util;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-
-import org.bukkit.configuration.ConfigurationSection;
+import java.util.Collections;
 
 /**
- * allows object references to be stored for lazy MessageFormat formatting
- *
+ * store parameters for lazy MessageFormat formatting
  * @author EdGruberman (ed@rjump.com)
- * @version 1.5.0
+ * @version 2.0.1
  */
-public class JoinList<T> extends ArrayList<T> {
+public class JoinList<E> extends ArrayList<E> {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String CONFIG_KEY_FORMAT = "format";
-    public static final String CONFIG_KEY_ITEM = "item";
-    public static final String CONFIG_KEY_DELIMITER = "delimiter";
+
+
+    // ---- defaults ----
 
     public static final String DEFAULT_FORMAT = "{0}";
     public static final String DEFAULT_ITEM = "{0}";
     public static final String DEFAULT_DELIMITER = " ";
+    public static final String DEFAULT_LAST = JoinList.DEFAULT_DELIMITER;
 
 
 
-    public static String join(final Collection<?> collection) {
-        return JoinList.join(collection, JoinList.DEFAULT_DELIMITER);
+    // ---- convenience functions ----
+
+    public static <T> DefaultFactory<T> factory() {
+        return JoinList.DefaultFactory.create();
     }
 
-    public static String join(final Collection<?> collection, final String delimiter) {
-        return JoinList.join(collection, delimiter, JoinList.DEFAULT_ITEM);
+    /** concatenate with default delimiter of {@value #DEFAULT_DELIMITER} */
+    public static String join(final Collection<?> elements) {
+        return JoinList.factory().elements(elements).join();
     }
 
-    public static String join(final Collection<?> collection, final String delimiter, final String item) {
-        return JoinList.join(collection, delimiter, item, JoinList.DEFAULT_FORMAT);
-    }
-
-    public static String join(final Collection<?> collection, final String delimiter, final String item, final String format) {
-        final JoinList<Object> list = new JoinList<Object>(format, item, delimiter, collection);
-        return list.toString();
+    /** concatenate with default delimiter of {@value #DEFAULT_DELIMITER} */
+    public static <T> String join(final T... elements) {
+        return JoinList.join(Arrays.asList(elements));
     }
 
 
+
+    // ---- instance ----
 
     private final String format;
     private final String item;
     private final String delimiter;
+    private final String last;
 
     public JoinList() {
-        this(JoinList.DEFAULT_FORMAT, JoinList.DEFAULT_ITEM, JoinList.DEFAULT_DELIMITER);
+        this(JoinList.DEFAULT_FORMAT, JoinList.DEFAULT_ITEM, JoinList.DEFAULT_DELIMITER, JoinList.DEFAULT_LAST);
     }
 
-    public JoinList(final String format, final String item, final String delimiter) {
+    public JoinList(final String format, final String item, final String delimiter, final String last) {
         this.format = format;
         this.item = item;
         this.delimiter = delimiter;
+        this.last = last;
     }
 
-    public JoinList(final String format, final String item, final String delimiter, final Collection<? extends T> collection) {
-        this(format, item, delimiter);
-        this.addAll(collection);
+    protected JoinList(final JoinList.Factory<?, ?> factory) {
+        super( factory.elements.size() > 0 ? factory.elements.size() : 10 );
+        this.format = factory.format;
+        this.item = factory.item;
+        this.delimiter = factory.delimiter;
+        this.last = factory.last;
     }
 
-    public JoinList(final ConfigurationSection config) {
-        this(config.getString(JoinList.CONFIG_KEY_FORMAT, JoinList.DEFAULT_FORMAT)
-                , config.getString(JoinList.CONFIG_KEY_ITEM, JoinList.DEFAULT_ITEM)
-                , config.getString(JoinList.CONFIG_KEY_DELIMITER, JoinList.DEFAULT_DELIMITER));
-    }
-
-    public JoinList(final ConfigurationSection config, final Collection<? extends T> collection) {
-        this(config);
-        this.addAll(collection);
-    }
-
+    /** add arguments as single element of array */
     public boolean add(final Object... arguments) {
         return this.add((Object) arguments);
     }
 
-    @Override
-    public String toString() {
-        final Iterator<T> i = this.iterator();
-        if (!i.hasNext()) return MessageFormat.format(this.format, "");
+    /** format elements and concatenate */
+    public String join() {
+        final StringBuilder result = new StringBuilder();
 
-        final StringBuilder items = new StringBuilder();
-        while (i.hasNext()) {
-            final Object o = i.next();
+        final int last = this.size() - 1;
+        for (int i = 0; i < this.size(); i++) {
+            final E element = this.get(i);
+
+            // prefix delimiter
+            if (result.length() > 0) {
+                if (i < last) {
+                    result.append(this.delimiter);
+                } else {
+                    result.append(this.last);
+                }
+            }
 
             // prevent recursion
-            if (o == this) {
-                items.append("{this}");
+            if (element == this) {
+                result.append("{this}");
                 continue;
             }
 
             // format item, which could either be an array of objects or a single object
             final MessageFormat message = new MessageFormat(this.item);
-            final Object[] arguments = ( o instanceof Object[] ? (Object[]) o : new Object[] { o } );
+            final Object[] arguments = ( element instanceof Object[] ? (Object[]) element : new Object[] { element } );
             final StringBuffer sb = message.format(arguments, new StringBuffer(), new FieldPosition(0));
-            items.append(sb);
-
-            if (i.hasNext()) items.append(this.delimiter);
+            result.append(sb);
         }
 
-        return MessageFormat.format(this.format, items);
+        return MessageFormat.format(this.format, result);
+    }
+
+    @Override
+    public String toString() {
+        return this.join();
+    }
+
+
+
+
+
+    public abstract static class Factory<T, F extends JoinList.Factory<T, F>> {
+
+        protected String format = JoinList.DEFAULT_FORMAT;
+        protected String item = JoinList.DEFAULT_ITEM;
+        protected String delimiter = JoinList.DEFAULT_DELIMITER;
+        protected String last = JoinList.DEFAULT_LAST;
+
+        protected Collection<? extends T> elements = Collections.emptyList();
+
+        /**
+         * @param format pattern used to format resultant joined output
+         * (default is {@value #DEFAULT_FORMAT})
+         */
+        public F format(final String format) {
+            this.format = format;
+            return this.cast();
+        }
+
+        /**
+         * @param item pattern used to format each element in list as
+         * parameters (default is {@value #DEFAULT_ITEM})
+         */
+        public F item(final String item) {
+            this.item = item;
+            return this.cast();
+        }
+
+        /**
+         * @param delimiter appended between all items except before the last
+         * (default is {@value #DEFAULT_DELIMITER})
+         */
+        public F delimiter(final String delimiter) {
+            this.delimiter = delimiter;
+            return this.cast();
+        }
+
+        /**
+         * @param last delimiter appended before last item
+         * (default is {@value #DEFAULT_LAST})
+         */
+        public F last(final String last) {
+            this.last = last;
+            return this.cast();
+        }
+
+        /**
+         * @param elements initialize list with elements
+         */
+        public F elements(final Collection<? extends T> elements) {
+            this.elements = elements;
+            return this.cast();
+        }
+
+        protected abstract F cast();
+
+        public JoinList<T> build() {
+            final JoinList<T> result = new JoinList<T>(this);
+            result.addAll(this.elements);
+            return result;
+        }
+
+        public String join() {
+            return this.build().join();
+        }
+
+    }
+
+
+
+
+
+    public static class DefaultFactory<T> extends JoinList.Factory<T, DefaultFactory<T>> {
+
+        public static <Y> DefaultFactory<Y> create() {
+            return new DefaultFactory<Y>();
+        }
+
+        @Override
+        protected DefaultFactory<T> cast() {
+            return this;
+        }
+
     }
 
 }

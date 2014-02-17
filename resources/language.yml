@@ -10,14 +10,12 @@ back-already: '§f-> §7You are §enot away' # 0 = generated
 away-already: '§f-> §7You are §ealready away§7 {1} for §o{2} §8(§7To return§8: §7 §b/back§8)' # 0 = generated, 1 = duration, 2 = reason
 away-default-reason: 'no reason'
 mentions: '§f-> §7{1}§7 has been §9away§7 {2} for §o{3}' # 0 = generated, 1 = player display name, 2 = away duration, 3 = reason
-mentions-summary:
-  message: '§f-> §7Your name was §dmentioned§7 by§8: §7 {1}' # 0 = generated, 1 = players
-  item: '§7{0} §8({1} ago)' # 0 = display name, 1 = duration since last mention
-  delimiter: ', '
-players:
-  message: '§f-> §7Players§8: §7{2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
-  item: '§7{0}' # 0 = tagged display name
-  delimiter: '§8, '
+mentions-summary: '§f-> §7Your name was §dmentioned§7 by§8: §7 {1}' # 0 = generated, 1 = players
+mentions-summary-item: '§7{0} §8({1} ago)' # 0 = display name, 1 = duration since last mention
+mentions-summary-delimiter: ', '
+players: '§f-> §7Players§8: §7{2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
+players-item: '§7{0}' # 0 = tagged display name
+players-delimiter: '§8, '
 who:
   connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 0 = generated, 1 = display name, 2 = last connected duration, 3 = tag description, 4 = hasTag(0|1)
   disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 0 = generated, 1 = player name, 2 = last disconnected duration
