@@ -50,17 +50,17 @@ public final class Who implements CommandExecutor, Listener {
         // disconnected
         if (!target.isOnline() || !target.getPlayer().hasPermission("playeractivity.track.who")) {
             final String duration = Main.readableDuration(System.currentTimeMillis() - target.getLastPlayed());
-            this.courier.send(sender, "who.disconnected", target.getName(), duration);
+            this.courier.send(sender, "who-disconnected", target.getName(), duration);
             return true;
         }
 
         // connected
         final long now = System.currentTimeMillis();
-        final String unknown = this.courier.format("who.unknown-connected");
+        final String unknown = this.courier.format("who-unknown-connected");
         final String connected = ( this.joined.containsKey(target.getPlayer().getName())
                 ? Main.readableDuration(now - this.joined.get(target.getPlayer().getName()))
                 : unknown );
-        this.courier.send(sender, "who.connected", target.getPlayer().getDisplayName(), connected
+        this.courier.send(sender, "who-connected", target.getPlayer().getDisplayName(), connected
                 , ( this.listTag != null ? this.listTag.getTagDescription(target.getPlayer()) : null )
                 , ( this.listTag != null && this.listTag.getAttached(target.getPlayer()).size() > 0 ? 1 : 0 ));
         return true;

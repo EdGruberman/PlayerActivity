@@ -16,10 +16,9 @@ mentions-summary-delimiter: ', '
 players: '§f-> §7Players§8: §7{2,choice,0#§8None|1#{1} §8({2})}' # 0 = generated, 1 = players, 2 = count
 players-item: '§7{0}' # 0 = tagged display name
 players-delimiter: '§8, '
-who:
-  connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 0 = generated, 1 = display name, 2 = last connected duration, 3 = tag description, 4 = hasTag(0|1)
-  disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 0 = generated, 1 = player name, 2 = last disconnected duration
-  unknown-connected: '§osome time§7'
+who-connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 0 = generated, 1 = display name, 2 = last connected duration, 3 = tag description, 4 = hasTag(0|1)
+who-disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 0 = generated, 1 = player name, 2 = last disconnected duration
+who-unknown-connected: '§osome time§7'
 tag-Away:
   pattern: '{0}§9#Away' # 0 = player name
   description: '§9Away§7 {0} for §o{3}' # 0 = duration, 1 = hasTag(0|1), 2 = list name, 3 = reason
