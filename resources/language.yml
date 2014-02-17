@@ -19,15 +19,12 @@ players-delimiter: '§8, '
 who-connected: '§f-> §7{1}§7 connected {2} ago {4,choice,0#|1#§8({3}§8)}' # 0 = generated, 1 = display name, 2 = last connected duration, 3 = tag description, 4 = hasTag(0|1)
 who-disconnected: '§f-> §7{1}§7 §9disconnected§7 {2} ago' # 0 = generated, 1 = player name, 2 = last disconnected duration
 who-unknown-connected: '§osome time§7'
-tag-Away:
-  pattern: '{0}§9#Away' # 0 = player name
-  description: '§9Away§7 {0} for §o{3}' # 0 = duration, 1 = hasTag(0|1), 2 = list name, 3 = reason
-tag-Idle:
-  pattern: '{0}§3#Idle' # 0 = player name
-  description: '§3Idle§7 {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
-tag-Bed:
-  pattern: '{0}§5#Bed' # 0 = player name
-  description: 'In bed {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
+tag-Away: '{0}§9#Away' # 0 = player name
+tag-Away-description: '§9Away§7 {0} for §o{3}' # 0 = duration, 1 = hasTag(0|1), 2 = list name, 3 = reason
+tag-Idle: '{0}§3#Idle' # 0 = player name
+tag-Idle-description: '§3Idle§7 {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
+tag-Bed: '{0}§5#Bed' # 0 = player name
+tag-Bed-description: 'In bed {0}' # 0 = duration, 1 = hasTag(0|1), 2 = list name
 command-disabled: '§f-> §7Command §cdisabled§8: §7 §o{1}' # 0 = generated, 1 = command label
 player-not-found: '§f-> §7Player §enot found§8: §7 §o{1}' # 0 = generated, 1 = player
 reload: '§f-> §2Reloaded §7{1} plugin' # 0 = generated, 1 = plugin name

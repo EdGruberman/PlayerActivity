@@ -34,7 +34,7 @@ public final class Main extends CustomPlugin {
     @Override
     public void onLoad() {
         this.putConfigMinimum("4.0.0");
-        this.putConfigMinimum("language.yml", "4.2.2a6");
+        this.putConfigMinimum("language.yml", "4.2.2");
     }
 
     @Override
@@ -61,8 +61,8 @@ public final class Main extends CustomPlugin {
             for (final String name : tags.getKeys(false)) {
                 if (!tags.isConfigurationSection(name)) continue;
                 final ConfigurationSection tag = tags.getConfigurationSection(name);
-                tag.set("pattern", this.courier.translate("tag-" + name + ".pattern"));
-                tag.set("description", this.courier.translate("tag-" + name + ".description"));
+                tag.set("pattern", this.courier.translate("tag-" + name));
+                tag.set("description", this.courier.translate("tag-" + name + "-description"));
             }
             this.listTag = new ListTag(this, tags, "playeractivity.track.listtag");
         }
