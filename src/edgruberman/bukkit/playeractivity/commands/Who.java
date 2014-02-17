@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,18 +24,20 @@ public final class Who implements CommandExecutor, Listener {
 
     private final ConfigurationCourier courier;
     private final ListTag listTag;
+    private final PluginCommand players;
     private final Map<String, Long> joined = new HashMap<String, Long>();
 
-    public Who(final Plugin plugin, final ConfigurationCourier courier, final ListTag listTag) {
+    public Who(final Plugin plugin, final ConfigurationCourier courier, final ListTag listTag, final PluginCommand players) {
         this.courier = courier;
         this.listTag = listTag;
+        this.players = players;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (args.length == 0) {
-            Bukkit.dispatchCommand(sender, "playeractivity:players");
+            this.players.execute(sender, this.players.getLabel(), new String[0]);
             return true;
         }
 

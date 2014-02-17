@@ -72,14 +72,14 @@ public final class Main extends CustomPlugin {
             this.awayBack = new AwayBack(this, this.getActivity(section), section.getBoolean("mentions"), this.courier);
             final Away away = new Away(this.courier, this.awayBack);
             final Back back = new Back(this.courier, this.awayBack);
-            this.getCommand("playeractivity:away").setExecutor(away);
-            this.getCommand("playeractivity:back").setExecutor(back);
-            this.getCommand("playeractivity:toggle").setExecutor(new Toggle(this.courier, this.awayBack, away, back));
+            this.getCommand("away").setExecutor(away);
+            this.getCommand("back").setExecutor(back);
+            this.getCommand("toggle").setExecutor(new Toggle(this.courier, this.awayBack, away, back));
         }
 
-        this.getCommand("playeractivity:who").setExecutor(new Who(this, this.courier, this.listTag));
-        this.getCommand("playeractivity:players").setExecutor(new Players(this.courier, this.listTag));
-        this.getCommand("playeractivity:reload").setExecutor(new Reload(this, this.courier));
+        this.getCommand("who").setExecutor(new Who(this, this.courier, this.listTag, this.getCommand("players")));
+        this.getCommand("players").setExecutor(new Players(this.courier, this.listTag));
+        this.getCommand("playeractivity.reload").setExecutor(new Reload(this, this.courier));
     }
 
     @Override
