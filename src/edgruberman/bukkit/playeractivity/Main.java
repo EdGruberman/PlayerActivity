@@ -34,7 +34,7 @@ public final class Main extends CustomPlugin {
     @Override
     public void onLoad() {
         this.putConfigMinimum("4.0.0");
-        this.putConfigMinimum("language.yml", "4.2.2");
+        this.putConfigMinimum("language.yml", "4.3.0");
     }
 
     @Override
